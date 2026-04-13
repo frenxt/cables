@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "build-with-ai entry schema",
+  "description": "Schema for frontmatter and registry.json files in content/",
+  "definitions": {
+    "Frontmatter": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "track": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": [
+            "beginner",
+            "intermediate",
+            "advanced"
+          ]
+        },
+        "last_verified": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "day": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "time_required": {
+          "type": "string"
+        },
+        "artifact_type": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "claude-md",
+                "skill",
+                "subagent",
+                "slash-command"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "has_war_story": {
+          "type": "boolean"
+        },
+        "contributors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "label",
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "title",
+        "slug",
+        "tool",
+        "track",
+        "category",
+        "difficulty",
+        "last_verified"
+      ],
+      "additionalProperties": false
+    },
+    "Registry": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "artifact_type": {
+          "type": "string",
+          "enum": [
+            "claude-md",
+            "skill",
+            "subagent",
+            "slash-command"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target": {
+                "type": "string",
+                "minLength": 1
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "copy"
+                ]
+              },
+              "on_conflict": {
+                "type": "string",
+                "enum": [
+                  "prompt",
+                  "skip",
+                  "overwrite"
+                ]
+              }
+            },
+            "required": [
+              "source",
+              "target",
+              "action",
+              "on_conflict"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "post_install_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "slug",
+        "artifact_type",
+        "version",
+        "requires",
+        "files"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
