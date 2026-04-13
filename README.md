@@ -1,8 +1,10 @@
-# Build With AI
+# Cables
 
-A living, community-curated resource for shipping with AI coding tools. Starts with Claude Code. Built and maintained by [FRE|Nxt Labs](https://frenxt.com).
+Field notes from real projects with Claude Code. Written and maintained by [FRE|Nxt Labs](https://frenxt.com).
 
-Every entry is a field note: something we actually did on a real project, what worked, what didn't, and the artifacts you can drop into your own setup.
+Every cable is a dispatch from someone who actually did the work — what we tried, what broke, what we learned, and the artifacts you can drop into your own setup.
+
+Starts with Claude Code. Built to expand to other AI coding tools over time.
 
 ## Three ways to use this
 

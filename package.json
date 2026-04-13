@@ -1,7 +1,17 @@
 {
-  "name": "build-with-ai",
+  "name": "cables",
   "version": "0.0.0",
   "private": true,
+  "description": "Field notes from real projects with Claude Code — written and maintained by FRE|Nxt Labs.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frenxt/cables.git"
+  },
+  "homepage": "https://github.com/frenxt/cables#readme",
+  "bugs": {
+    "url": "https://github.com/frenxt/cables/issues"
+  },
+  "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@10.30.1",
   "engines": {
