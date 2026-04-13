@@ -1,0 +1,14 @@
+{
+  "slug": "invalid-entry-missing-artifact-dir",
+  "artifact_type": "claude-md",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/CLAUDE.md",
+      "target": "CLAUDE.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ]
+}
