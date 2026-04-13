@@ -6,7 +6,7 @@ Thanks for wanting to contribute. This document is the checklist you need to pas
 
 Reviewers will reject PRs that don't pass these three rules. They are the reason this repo exists.
 
-1. **First person plural, not second person.** "We tried this and it broke in X way," not "You should do X." Entries are field notes from people who did the work, not instructions from people who think they know better.
+1. **First person plural, not second person.** "We tried this and it broke in X way," not "You should do X." Cables are field notes from people who did the work, not instructions from people who think they know better.
 
 2. **Lead with a real moment, not a definition.** Bad: "A CLAUDE.md is a project configuration file." Good: "Three weeks into the frenxt rebuild, we realized our CLAUDE.md was making Claude re-read the whole codebase on every query."
 
