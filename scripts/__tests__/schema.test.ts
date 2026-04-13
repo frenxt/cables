@@ -10,6 +10,7 @@ describe("FrontmatterSchema", () => {
     category: "configuration",
     difficulty: "beginner",
     last_verified: "2026-04-10",
+    contributors: ["@sragav"],
   };
 
   it("accepts minimal valid frontmatter", () => {
@@ -35,6 +36,24 @@ describe("FrontmatterSchema", () => {
   it("rejects frontmatter missing title", () => {
     const { title, ...missingTitle } = validFrontmatter;
     const result = FrontmatterSchema.safeParse(missingTitle);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects frontmatter missing contributors", () => {
+    const { contributors, ...missing } = validFrontmatter;
+    const result = FrontmatterSchema.safeParse(missing);
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts frontmatter with a non-empty contributors array", () => {
+    const ok = { ...validFrontmatter, contributors: ["@sragav"] };
+    const result = FrontmatterSchema.safeParse(ok);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects frontmatter with an empty contributors array", () => {
+    const bad = { ...validFrontmatter, contributors: [] };
+    const result = FrontmatterSchema.safeParse(bad);
     expect(result.success).toBe(false);
   });
 

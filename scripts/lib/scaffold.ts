@@ -27,6 +27,7 @@ function frontmatter(opts: ScaffoldOptions): string {
   lines.push(`category: "${opts.category}"`);
   lines.push(`difficulty: "${opts.difficulty}"`);
   lines.push(`last_verified: "${opts.last_verified}"`);
+  lines.push(`contributors: ["@TODO-your-handle"]`);
   if (opts.artifact_type !== null) lines.push(`artifact_type: "${opts.artifact_type}"`);
   lines.push("---");
   return lines.join("\n");
