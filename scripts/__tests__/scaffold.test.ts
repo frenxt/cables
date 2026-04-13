@@ -31,6 +31,7 @@ describe("scaffoldEntry", () => {
     expect(mdx).toContain("slug: \"day-01-install\"");
     expect(mdx).toContain("title: \"Install Claude Code and your first / command\"");
     expect(mdx).toContain("difficulty: \"beginner\"");
+    expect(mdx).toContain("contributors:");
   });
 
   it("creates an artifact-bearing entry with registry.json and artifact/ dir", () => {
@@ -54,6 +55,8 @@ describe("scaffoldEntry", () => {
     expect(reg.slug).toBe("day-02-claude-md");
     expect(reg.artifact_type).toBe("claude-md");
     expect(reg.version).toBe("0.1.0");
+    const mdx2 = readFileSync(join(folder, "index.mdx"), "utf8");
+    expect(mdx2).toContain("contributors:");
   });
 
   it("throws if the target folder already exists", () => {

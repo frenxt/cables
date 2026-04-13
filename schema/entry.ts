@@ -32,7 +32,7 @@ export const FrontmatterSchema = z.object({
   time_required: z.string().optional(),
   artifact_type: ArtifactTypeSchema.nullable().optional(),
   has_war_story: z.boolean().optional(),
-  contributors: z.array(z.string()).optional(),
+  contributors: z.array(z.string()).min(1),
   source_links: z.array(SourceLinkSchema).optional(),
 });
 

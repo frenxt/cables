@@ -21,7 +21,7 @@
     "validate": "tsx scripts/validate.ts",
     "build-index": "tsx scripts/build-index.ts",
     "generate-schema": "tsx scripts/generate-schema.ts",
-    "new-entry": "tsx scripts/new-entry.ts",
+    "new-cable": "tsx scripts/new-cable.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
