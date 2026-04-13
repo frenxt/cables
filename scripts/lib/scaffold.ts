@@ -39,7 +39,7 @@ function body(opts: ScaffoldOptions): string {
     "",
     `# ${opts.title}`,
     "",
-    "_Lead with a real moment. What happened on a real project that made this entry necessary?_",
+    "_Lead with a real moment. What happened on a real project that made this cable necessary?_",
     "",
     "## What we tried",
     "",

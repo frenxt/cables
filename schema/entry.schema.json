@@ -82,7 +82,8 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "minItems": 1
         },
         "source_links": {
           "type": "array",
@@ -113,7 +114,8 @@
         "track",
         "category",
         "difficulty",
-        "last_verified"
+        "last_verified",
+        "contributors"
       ],
       "additionalProperties": false
     },
