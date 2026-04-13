@@ -1,0 +1,35 @@
+---
+title: "Install Claude Code and run your first slash command"
+slug: "day-01-install"
+tool: "claude-code"
+track: "fundamentals"
+day: 1
+category: "onboarding"
+difficulty: "beginner"
+time_required: "10 min"
+last_verified: "2026-04-13"
+contributors: ["@frenxt"]
+---
+
+# Day 1: Install Claude Code and run your first slash command
+
+The first time we opened Claude Code in a real repo, we spent fifteen minutes looking for where to type. We'd been using ChatGPT in a browser tab for months; a terminal that talks back wasn't the mental model we walked in with.
+
+## What we tried
+
+We followed the install instructions, ran `claude` in our project root, and immediately typed a paragraph of what we wanted. Nothing surprising happened — it answered. Then we got stuck: there was no obvious way to ask it to run a test, open a file, or do anything beyond chat.
+
+## What happened
+
+The thing we were missing was that Claude Code is two modes at once. It's a chat, and it's a command palette. Type `/` and everything you can do appears. That one keystroke is the whole on-ramp.
+
+## What we learned
+
+- Install: follow the official docs at <https://docs.claude.com/en/docs/claude-code>.
+- Start it in a project directory, not your home directory. Claude Code reads files relative to where you run it, and `~` is almost never where you want it to be looking.
+- Type `/` to see every available slash command, including the ones that come from installed plugins and skills. `/help` is the one to memorize first.
+- Your first real action is almost always `/init` — it scaffolds a `CLAUDE.md` file, which is the single most important piece of configuration you'll write (Day 2 covers it).
+
+## Next
+
+- **Day 2** — Your first `CLAUDE.md`.

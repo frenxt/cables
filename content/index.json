@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-04-13T05:26:19.631Z",
+  "entries": [
+    {
+      "title": "Install Claude Code and run your first slash command",
+      "slug": "day-01-install",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "onboarding",
+      "difficulty": "beginner",
+      "day": 1,
+      "tags": [],
+      "time_required": "10 min",
+      "artifact_type": null,
+      "has_war_story": false,
+      "last_verified": "2026-04-13",
+      "path": "content/claude-code/day-01-install"
+    }
+  ]
+}
