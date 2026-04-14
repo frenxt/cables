@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-04-13T12:00:00.000Z",
+  "entries": [
+    {
+      "title": "A tutorial-only sample",
+      "slug": "sample-tutorial",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "onboarding",
+      "difficulty": "beginner",
+      "day": null,
+      "tags": ["sample", "test"],
+      "time_required": null,
+      "artifact_type": null,
+      "has_war_story": false,
+      "last_verified": "2026-04-10",
+      "path": "content/claude-code/sample-tutorial",
+      "contributors": ["@test"]
+    },
+    {
+      "title": "A sample cable with a CLAUDE.md artifact",
+      "slug": "sample-with-artifact",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "configuration",
+      "difficulty": "beginner",
+      "day": null,
+      "tags": ["sample", "claude-md"],
+      "time_required": "5 min",
+      "artifact_type": "claude-md",
+      "has_war_story": false,
+      "last_verified": "2026-04-10",
+      "path": "content/claude-code/sample-with-artifact",
+      "contributors": ["@test"]
+    }
+  ]
+}
