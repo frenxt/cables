@@ -130,7 +130,7 @@ export function run(argv: string[]): void {
     return;
   }
 
-  cli.runMatchedCommand().catch((e) => {
+  cli.runMatchedCommand().catch((e: unknown) => {
     logError((e as Error).message);
     exit(1);
   });
