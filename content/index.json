@@ -1,6 +1,25 @@
 {
-  "generated_at": "2026-04-15T09:00:36.096Z",
+  "generated_at": "2026-04-15T09:09:33.866Z",
   "entries": [
+    {
+      "title": "Autonomous browser QA with browser-use",
+      "slug": "browser-use-qa",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "testing",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "browser-qa",
+        "e2e",
+        "automation"
+      ],
+      "time_required": "25 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/browser-use-qa"
+    },
     {
       "title": "Install Claude Code and run your first slash command",
       "slug": "day-01-install",
@@ -56,64 +75,6 @@
       "path": "content/claude-code/day-03-claude-home-directory"
     },
     {
-      "title": "Audit your E2E coverage",
-      "slug": "day-04-audit-e2e-coverage",
-      "tool": "claude-code",
-      "track": "fundamentals",
-      "category": "testing",
-      "difficulty": "intermediate",
-      "day": 4,
-      "tags": [
-        "e2e",
-        "qa",
-        "regression",
-        "checklist"
-      ],
-      "time_required": "20 min",
-      "artifact_type": "skill",
-      "has_war_story": true,
-      "last_verified": "2026-04-15",
-      "path": "content/claude-code/day-04-audit-e2e-coverage"
-    },
-    {
-      "title": "Fix your prompt caching",
-      "slug": "day-05-fix-prompt-caching",
-      "tool": "claude-code",
-      "track": "fundamentals",
-      "category": "performance",
-      "difficulty": "intermediate",
-      "day": 5,
-      "tags": [
-        "prompt-caching",
-        "latency",
-        "token-cost"
-      ],
-      "time_required": "18 min",
-      "artifact_type": "skill",
-      "has_war_story": true,
-      "last_verified": "2026-04-15",
-      "path": "content/claude-code/day-05-fix-prompt-caching"
-    },
-    {
-      "title": "Debug an agent from a LangSmith trace",
-      "slug": "day-06-debug-langsmith-trace",
-      "tool": "claude-code",
-      "track": "fundamentals",
-      "category": "workflow",
-      "difficulty": "intermediate",
-      "day": 6,
-      "tags": [
-        "langsmith",
-        "debugging",
-        "trace-analysis"
-      ],
-      "time_required": "22 min",
-      "artifact_type": "skill",
-      "has_war_story": true,
-      "last_verified": "2026-04-15",
-      "path": "content/claude-code/day-06-debug-langsmith-trace"
-    },
-    {
       "title": "Write your first skill from scratch",
       "slug": "day-07-first-skill-from-scratch",
       "tool": "claude-code",
@@ -131,25 +92,6 @@
       "has_war_story": false,
       "last_verified": "2026-04-15",
       "path": "content/claude-code/day-07-first-skill-from-scratch"
-    },
-    {
-      "title": "Autonomous browser QA with browser-use",
-      "slug": "day-08-browser-use-qa",
-      "tool": "claude-code",
-      "track": "fundamentals",
-      "category": "testing",
-      "difficulty": "intermediate",
-      "day": 8,
-      "tags": [
-        "browser-qa",
-        "e2e",
-        "automation"
-      ],
-      "time_required": "25 min",
-      "artifact_type": "skill",
-      "has_war_story": true,
-      "last_verified": "2026-04-15",
-      "path": "content/claude-code/day-08-browser-use-qa"
     },
     {
       "title": "Your first subagent",
@@ -188,44 +130,6 @@
       "has_war_story": false,
       "last_verified": "2026-04-15",
       "path": "content/claude-code/day-10-first-slash-command"
-    },
-    {
-      "title": "Reproduce -> fix -> verify",
-      "slug": "day-11-reproduce-fix-verify",
-      "tool": "claude-code",
-      "track": "fundamentals",
-      "category": "workflow",
-      "difficulty": "intermediate",
-      "day": 11,
-      "tags": [
-        "bugfix",
-        "linear",
-        "verification"
-      ],
-      "time_required": "24 min",
-      "artifact_type": "skill",
-      "has_war_story": true,
-      "last_verified": "2026-04-15",
-      "path": "content/claude-code/day-11-reproduce-fix-verify"
-    },
-    {
-      "title": "Benchmark a LangGraph agent",
-      "slug": "day-12-benchmark-langgraph-agent",
-      "tool": "claude-code",
-      "track": "fundamentals",
-      "category": "performance",
-      "difficulty": "advanced",
-      "day": 12,
-      "tags": [
-        "langgraph",
-        "benchmarking",
-        "evaluation"
-      ],
-      "time_required": "30 min",
-      "artifact_type": "skill",
-      "has_war_story": false,
-      "last_verified": "2026-04-15",
-      "path": "content/claude-code/day-12-benchmark-langgraph-agent"
     },
     {
       "title": "CLAUDE.md patterns: when to split",
@@ -283,6 +187,26 @@
       "has_war_story": false,
       "last_verified": "2026-04-15",
       "path": "content/claude-code/day-15-war-story-contributor-guide"
+    },
+    {
+      "title": "Audit your E2E coverage",
+      "slug": "e2e-coverage-audit",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "testing",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "e2e",
+        "qa",
+        "regression",
+        "checklist"
+      ],
+      "time_required": "20 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/e2e-coverage-audit"
     },
     {
       "title": "How we rolled Claude Code out to a 6-person team",
@@ -359,6 +283,82 @@
       "has_war_story": false,
       "last_verified": "2026-04-15",
       "path": "content/claude-code/f4-skills-that-scale"
+    },
+    {
+      "title": "Benchmark a LangGraph agent",
+      "slug": "langgraph-agent-benchmark",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "performance",
+      "difficulty": "advanced",
+      "day": null,
+      "tags": [
+        "langgraph",
+        "benchmarking",
+        "evaluation"
+      ],
+      "time_required": "30 min",
+      "artifact_type": "skill",
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/langgraph-agent-benchmark"
+    },
+    {
+      "title": "Debug an agent from a LangSmith trace",
+      "slug": "langsmith-trace-debug",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "langsmith",
+        "debugging",
+        "trace-analysis"
+      ],
+      "time_required": "22 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/langsmith-trace-debug"
+    },
+    {
+      "title": "Fix your prompt caching",
+      "slug": "prompt-caching-fix",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "performance",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "prompt-caching",
+        "latency",
+        "token-cost"
+      ],
+      "time_required": "18 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/prompt-caching-fix"
+    },
+    {
+      "title": "Reproduce -> fix -> verify",
+      "slug": "reproduce-fix-verify",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "bugfix",
+        "linear",
+        "verification"
+      ],
+      "time_required": "24 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/reproduce-fix-verify"
     },
     {
       "title": "Replicate your skill stack (local + marketplace)",

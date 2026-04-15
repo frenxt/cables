@@ -1,5 +1,5 @@
 {
-  "slug": "day-11-reproduce-fix-verify",
+  "slug": "reproduce-fix-verify",
   "artifact_type": "skill",
   "version": "1.0.0",
   "requires": ["LINEAR_WORKSPACE"],

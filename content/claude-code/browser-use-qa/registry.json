@@ -1,5 +1,5 @@
 {
-  "slug": "day-08-browser-use-qa",
+  "slug": "browser-use-qa",
   "artifact_type": "skill",
   "version": "1.0.0",
   "requires": ["BROWSER_USE_API_KEY"],
