@@ -10,7 +10,7 @@ Starts with Claude Code. Built to expand to other AI coding tools over time.
 
 - **Day 1 → Day N track** — a sequenced path for someone new to Claude Code.
 - **Catalog** — browse by category, tag, or difficulty when you need one specific thing.
-- **Registry** — `npx frenxt add <slug>` installs real artifacts (CLAUDE.md templates, skills, subagents, slash commands) directly into your project.
+- **Registry** — `npx frenxt-cables add <slug>` installs real artifacts (CLAUDE.md templates, skills, subagents, slash commands) directly into your project.
 
 ## Local development
 
