@@ -1,0 +1,15 @@
+{
+  "slug": "day-06-debug-langsmith-trace",
+  "artifact_type": "skill",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/analyse-langsmith-trace/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Run this skill with a concrete failing trace URL and one known-good comparison run."
+}

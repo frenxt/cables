@@ -1,0 +1,47 @@
+---
+title: "Autonomous browser QA with browser-use"
+slug: "day-08-browser-use-qa"
+tool: "claude-code"
+track: "fundamentals"
+day: 8
+category: "testing"
+tags: ["browser-qa", "e2e", "automation"]
+difficulty: "intermediate"
+time_required: "25 min"
+artifact_type: "skill"
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "browser-use docs", url: "https://docs.browser-use.com" }
+---
+
+# Day 8: Autonomous browser QA with browser-use
+
+Manual QA catches issues, but it does not scale when UI changes land every day.
+
+<WarStory title="A visual regression hid behind a passing API test">
+Backend checks were green while a checkout button became non-interactive after a CSS refactor. Browser automation caught it in the first run.
+</WarStory>
+
+## What we tried
+
+We installed a browser QA skill and ran it against the top three user flows:
+
+- sign-in
+- checkout
+- settings update
+
+## What happened
+
+The skill produced reproducible failure notes with clear reproduction paths instead of vague "it broke" reports.
+
+## What we learned
+
+- Start with high-value user journeys, not full-site crawls.
+- Capture screenshots only on failure to keep reports readable.
+- Keep one stable seed dataset for deterministic QA runs.
+
+## Next
+
+- **Day 9** — Your first subagent.

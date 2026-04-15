@@ -1,0 +1,43 @@
+---
+title: "Write your first skill from scratch"
+slug: "day-07-first-skill-from-scratch"
+tool: "claude-code"
+track: "fundamentals"
+day: 7
+category: "skill-authoring"
+tags: ["skills", "authoring", "workflow"]
+difficulty: "beginner"
+time_required: "16 min"
+artifact_type: null
+has_war_story: false
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Skill format reference", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# Day 7: Write your first skill from scratch
+
+A skill is just a reusable operating procedure in markdown. The value is consistency, not complexity.
+
+## What we tried
+
+We took one repetitive engineering task (reviewing API contract changes) and encoded it as a simple skill with:
+
+- clear inputs
+- deterministic steps
+- explicit output format
+
+## What happened
+
+The first draft was too broad. After we narrowed it to one job and one output shape, it became reliably useful across repos.
+
+## What we learned
+
+- One skill should solve one recurring task.
+- Constraints improve output quality more than long instructions.
+- Include an output template so results are easy to consume in PRs.
+
+## Next
+
+- **Day 8** — Autonomous browser QA with browser-use.

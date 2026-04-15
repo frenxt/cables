@@ -1,0 +1,44 @@
+---
+title: "Benchmark a LangGraph agent"
+slug: "day-12-benchmark-langgraph-agent"
+tool: "claude-code"
+track: "fundamentals"
+day: 12
+category: "performance"
+tags: ["langgraph", "benchmarking", "evaluation"]
+difficulty: "advanced"
+time_required: "30 min"
+artifact_type: "skill"
+has_war_story: false
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "LangGraph docs", url: "https://langchain-ai.github.io/langgraph/" }
+---
+
+# Day 12: Benchmark a LangGraph agent
+
+You cannot optimize what you do not measure. For agent systems, that means evaluating both quality and execution cost.
+
+## What we tried
+
+We built a benchmark harness with fixed workloads and scored:
+
+- latency (p50/p95)
+- token cost
+- success rate per task class
+- tool-call failure rate
+
+## What happened
+
+A slower variant outperformed on quality for high-stakes tasks, while a cheaper variant won on low-risk tasks. One default model was not enough.
+
+## What we learned
+
+- Benchmark by task class, not global averages.
+- Record trace-level failures to explain score drops.
+- Keep benchmark datasets versioned in-repo.
+
+## Next
+
+- **Day 13** — CLAUDE.md patterns: when to split.

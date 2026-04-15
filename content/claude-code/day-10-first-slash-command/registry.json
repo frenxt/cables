@@ -1,0 +1,15 @@
+{
+  "slug": "day-10-first-slash-command",
+  "artifact_type": "slash-command",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/release-readiness.md",
+      "target": ".claude/commands/release-readiness.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Customize checklist items to match your CI/CD and approval flow."
+}

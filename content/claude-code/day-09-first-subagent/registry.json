@@ -1,0 +1,15 @@
+{
+  "slug": "day-09-first-subagent",
+  "artifact_type": "subagent",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/trace-reviewer.md",
+      "target": ".claude/agents/trace-reviewer.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Use this subagent for bounded review tasks where the output format is fixed."
+}

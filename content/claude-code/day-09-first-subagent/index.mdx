@@ -1,0 +1,39 @@
+---
+title: "Your first subagent"
+slug: "day-09-first-subagent"
+tool: "claude-code"
+track: "fundamentals"
+day: 9
+category: "workflow"
+tags: ["subagent", "delegation", "parallel-work"]
+difficulty: "intermediate"
+time_required: "14 min"
+artifact_type: "subagent"
+has_war_story: false
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Claude Code subagents", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# Day 9: Your first subagent
+
+Subagents are most useful when the task is bounded and parallelizable.
+
+## What we tried
+
+We created a narrow "reviewer" subagent to inspect one module at a time while the primary agent handled integration.
+
+## What happened
+
+When we gave clear ownership boundaries, delegated work became faster and easier to merge. Broad prompts produced noisy results.
+
+## What we learned
+
+- Delegate only well-scoped tasks.
+- Assign explicit file ownership for each subagent.
+- Keep the integration path in the primary agent.
+
+## Next
+
+- **Day 10** — Your first slash command.

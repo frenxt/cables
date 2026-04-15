@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-15T06:03:01.324Z",
+  "generated_at": "2026-04-15T07:11:22.087Z",
   "entries": [
     {
       "title": "Install Claude Code and run your first slash command",
@@ -93,6 +93,196 @@
       "has_war_story": true,
       "last_verified": "2026-04-15",
       "path": "content/claude-code/day-05-fix-prompt-caching"
+    },
+    {
+      "title": "Debug an agent from a LangSmith trace",
+      "slug": "day-06-debug-langsmith-trace",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "intermediate",
+      "day": 6,
+      "tags": [
+        "langsmith",
+        "debugging",
+        "trace-analysis"
+      ],
+      "time_required": "22 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-06-debug-langsmith-trace"
+    },
+    {
+      "title": "Write your first skill from scratch",
+      "slug": "day-07-first-skill-from-scratch",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "skill-authoring",
+      "difficulty": "beginner",
+      "day": 7,
+      "tags": [
+        "skills",
+        "authoring",
+        "workflow"
+      ],
+      "time_required": "16 min",
+      "artifact_type": null,
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-07-first-skill-from-scratch"
+    },
+    {
+      "title": "Autonomous browser QA with browser-use",
+      "slug": "day-08-browser-use-qa",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "testing",
+      "difficulty": "intermediate",
+      "day": 8,
+      "tags": [
+        "browser-qa",
+        "e2e",
+        "automation"
+      ],
+      "time_required": "25 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-08-browser-use-qa"
+    },
+    {
+      "title": "Your first subagent",
+      "slug": "day-09-first-subagent",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "intermediate",
+      "day": 9,
+      "tags": [
+        "subagent",
+        "delegation",
+        "parallel-work"
+      ],
+      "time_required": "14 min",
+      "artifact_type": "subagent",
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-09-first-subagent"
+    },
+    {
+      "title": "Your first slash command",
+      "slug": "day-10-first-slash-command",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "beginner",
+      "day": 10,
+      "tags": [
+        "slash-command",
+        "automation",
+        "routines"
+      ],
+      "time_required": "10 min",
+      "artifact_type": "slash-command",
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-10-first-slash-command"
+    },
+    {
+      "title": "Reproduce -> fix -> verify",
+      "slug": "day-11-reproduce-fix-verify",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "intermediate",
+      "day": 11,
+      "tags": [
+        "bugfix",
+        "linear",
+        "verification"
+      ],
+      "time_required": "24 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-11-reproduce-fix-verify"
+    },
+    {
+      "title": "Benchmark a LangGraph agent",
+      "slug": "day-12-benchmark-langgraph-agent",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "performance",
+      "difficulty": "advanced",
+      "day": 12,
+      "tags": [
+        "langgraph",
+        "benchmarking",
+        "evaluation"
+      ],
+      "time_required": "30 min",
+      "artifact_type": "skill",
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-12-benchmark-langgraph-agent"
+    },
+    {
+      "title": "CLAUDE.md patterns: when to split",
+      "slug": "day-13-claude-md-split-patterns",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "configuration",
+      "difficulty": "intermediate",
+      "day": 13,
+      "tags": [
+        "claude-md",
+        "modularity",
+        "scale"
+      ],
+      "time_required": "15 min",
+      "artifact_type": null,
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-13-claude-md-split-patterns"
+    },
+    {
+      "title": "Plugins worth installing",
+      "slug": "day-14-plugins-worth-installing",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "meta",
+      "difficulty": "beginner",
+      "day": 14,
+      "tags": [
+        "plugins",
+        "tooling",
+        "productivity"
+      ],
+      "time_required": "12 min",
+      "artifact_type": null,
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-14-plugins-worth-installing"
+    },
+    {
+      "title": "Writing a war story: the contributor guide",
+      "slug": "day-15-war-story-contributor-guide",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "meta",
+      "difficulty": "beginner",
+      "day": 15,
+      "tags": [
+        "war-story",
+        "contributing",
+        "editorial"
+      ],
+      "time_required": "14 min",
+      "artifact_type": null,
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-15-war-story-contributor-guide"
     }
   ]
 }

@@ -1,0 +1,39 @@
+---
+title: "CLAUDE.md patterns: when to split"
+slug: "day-13-claude-md-split-patterns"
+tool: "claude-code"
+track: "fundamentals"
+day: 13
+category: "configuration"
+tags: ["claude-md", "modularity", "scale"]
+difficulty: "intermediate"
+time_required: "15 min"
+artifact_type: null
+has_war_story: false
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Claude Code docs", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# Day 13: CLAUDE.md patterns: when to split
+
+A single `CLAUDE.md` works until project complexity exceeds one file's clarity budget.
+
+## What we tried
+
+We kept a root `CLAUDE.md` for universal rules and moved domain-specific instructions into folder-local docs referenced from the root.
+
+## What happened
+
+Context quality improved because each area had tighter, relevant guidance instead of one oversized instruction document.
+
+## What we learned
+
+- Keep global rules global; keep domain rules close to domain code.
+- Split when edits become frequent and unrelated sections start colliding.
+- Add a lightweight table of contents so navigation stays fast.
+
+## Next
+
+- **Day 14** — Plugins worth installing.
