@@ -1,0 +1,61 @@
+---
+title: "Replicate your skill stack (local + marketplace)"
+slug: "skill-stack-replication"
+tool: "claude-code"
+track: "fundamentals"
+day: null
+category: "workflow"
+tags: ["skills", "taxonomy", "plugins", "standardization"]
+difficulty: "intermediate"
+time_required: "20 min"
+artifact_type: "skill"
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Claude Code docs", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# Replicate your skill stack (local + marketplace)
+
+If your skills live in one profile but not another, your quality and speed drift by project.
+
+<WarStory title="Same person, different output quality">
+We compared runs across `~/.claude`, `~/.claude-frenxt`, and `~/.claude-curious` and got different behavior for the same request. The root cause was not model variance; it was skill drift.
+</WarStory>
+
+## What we checked
+
+We audited both local and plugin-backed skill sources:
+
+- Local profiles: `~/.claude`, `~/.claude-curious`, `~/.claude-frenxt`, `~/.claude-interviewlm`, `~/.claude-juliet`
+- Local recurring skills: `e2e-review` (5/5 profiles), `qa` (4/5), `benchmark` (4/5), `analyse-langsmith-trace` (4/5), plus project-specific skills like `bugfix-cycle`, `qa-release`, and `voice-test`
+- Plugin inventories from `installed_plugins.json` + each plugin `installPath`
+- Plugin skill packs detected: `marketing-skills` (33), `vercel` (32), `sentry` (30), `posthog` (16), `superpowers` (14), `netlify-skills` (13)
+
+## Renamed buckets (clean taxonomy)
+
+We renamed the old buckets to make them operational:
+
+- `developer experience` -> **Developer Workflow Systems**
+- `thought process` -> **Reasoning Frameworks**
+- `specific skills` -> **Domain Playbooks**
+
+## Why this works
+
+- **Developer Workflow Systems** keep execution consistent: branch hygiene, QA loops, release checks, benchmark routines.
+- **Reasoning Frameworks** keep decisions consistent: reproduce->fix->verify, trace analysis, debugging flow, verification before completion.
+- **Domain Playbooks** keep output specific: marketing, Vercel platform work, Sentry operations, Netlify deployment patterns.
+
+This separation stops one giant skill list from becoming noise. You can standardize core behavior across all profiles while still layering domain packs where they matter.
+
+## What we learned
+
+- Replication should happen at taxonomy level first, file-copy level second.
+- Plugin skills are high-volume; curate them intentionally instead of enabling everything by default.
+- Your "core" is usually the intersection across profiles, not the largest profile.
+
+## Next
+
+- Standardize one baseline stack across all active profiles.
+- Add project-specific deltas only when they are measurable.
