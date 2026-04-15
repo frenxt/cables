@@ -1,0 +1,38 @@
+---
+title: "5x output without 5x tokens: subagents as leverage"
+slug: "f2-subagents-as-leverage"
+tool: "claude-code"
+track: "founder"
+category: "leverage-patterns"
+tags: ["subagents", "throughput", "delegation"]
+difficulty: "intermediate"
+time_required: "14 min"
+artifact_type: null
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Claude Code docs", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# F2: 5x output without 5x tokens: subagents as leverage
+
+Subagents improved throughput only after we redesigned task boundaries.
+
+<WarStory title="Parallelism without ownership created rework">
+At first, we delegated broad tasks to multiple subagents and spent more time merging than building. Clear file ownership changed that.
+</WarStory>
+
+## What we tried
+
+We split work into parallel, non-overlapping units with one integration owner.
+
+## What happened
+
+Cycle time dropped and review quality improved because each delegated output had a clear acceptance shape.
+
+## What we learned
+
+- Delegate bounded work, not ambiguous work.
+- Assign one owner for final integration.
+- Measure leverage by lead time and rework rate, not output volume.

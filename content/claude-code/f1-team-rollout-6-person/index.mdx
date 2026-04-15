@@ -1,0 +1,42 @@
+---
+title: "How we rolled Claude Code out to a 6-person team"
+slug: "f1-team-rollout-6-person"
+tool: "claude-code"
+track: "founder"
+category: "team-setup"
+tags: ["rollout", "team-adoption", "process"]
+difficulty: "intermediate"
+time_required: "16 min"
+artifact_type: null
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Claude Code docs", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# F1: How we rolled Claude Code out to a 6-person team
+
+The hardest part of team rollout was not tooling, it was consistency.
+
+<WarStory title="Six workflows, one repo, zero shared defaults">
+In week one, everyone used a different prompt style and branch workflow. Output quality varied by person, not by task type.
+</WarStory>
+
+## What we tried
+
+We standardized three layers:
+
+- one shared root `CLAUDE.md`
+- one PR checklist for AI-assisted changes
+- one weekly review of misses and fixes
+
+## What happened
+
+Adoption stabilized quickly because expectations were explicit. New teammates onboarded faster because the workflow was documented and enforced.
+
+## What we learned
+
+- Team rollout is a process design problem first.
+- Shared conventions beat individual prompt craftsmanship.
+- Weekly review loops prevent silent drift.

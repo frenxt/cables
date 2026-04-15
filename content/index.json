@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-15T07:11:22.087Z",
+  "generated_at": "2026-04-15T07:24:03.240Z",
   "entries": [
     {
       "title": "Install Claude Code and run your first slash command",
@@ -283,6 +283,82 @@
       "has_war_story": false,
       "last_verified": "2026-04-15",
       "path": "content/claude-code/day-15-war-story-contributor-guide"
+    },
+    {
+      "title": "How we rolled Claude Code out to a 6-person team",
+      "slug": "f1-team-rollout-6-person",
+      "tool": "claude-code",
+      "track": "founder",
+      "category": "team-setup",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "rollout",
+        "team-adoption",
+        "process"
+      ],
+      "time_required": "16 min",
+      "artifact_type": null,
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/f1-team-rollout-6-person"
+    },
+    {
+      "title": "5x output without 5x tokens: subagents as leverage",
+      "slug": "f2-subagents-as-leverage",
+      "tool": "claude-code",
+      "track": "founder",
+      "category": "leverage-patterns",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "subagents",
+        "throughput",
+        "delegation"
+      ],
+      "time_required": "14 min",
+      "artifact_type": null,
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/f2-subagents-as-leverage"
+    },
+    {
+      "title": "CLAUDE.md as team contract",
+      "slug": "f3-claude-md-team-contract",
+      "tool": "claude-code",
+      "track": "founder",
+      "category": "team-setup",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "claude-md",
+        "governance",
+        "standards"
+      ],
+      "time_required": "12 min",
+      "artifact_type": null,
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/f3-claude-md-team-contract"
+    },
+    {
+      "title": "Skills that scale past solo usage",
+      "slug": "f4-skills-that-scale",
+      "tool": "claude-code",
+      "track": "founder",
+      "category": "leverage-patterns",
+      "difficulty": "beginner",
+      "day": null,
+      "tags": [
+        "skills",
+        "standardization",
+        "scale"
+      ],
+      "time_required": "11 min",
+      "artifact_type": null,
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/f4-skills-that-scale"
     }
   ]
 }
