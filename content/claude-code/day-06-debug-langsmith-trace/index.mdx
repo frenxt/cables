@@ -1,0 +1,48 @@
+---
+title: "Debug an agent from a LangSmith trace"
+slug: "day-06-debug-langsmith-trace"
+tool: "claude-code"
+track: "fundamentals"
+day: 6
+category: "workflow"
+tags: ["langsmith", "debugging", "trace-analysis"]
+difficulty: "intermediate"
+time_required: "22 min"
+artifact_type: "skill"
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "LangSmith observability", url: "https://docs.langchain.com/langsmith/observability-quickstart" }
+---
+
+# Day 6: Debug an agent from a LangSmith trace
+
+When an agent fails, raw logs usually tell us *what* happened, not *why* it happened in that step sequence.
+
+<WarStory title="The bug was in a branch we never looked at">
+We spent hours tuning prompts before noticing the tool-call branch was never executed after a guard condition changed. The trace made it obvious in two minutes.
+</WarStory>
+
+## What we tried
+
+We used a trace-review skill that forces a consistent walkthrough:
+
+- identify the failing run and expected behavior
+- isolate the first diverging step
+- inspect tool inputs/outputs at that step
+- classify root cause (prompt, tool contract, retrieval, guardrail, routing)
+
+## What happened
+
+Once we standardized that sequence, debugging stopped feeling like archaeology. We could move from symptom to concrete fix proposal quickly.
+
+## What we learned
+
+- Always compare a failing trace against a known-good trace.
+- Treat routing decisions as first-class failure points.
+- Save root-cause notes in the repo so future regressions are faster to triage.
+
+## Next
+
+- **Day 7** — Write your first skill from scratch.

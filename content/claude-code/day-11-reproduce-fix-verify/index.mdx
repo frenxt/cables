@@ -1,0 +1,47 @@
+---
+title: "Reproduce -> fix -> verify"
+slug: "day-11-reproduce-fix-verify"
+tool: "claude-code"
+track: "fundamentals"
+day: 11
+category: "workflow"
+tags: ["bugfix", "linear", "verification"]
+difficulty: "intermediate"
+time_required: "24 min"
+artifact_type: "skill"
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Linear docs", url: "https://linear.app/docs" }
+---
+
+# Day 11: Reproduce -> fix -> verify
+
+The fastest way to ship bugs is to skip one of those three steps.
+
+<WarStory title="We fixed the wrong bug first">
+A patch looked right in code review but targeted the symptom branch, not the reproducible root path. We closed the ticket and reopened it 48 hours later.
+</WarStory>
+
+## What we tried
+
+We enforced a strict flow:
+
+- write reproduction criteria first
+- apply the smallest plausible fix
+- run explicit verification checks mapped to reproduction criteria
+
+## What happened
+
+The loop slowed down initial edits by minutes and saved days of regression churn.
+
+## What we learned
+
+- If you cannot reproduce it, you cannot confidently close it.
+- Verification should mirror real user behavior, not just unit-level success.
+- Include rollback notes when risk is non-trivial.
+
+## Next
+
+- **Day 12** — Benchmark a LangGraph agent.

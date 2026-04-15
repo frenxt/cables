@@ -1,0 +1,15 @@
+{
+  "slug": "day-08-browser-use-qa",
+  "artifact_type": "skill",
+  "version": "1.0.0",
+  "requires": ["BROWSER_USE_API_KEY"],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/qa/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Set BROWSER_USE_API_KEY in your environment before running this skill."
+}

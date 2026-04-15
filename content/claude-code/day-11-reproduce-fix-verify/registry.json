@@ -1,0 +1,15 @@
+{
+  "slug": "day-11-reproduce-fix-verify",
+  "artifact_type": "skill",
+  "version": "1.0.0",
+  "requires": ["LINEAR_WORKSPACE"],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/bugfix-cycle/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Populate your issue tracker context before running this workflow to keep acceptance checks grounded."
+}
