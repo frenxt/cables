@@ -1,0 +1,2 @@
+# This profile is plugin-heavy in practice.
+# Keep local skills minimal and rely on domain plugin packs.

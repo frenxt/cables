@@ -1,15 +1,35 @@
 {
   "slug": "skill-stack-replication",
   "artifact_type": "skill",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "requires": [],
   "files": [
-    {
-      "source": "artifact/SKILL.md",
-      "target": ".claude/skills/replicate-skill-stack/SKILL.md",
-      "action": "copy",
-      "on_conflict": "prompt"
-    }
+    { "source": "artifact/SKILL.md", "target": ".claude/skills/replicate-frenxt-stack/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/commands/replicate-frenxt-stack.md", "target": ".claude/commands/replicate-frenxt-stack.md", "action": "copy", "on_conflict": "prompt" },
+
+    { "source": "artifact/plugins/installed-plugins.txt", "target": ".claude/stacks/frenxt/installed-plugins.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/plugins/install-plugins.sh", "target": ".claude/stacks/frenxt/install-plugins.sh", "action": "copy", "on_conflict": "prompt" },
+
+    { "source": "artifact/scripts/bootstrap-frenxt-stack.sh", "target": ".claude/stacks/frenxt/bootstrap-frenxt-stack.sh", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/scripts/sync-skills-to-profiles.sh", "target": ".claude/stacks/frenxt/sync-skills-to-profiles.sh", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/scripts/install-category-plugins.sh", "target": ".claude/stacks/frenxt/install-category-plugins.sh", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/scripts/sync-category-skills-to-profiles.sh", "target": ".claude/stacks/frenxt/sync-category-skills-to-profiles.sh", "action": "copy", "on_conflict": "prompt" },
+
+    { "source": "artifact/categories/skills-developer-workflow-systems.txt", "target": ".claude/stacks/frenxt/categories/skills-developer-workflow-systems.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/categories/skills-reasoning-frameworks.txt", "target": ".claude/stacks/frenxt/categories/skills-reasoning-frameworks.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/categories/skills-domain-playbooks.txt", "target": ".claude/stacks/frenxt/categories/skills-domain-playbooks.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/categories/plugins-developer-workflow-systems.txt", "target": ".claude/stacks/frenxt/categories/plugins-developer-workflow-systems.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/categories/plugins-reasoning-frameworks.txt", "target": ".claude/stacks/frenxt/categories/plugins-reasoning-frameworks.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/categories/plugins-domain-playbooks.txt", "target": ".claude/stacks/frenxt/categories/plugins-domain-playbooks.txt", "action": "copy", "on_conflict": "prompt" },
+
+    { "source": "artifact/skills/analyse-langsmith-trace/SKILL.md", "target": ".claude/skills/analyse-langsmith-trace/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/benchmark/SKILL.md", "target": ".claude/skills/benchmark/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/e2e-review/SKILL.md", "target": ".claude/skills/e2e-review/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/qa/SKILL.md", "target": ".claude/skills/qa/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/bugfix-cycle/SKILL.md", "target": ".claude/skills/bugfix-cycle/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/debug-prompt-caching/SKILL.md", "target": ".claude/skills/debug-prompt-caching/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/qa-release/SKILL.md", "target": ".claude/skills/qa-release/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/voice-test/SKILL.md", "target": ".claude/skills/voice-test/SKILL.md", "action": "copy", "on_conflict": "prompt" }
   ],
-  "post_install_notes": "Run this skill from your home directory so it can inspect all ~/.claude* profiles and plugin install paths."
+  "post_install_notes": "Run `bash .claude/stacks/frenxt/bootstrap-frenxt-stack.sh` for full replication, or run the category scripts for selective install/copy."
 }
