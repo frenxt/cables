@@ -9,6 +9,9 @@ on:
       - 'schema/**'
       - 'scripts/**'
 
+permissions:
+  contents: write
+
 jobs:
   regenerate:
     runs-on: ubuntu-latest
