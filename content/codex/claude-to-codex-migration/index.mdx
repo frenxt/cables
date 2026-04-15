@@ -1,0 +1,56 @@
+---
+title: "Migrate Claude workflows to Codex (and back) with one command"
+slug: "claude-to-codex-migration"
+tool: "codex"
+track: "fundamentals"
+category: "workflow"
+difficulty: "intermediate"
+tags: ["migration", "skills", "commands", "rules", "interop"]
+time_required: "18 min"
+has_war_story: true
+last_verified: "2026-04-16"
+contributors: ["@frenxt"]
+source_links:
+  - { label: "Claude memory and CLAUDE.md", url: "https://docs.claude.com/en/docs/claude-code/memory" }
+  - { label: "Claude skills", url: "https://docs.claude.com/en/docs/claude-code/skills" }
+  - { label: "Codex skills", url: "https://developers.openai.com/codex/skills" }
+  - { label: "Codex rules", url: "https://developers.openai.com/codex/rules" }
+  - { label: "Codex config basics", url: "https://developers.openai.com/codex/config-basic" }
+---
+
+A migration sprint broke on day one because half the team had `.claude` assets and the other half had `.codex` assets. We were copying by hand and introducing subtle drift in permissions and command packs.
+
+We fixed it by making conversion deterministic in the `frenxt` CLI.
+
+## Commands
+
+```bash
+# Claude -> Codex
+npx frenxt-cables convert claude-to-codex --source . --target .
+
+# Codex -> Claude
+npx frenxt-cables convert codex-to-claude --source . --target .
+```
+
+Both commands support `--dry-run` and `--force`.
+
+## Mapping we use
+
+- `.claude/skills/**/SKILL.md` <-> `.agents/skills/**/SKILL.md`
+- `.claude/commands/**/*.md` <-> `.codex/prompts/**/*.md`
+- `CLAUDE.md` / `.claude/CLAUDE.md` <-> `AGENTS.md`
+- `.claude/settings.json` permissions <-> `.codex/rules/default.rules`
+
+The rule conversion is intentionally conservative:
+
+- Claude `Bash(...)` permissions become Codex `prefix_rule(...)` entries.
+- Non-Bash permissions are skipped with warnings.
+
+## Practical rollout pattern
+
+1. Run `--dry-run` and inspect planned writes.
+2. Commit converted files in a dedicated migration branch.
+3. Run one real task in each agent to validate behavior.
+4. Keep both formats for one iteration if the team is still mixed.
+
+This gave us repeatable interop without blocking on a full-agent cutover.
