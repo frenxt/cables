@@ -2,6 +2,14 @@
   "name": "frenxt-cables",
   "version": "0.0.0",
   "description": "Install cables — field notes and artifacts for Claude Code and other AI coding tools.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/frenxt/cables"
+  },
+  "homepage": "https://github.com/frenxt/cables#readme",
+  "bugs": {
+    "url": "https://github.com/frenxt/cables/issues"
+  },
   "bin": {
     "frenxt": "./dist/index.js"
   },
