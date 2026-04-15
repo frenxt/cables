@@ -1,0 +1,38 @@
+name: publish-cli
+
+on:
+  push:
+    tags:
+      - 'cli-v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter ./packages/cli typecheck
+      - run: pnpm test
+      - run: pnpm --filter ./packages/cli build
+      - name: Set package version from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#cli-v}"
+          cd packages/cli
+          npm pkg set version="$VERSION"
+      - name: Publish package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd packages/cli
+          npm publish --access public --provenance

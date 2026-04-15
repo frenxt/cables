@@ -1,0 +1,49 @@
+name: stale-content
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'content/index.json';
+            if (!fs.existsSync(path)) {
+              core.setFailed('content/index.json not found');
+              return;
+            }
+            const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const now = new Date();
+            const cutoffDays = 120;
+            const stale = (data.entries || []).filter((entry) => {
+              const d = new Date(entry.last_verified);
+              if (Number.isNaN(d.getTime())) return true;
+              const ageDays = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+              return ageDays > cutoffDays;
+            });
+
+            if (stale.length === 0) {
+              core.info('No stale cables found');
+              return;
+            }
+
+            const title = `Stale cables report (${now.toISOString().slice(0, 10)})`;
+            const body = [
+              `The following cables are older than ${cutoffDays} days by \`last_verified\`:`,
+              ...stale.map((e) => `- ${e.slug} (last_verified: ${e.last_verified})`),
+              '',
+              'Please review and refresh verification dates or content.',
+            ].join('\n');
+
+            const { owner, repo } = context.repo;
+            await github.rest.issues.create({ owner, repo, title, body, labels: ['content', 'maintenance'] });
