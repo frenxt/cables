@@ -1,0 +1,58 @@
+---
+title: "Publish to FRE|Nxt cables end-to-end"
+slug: "publish-to-frenxt-cables"
+tool: "claude-code"
+track: "fundamentals"
+day: null
+category: "meta"
+tags: ["publishing", "content-ops", "workflow", "checklist"]
+difficulty: "intermediate"
+time_required: "22 min"
+artifact_type: "skill"
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-16"
+source_links:
+  - { label: "cables contributing guide", url: "https://github.com/frenxt/cables/blob/main/CONTRIBUTING.md" }
+---
+
+# Publish to FRE|Nxt cables end-to-end
+
+Publishing cables is not just writing markdown. The failures usually happen in validation, index generation, or submodule pointer updates.
+
+<WarStory title="Published content existed, but users could not see it">
+We merged a solid cable entry but skipped index generation in the content repo, then forgot to bump the parent submodule pointer. Result: the page looked unchanged in production.
+</WarStory>
+
+## What this cable gives you
+
+This cable installs a reusable skill that runs the full publication workflow:
+
+- shape and quality checks for frontmatter + body
+- artifact wiring (`registry.json`) for installable cables
+- content repo validation and index regeneration
+- submodule + parent repo commit order
+- final pre-push checklist
+
+## Install the skill
+
+```bash
+npx frenxt-cables add publish-to-frenxt-cables
+```
+
+Installed path:
+
+- `.claude/skills/publish-to-frenxt-cables/SKILL.md`
+
+## When to run it
+
+- Creating a new cable entry
+- Updating an existing cable artifact or metadata
+- Preparing a publish-ready PR from a cables content change
+
+## Why this works
+
+- It enforces one deterministic sequence from draft to push.
+- It reduces "looks good locally" failures by requiring content validation.
+- It makes submodule publishing explicit instead of relying on memory.
+

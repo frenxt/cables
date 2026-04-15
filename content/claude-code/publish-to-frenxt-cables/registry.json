@@ -1,0 +1,15 @@
+{
+  "slug": "publish-to-frenxt-cables",
+  "artifact_type": "skill",
+  "version": "0.1.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/publish-to-frenxt-cables/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Run this skill whenever you create or update a cable and need to publish confidently."
+}

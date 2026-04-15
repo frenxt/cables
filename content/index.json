@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-15T19:14:40.687Z",
+  "generated_at": "2026-04-15T19:41:36.081Z",
   "entries": [
     {
       "title": "Autonomous browser QA with browser-use",
@@ -412,6 +412,30 @@
       "has_war_story": true,
       "last_verified": "2026-04-15",
       "path": "content/claude-code/prompt-caching-fix"
+    },
+    {
+      "title": "Publish to FRE|Nxt cables end-to-end",
+      "slug": "publish-to-frenxt-cables",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "meta",
+      "difficulty": "intermediate",
+      "day": null,
+      "series": null,
+      "series_title": null,
+      "series_order": null,
+      "series_total": null,
+      "tags": [
+        "publishing",
+        "content-ops",
+        "workflow",
+        "checklist"
+      ],
+      "time_required": "22 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-16",
+      "path": "content/claude-code/publish-to-frenxt-cables"
     },
     {
       "title": "Reproduce -> fix -> verify",
