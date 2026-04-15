@@ -1,0 +1,57 @@
+---
+title: "Install Codex CLI and ship your first AGENTS.md"
+slug: "day-01-codex-setup"
+tool: "codex"
+track: "fundamentals"
+category: "onboarding"
+difficulty: "beginner"
+day: 1
+series: "codex-10-days"
+series_title: "Codex in 10 days"
+series_order: 1
+series_total: 10
+tags: ["codex-cli", "agents-md", "onboarding"]
+time_required: "12 min"
+has_war_story: false
+last_verified: "2026-04-16"
+contributors: ["@frenxt"]
+source_links:
+  - { label: "Codex quickstart", url: "https://developers.openai.com/codex" }
+  - { label: "Codex AGENTS.md", url: "https://developers.openai.com/codex/agents" }
+  - { label: "Codex config basics", url: "https://developers.openai.com/codex/config-basic" }
+---
+
+The first Codex week at FRE|Nxt had one repeated failure mode: each thread started with good intent, then drifted because project guardrails were implicit.
+
+We fixed it by standardizing two files before any prompt tuning:
+
+1. `AGENTS.md` in the repo root for task and quality expectations.
+2. `.codex/config.toml` for local defaults and trust-aware project overrides.
+
+## Setup snapshot
+
+```bash
+npm install -g @openai/codex
+codex
+```
+
+After login, we created `AGENTS.md` with three sections:
+
+- repository architecture assumptions
+- non-negotiable testing/verification steps
+- git hygiene constraints
+
+That was enough to stop most context resets between sessions.
+
+## Why this worked
+
+Codex applies layered configuration from user config (`~/.codex/config.toml`) and project config (`.codex/config.toml`) with project trust checks. We kept global defaults light and pushed repo-specific behavior into the project layer.
+
+The practical effect: less prompt duplication, fewer accidental workflow violations, and cleaner diffs.
+
+## Fast verification checklist
+
+- `codex --help` runs without install errors.
+- `AGENTS.md` exists at the repo root.
+- `.codex/config.toml` contains only project-specific overrides.
+- First task run follows repository constraints without restating them in the prompt.

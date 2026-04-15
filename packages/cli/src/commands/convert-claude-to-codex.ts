@@ -1,0 +1,12 @@
+import { convertClaudeToCodex, type ConvertClaudeToCodexResult } from "../lib/convert-claude-to-codex";
+
+export interface RunConvertClaudeToCodexOptions {
+  sourceRoot: string;
+  targetRoot: string;
+  force: boolean;
+  dryRun: boolean;
+}
+
+export function runConvertClaudeToCodex(options: RunConvertClaudeToCodexOptions): ConvertClaudeToCodexResult {
+  return convertClaudeToCodex(options);
+}

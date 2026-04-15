@@ -9,6 +9,8 @@ import { runList, type ListOptions } from "./commands/list";
 import { runSearch } from "./commands/search";
 import { runInfo } from "./commands/info";
 import { runAdd } from "./commands/add";
+import { runConvertClaudeToCodex } from "./commands/convert-claude-to-codex";
+import { runConvertCodexToClaude } from "./commands/convert-codex-to-claude";
 import {
   banner,
   bye,
@@ -38,6 +40,36 @@ const VERSION = resolveVersion();
 
 function isInteractiveTTY(): boolean {
   return Boolean(process.stdin.isTTY && process.stdout.isTTY);
+}
+
+function printConvertResult(
+  actionLabel: "Converted" | "Planned",
+  result: { writtenFiles: string[]; skippedFiles: string[]; warnings: string[] }
+): void {
+  console.log(
+    `${actionLabel} ${result.writtenFiles.length} file${result.writtenFiles.length === 1 ? "" : "s"}:`
+  );
+  for (const file of result.writtenFiles) {
+    console.log(`  ${file}`);
+  }
+  if (result.skippedFiles.length > 0) {
+    console.log("");
+    console.log(
+      `Skipped ${result.skippedFiles.length} existing file${
+        result.skippedFiles.length === 1 ? "" : "s"
+      }:`
+    );
+    for (const file of result.skippedFiles) {
+      console.log(`  ${file}`);
+    }
+  }
+  if (result.warnings.length > 0) {
+    console.log("");
+    console.log(`Warnings (${result.warnings.length}):`);
+    for (const warning of result.warnings) {
+      console.log(`  - ${warning}`);
+    }
+  }
 }
 
 export async function run(argv: string[]): Promise<void> {
@@ -155,6 +187,42 @@ export async function run(argv: string[]): Promise<void> {
         for (const f of result.writtenFiles) success(`Wrote ${f}`);
         for (const f of result.skippedFiles) console.log(`Skipped ${f}`);
         bye(opts.dryRun ? "Dry run complete — no files were written." : "Done.");
+      } catch (e) {
+        logError((e as Error).message);
+        exit(1);
+      }
+    });
+
+  cli
+    .command("convert <direction>", "Convert between Claude and Codex artifact layouts")
+    .option("--source <dir>", "Source project root (defaults to current working directory)")
+    .option("--target <dir>", "Target project root (defaults to current working directory)")
+    .option("--force", "Overwrite existing files in the target")
+    .option("--dry-run", "Print what would be written without touching disk")
+    .action(async (direction: string, opts) => {
+      try {
+        const sourceRoot = opts.source ?? cwd();
+        const targetRoot = opts.target ?? cwd();
+        const dryRun = Boolean(opts.dryRun);
+        const force = Boolean(opts.force);
+        if (direction !== "claude-to-codex" && direction !== "codex-to-claude") {
+          throw new Error(
+            `Unknown direction "${direction}". Use "claude-to-codex" or "codex-to-claude".`
+          );
+        }
+        const result =
+          direction === "claude-to-codex"
+            ? runConvertClaudeToCodex({ sourceRoot, targetRoot, force, dryRun })
+            : runConvertCodexToClaude({ sourceRoot, targetRoot, force, dryRun });
+        if (result.plannedWrites.length === 0) {
+          console.log(
+            direction === "claude-to-codex"
+              ? "No convertible Claude artifacts found."
+              : "No convertible Codex artifacts found."
+          );
+          return;
+        }
+        printConvertResult(dryRun ? "Planned" : "Converted", result);
       } catch (e) {
         logError((e as Error).message);
         exit(1);
