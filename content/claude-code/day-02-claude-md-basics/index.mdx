@@ -1,0 +1,51 @@
+---
+title: "Your first CLAUDE.md"
+slug: "day-02-claude-md-basics"
+tool: "claude-code"
+track: "fundamentals"
+day: 2
+category: "configuration"
+tags: ["claude-md", "setup", "project-context"]
+difficulty: "beginner"
+time_required: "12 min"
+artifact_type: "claude-md"
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Claude Code docs", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# Day 2: Your first CLAUDE.md
+
+Without a `CLAUDE.md`, Claude Code has to guess your project conventions on every task. We treated that file like optional documentation at first and paid for it in repeated context-setting.
+
+<WarStory title="We kept re-explaining the same repo">
+In one sprint, we noticed we were pasting the same architecture notes into chat every morning. The output quality was fine, but the setup tax was real. A 60-line `CLAUDE.md` removed most of that drift.
+</WarStory>
+
+## What we tried
+
+We wrote a tiny `CLAUDE.md` with only four sections:
+
+- Project purpose
+- Tech stack and commands
+- Coding conventions
+- Definition of done
+
+Then we asked Claude Code to open a known bug, propose a fix, and run tests.
+
+## What happened
+
+The first draft wasn't magical, but it was consistent. Claude stopped guessing command names, used the right package manager, and followed our folder structure without prompting.
+
+## What we learned
+
+- Keep `CLAUDE.md` short enough to maintain every week.
+- Prefer concrete commands over prose (`npm run lint`, not "run linting").
+- Put "do not" rules in plain language (for example: "Do not rewrite generated files manually").
+- Treat this file as a living contract, not a one-time setup artifact.
+
+## Next
+
+- **Day 3** — What lives in `~/.claude/` and why.

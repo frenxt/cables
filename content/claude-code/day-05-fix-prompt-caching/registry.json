@@ -1,0 +1,15 @@
+{
+  "slug": "day-05-fix-prompt-caching",
+  "artifact_type": "skill",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/debug-prompt-caching/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Run this skill against a specific endpoint or prompt family so hit-rate recommendations stay actionable."
+}

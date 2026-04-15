@@ -1,0 +1,15 @@
+{
+  "slug": "day-02-claude-md-basics",
+  "artifact_type": "claude-md",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/CLAUDE.md",
+      "target": "CLAUDE.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Edit the stack and command sections to match your project before first use."
+}

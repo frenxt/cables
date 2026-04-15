@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-13T15:41:04.566Z",
+  "generated_at": "2026-04-15T06:03:01.324Z",
   "entries": [
     {
       "title": "Install Claude Code and run your first slash command",
@@ -15,6 +15,84 @@
       "has_war_story": false,
       "last_verified": "2026-04-13",
       "path": "content/claude-code/day-01-install"
+    },
+    {
+      "title": "Your first CLAUDE.md",
+      "slug": "day-02-claude-md-basics",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "configuration",
+      "difficulty": "beginner",
+      "day": 2,
+      "tags": [
+        "claude-md",
+        "setup",
+        "project-context"
+      ],
+      "time_required": "12 min",
+      "artifact_type": "claude-md",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-02-claude-md-basics"
+    },
+    {
+      "title": "What lives in ~/.claude/ and why",
+      "slug": "day-03-claude-home-directory",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "beginner",
+      "day": 3,
+      "tags": [
+        "claude-home",
+        "skills",
+        "commands",
+        "agents"
+      ],
+      "time_required": "10 min",
+      "artifact_type": null,
+      "has_war_story": false,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-03-claude-home-directory"
+    },
+    {
+      "title": "Audit your E2E coverage",
+      "slug": "day-04-audit-e2e-coverage",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "testing",
+      "difficulty": "intermediate",
+      "day": 4,
+      "tags": [
+        "e2e",
+        "qa",
+        "regression",
+        "checklist"
+      ],
+      "time_required": "20 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-04-audit-e2e-coverage"
+    },
+    {
+      "title": "Fix your prompt caching",
+      "slug": "day-05-fix-prompt-caching",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "performance",
+      "difficulty": "intermediate",
+      "day": 5,
+      "tags": [
+        "prompt-caching",
+        "latency",
+        "token-cost"
+      ],
+      "time_required": "18 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/day-05-fix-prompt-caching"
     }
   ]
 }

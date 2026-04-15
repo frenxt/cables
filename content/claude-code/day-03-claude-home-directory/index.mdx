@@ -1,0 +1,46 @@
+---
+title: "What lives in ~/.claude/ and why"
+slug: "day-03-claude-home-directory"
+tool: "claude-code"
+track: "fundamentals"
+day: 3
+category: "workflow"
+tags: ["claude-home", "skills", "commands", "agents"]
+difficulty: "beginner"
+time_required: "10 min"
+artifact_type: null
+has_war_story: false
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Claude Code docs", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# Day 3: What lives in `~/.claude/` and why
+
+Most teams discover `~/.claude/` accidentally, usually after installing a skill from someone else. We ignored it early on and kept wondering why some commands appeared in one project but not another.
+
+## What we tried
+
+We mapped everything in `~/.claude/` and compared it with project-local `.claude/` folders:
+
+- `~/.claude/skills/` for reusable skills across projects
+- `~/.claude/commands/` for slash commands
+- `~/.claude/agents/` for subagent prompts
+
+Then we tested the same command in two repos to see what resolved globally vs locally.
+
+## What happened
+
+Global assets worked exactly where we expected, but only once naming was consistent. Local `.claude/` content is where project-specific behavior should live; global is for patterns you want everywhere.
+
+## What we learned
+
+- Put opinionated project behavior in the repo-local `.claude/` directory.
+- Put reusable utility skills in `~/.claude/skills/`.
+- Prefix names by purpose (`review-*`, `debug-*`, `release-*`) so the command palette stays searchable.
+- If behavior feels "random," check whether you installed an item globally or locally.
+
+## Next
+
+- **Day 4** — Audit your E2E coverage.
