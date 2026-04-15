@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-15T07:24:03.240Z",
+  "generated_at": "2026-04-15T09:00:36.096Z",
   "entries": [
     {
       "title": "Install Claude Code and run your first slash command",
@@ -359,6 +359,26 @@
       "has_war_story": false,
       "last_verified": "2026-04-15",
       "path": "content/claude-code/f4-skills-that-scale"
+    },
+    {
+      "title": "Replicate your skill stack (local + marketplace)",
+      "slug": "skill-stack-replication",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "intermediate",
+      "day": null,
+      "tags": [
+        "skills",
+        "taxonomy",
+        "plugins",
+        "standardization"
+      ],
+      "time_required": "20 min",
+      "artifact_type": "skill",
+      "has_war_story": true,
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/skill-stack-replication"
     }
   ]
 }

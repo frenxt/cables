@@ -1,0 +1,15 @@
+{
+  "slug": "skill-stack-replication",
+  "artifact_type": "skill",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/replicate-skill-stack/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Run this skill from your home directory so it can inspect all ~/.claude* profiles and plugin install paths."
+}
