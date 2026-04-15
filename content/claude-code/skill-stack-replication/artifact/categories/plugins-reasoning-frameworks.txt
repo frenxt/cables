@@ -1,0 +1,4 @@
+code-review@claude-plugins-official
+posthog@claude-plugins-official
+claude-md-management@claude-plugins-official
+linear@claude-plugins-official

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-15T09:09:33.866Z",
+  "generated_at": "2026-04-15T09:22:40.315Z",
   "entries": [
     {
       "title": "Autonomous browser QA with browser-use",
@@ -361,7 +361,7 @@
       "path": "content/claude-code/reproduce-fix-verify"
     },
     {
-      "title": "Replicate your skill stack (local + marketplace)",
+      "title": "Replicate Ragav's stack (skills + plugins + scripts)",
       "slug": "skill-stack-replication",
       "tool": "claude-code",
       "track": "fundamentals",
@@ -370,8 +370,8 @@
       "day": null,
       "tags": [
         "skills",
-        "taxonomy",
         "plugins",
+        "stack",
         "standardization"
       ],
       "time_required": "20 min",
