@@ -50,6 +50,22 @@
             }
           ]
         },
+        "series": {
+          "type": "string",
+          "minLength": 1
+        },
+        "series_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "series_order": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "series_total": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
         "tags": {
           "type": "array",
           "items": {

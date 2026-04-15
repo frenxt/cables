@@ -12,6 +12,10 @@ interface IndexEntry {
   category: string;
   difficulty: string;
   day: number | null;
+  series: string | null;
+  series_title: string | null;
+  series_order: number | null;
+  series_total: number | null;
   tags: string[];
   time_required: string | null;
   artifact_type: string | null;
@@ -30,6 +34,10 @@ function toIndexEntry(entry: Entry, contentRoot: string): IndexEntry {
     category: fm.category,
     difficulty: fm.difficulty,
     day: fm.day ?? null,
+    series: fm.series ?? null,
+    series_title: fm.series_title ?? null,
+    series_order: fm.series_order ?? null,
+    series_total: fm.series_total ?? null,
     tags: fm.tags ?? [],
     time_required: fm.time_required ?? null,
     artifact_type: fm.artifact_type ?? null,

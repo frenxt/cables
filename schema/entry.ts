@@ -28,6 +28,10 @@ export const FrontmatterSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "last_verified must be YYYY-MM-DD"),
   day: z.number().int().positive().nullable().optional(),
+  series: z.string().min(1).optional(),
+  series_title: z.string().min(1).optional(),
+  series_order: z.number().int().positive().optional(),
+  series_total: z.number().int().positive().optional(),
   tags: z.array(z.string()).optional(),
   time_required: z.string().optional(),
   artifact_type: ArtifactTypeSchema.nullable().optional(),
