@@ -1,0 +1,15 @@
+{
+  "slug": "day-04-audit-e2e-coverage",
+  "artifact_type": "skill",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/e2e-review/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ],
+  "post_install_notes": "Run this skill from your repository root so test paths and docs resolve correctly."
+}

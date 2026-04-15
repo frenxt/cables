@@ -1,0 +1,51 @@
+---
+title: "Fix your prompt caching"
+slug: "day-05-fix-prompt-caching"
+tool: "claude-code"
+track: "fundamentals"
+day: 5
+category: "performance"
+tags: ["prompt-caching", "latency", "token-cost"]
+difficulty: "intermediate"
+time_required: "18 min"
+artifact_type: "skill"
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Prompt caching docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" }
+---
+
+# Day 5: Fix your prompt caching
+
+Prompt caching is one of those optimizations we all think we enabled "well enough" until costs spike and response times drift.
+
+<WarStory title="The week caching silently regressed">
+We changed system prompt assembly in a refactor and accidentally invalidated cache keys across a high-volume path. Latency moved first, cost followed two days later.
+</WarStory>
+
+## What we tried
+
+We ran a prompt-caching debug skill on our busiest prompts and tracked:
+
+- cache hit ratio
+- repeated immutable prefix stability
+- token spend before/after prompt assembly changes
+
+## What happened
+
+We found three preventable issues:
+
+- dynamic timestamps placed too early in prompts
+- changing metadata blocks in the cached prefix
+- over-eager prompt templating that changed whitespace every request
+
+## What we learned
+
+- Keep stable instruction blocks at the top and isolate volatile values later.
+- Treat cache hit ratio as a first-class performance signal.
+- Add a lightweight regression check whenever prompt builders change.
+
+## Next
+
+- **Day 6** — Debug an agent from a LangSmith trace.

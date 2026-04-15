@@ -1,0 +1,47 @@
+---
+title: "Audit your E2E coverage"
+slug: "day-04-audit-e2e-coverage"
+tool: "claude-code"
+track: "fundamentals"
+day: 4
+category: "testing"
+tags: ["e2e", "qa", "regression", "checklist"]
+difficulty: "intermediate"
+time_required: "20 min"
+artifact_type: "skill"
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-15"
+source_links:
+  - { label: "Playwright best practices", url: "https://playwright.dev/docs/best-practices" }
+---
+
+# Day 4: Audit your E2E coverage
+
+We had tests. We also had regressions. The problem was coverage shape, not raw test count.
+
+<WarStory title="Green CI, broken signup">
+A release passed all E2E checks and still broke the checkout path because no test validated the final confirmation screen. We had steps, but not full journeys.
+</WarStory>
+
+## What we tried
+
+We used an E2E review skill to inventory user-critical flows and map each flow to an existing test.
+
+## What happened
+
+The skill exposed blind spots quickly:
+
+- Flows with no test at all
+- Flows with setup assertions but missing completion assertions
+- Flows that existed only in manual QA notes
+
+## What we learned
+
+- Measure coverage by user journeys, not file count.
+- Every critical flow should have: enter flow, complete flow, and confirm side effects.
+- Keep one markdown coverage matrix in-repo so regression gaps are visible during PR review.
+
+## Next
+
+- **Day 5** — Fix your prompt caching.
