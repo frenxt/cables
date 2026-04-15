@@ -1,5 +1,8 @@
 import { cac } from "cac";
 import { cwd, exit } from "node:process";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { createResolver } from "./lib/resolver";
 import { detectClaudeCodeProject } from "./lib/project";
 import { runList, type ListOptions } from "./commands/list";
@@ -19,9 +22,25 @@ import { select, isCancel, cancel } from "@clack/prompts";
 import type { ArtifactType } from "./lib/types";
 import type { ConflictResolution } from "./lib/installer";
 
-const VERSION = "0.0.0";
+function resolveVersion(): string {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const pkgPath = join(here, "..", "package.json");
+    const raw = readFileSync(pkgPath, "utf8");
+    const parsed = JSON.parse(raw) as { version?: string };
+    return parsed.version ?? "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+}
 
-export function run(argv: string[]): void {
+const VERSION = resolveVersion();
+
+function isInteractiveTTY(): boolean {
+  return Boolean(process.stdin.isTTY && process.stdout.isTTY);
+}
+
+export async function run(argv: string[]): Promise<void> {
   const cli = cac("frenxt");
 
   cli
@@ -79,25 +98,40 @@ export function run(argv: string[]): void {
     .option("--dry-run", "Print planned writes without touching disk")
     .action(async (slug: string, opts) => {
       try {
-        banner();
+        const interactive = isInteractiveTTY();
+        if (interactive) {
+          banner();
+        }
         const projectRoot = cwd();
         if (!detectClaudeCodeProject(projectRoot)) {
-          const proceed = await select<"yes" | "no">({
-            message:
-              "This doesn't look like a Claude Code project (no .claude/ or CLAUDE.md). Continue anyway?",
-            options: [
-              { value: "no", label: "Abort" },
-              { value: "yes", label: "Continue" },
-            ],
-            initialValue: "no",
-          });
-          if (isCancel(proceed) || proceed === "no") {
-            cancel("Install aborted.");
-            exit(1);
+          if (!opts.force) {
+            if (!interactive) {
+              throw new Error(
+                "This doesn't look like a Claude Code project (no .claude/ or CLAUDE.md). Re-run with --force or use an interactive terminal."
+              );
+            }
+            const proceed = await select<"yes" | "no">({
+              message:
+                "This doesn't look like a Claude Code project (no .claude/ or CLAUDE.md). Continue anyway?",
+              options: [
+                { value: "no", label: "Abort" },
+                { value: "yes", label: "Continue" },
+              ],
+              initialValue: "no",
+            });
+            if (isCancel(proceed) || proceed === "no") {
+              cancel("Install aborted.");
+              exit(1);
+            }
           }
         }
         const resolver = createResolver();
-        const spin = spinner(`Fetching ${emphasis(slug)} from ${resolver.describe()}`);
+        const spin = isInteractiveTTY()
+          ? spinner(`Fetching ${emphasis(slug)} from ${resolver.describe()}`)
+          : {
+              succeed: (_msg?: string) => undefined,
+              fail: (_msg: string) => undefined,
+            };
         let result;
         try {
           result = await runAdd(resolver, slug, {
@@ -105,7 +139,13 @@ export function run(argv: string[]): void {
             force: !!opts.force,
             dryRun: !!opts.dryRun,
             onConflict: async (path, existing, incoming): Promise<ConflictResolution> =>
-              promptConflict(path, existing, incoming),
+              isInteractiveTTY()
+                ? promptConflict(path, existing, incoming)
+                : Promise.reject(
+                    new Error(
+                      `Conflict detected at ${path}. Re-run with --force or in an interactive terminal.`
+                    )
+                  ),
           });
           spin.succeed(`Fetched ${emphasis(slug)}`);
         } catch (e) {
@@ -125,13 +165,21 @@ export function run(argv: string[]): void {
   cli.version(VERSION);
   cli.parse(argv, { run: false });
 
-  if (!cli.matchedCommand && argv.slice(2).length === 0) {
-    cli.outputHelp();
+  // Built-in flags like --help / --version do not set matchedCommand.
+  if (!cli.matchedCommand) {
+    if (argv.slice(2).length === 0) {
+      cli.outputHelp();
+    }
     return;
   }
 
-  cli.runMatchedCommand().catch((e: unknown) => {
+  try {
+    const maybe = cli.runMatchedCommand();
+    if (maybe && typeof (maybe as Promise<unknown>).then === "function") {
+      await maybe;
+    }
+  } catch (e) {
     logError((e as Error).message);
     exit(1);
-  });
+  }
 }

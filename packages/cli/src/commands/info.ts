@@ -46,7 +46,7 @@ export async function runInfo(
       }
     }
     lines.push("");
-    lines.push(`Install: npx frenxt add ${slug}`);
+    lines.push(`Install: npx frenxt-cables add ${slug}`);
   }
 
   return lines.join("\n");
