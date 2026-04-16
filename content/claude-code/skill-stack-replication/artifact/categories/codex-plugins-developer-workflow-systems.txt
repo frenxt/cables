@@ -1,0 +1,2 @@
+build-web-apps@openai-curated
+vercel@openai-curated

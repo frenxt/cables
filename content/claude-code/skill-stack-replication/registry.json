@@ -8,6 +8,7 @@
     { "source": "artifact/commands/replicate-frenxt-stack.md", "target": ".claude/commands/replicate-frenxt-stack.md", "action": "copy", "on_conflict": "prompt" },
 
     { "source": "artifact/plugins/installed-plugins.txt", "target": ".claude/stacks/frenxt/installed-plugins.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/plugins/installed-codex-plugins.txt", "target": ".claude/stacks/frenxt/installed-codex-plugins.txt", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/plugins/install-plugins.sh", "target": ".claude/stacks/frenxt/install-plugins.sh", "action": "copy", "on_conflict": "prompt" },
 
     { "source": "artifact/scripts/bootstrap-frenxt-stack.sh", "target": ".claude/stacks/frenxt/bootstrap-frenxt-stack.sh", "action": "copy", "on_conflict": "prompt" },
@@ -21,6 +22,9 @@
     { "source": "artifact/categories/plugins-developer-workflow-systems.txt", "target": ".claude/stacks/frenxt/categories/plugins-developer-workflow-systems.txt", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/categories/plugins-reasoning-frameworks.txt", "target": ".claude/stacks/frenxt/categories/plugins-reasoning-frameworks.txt", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/categories/plugins-domain-playbooks.txt", "target": ".claude/stacks/frenxt/categories/plugins-domain-playbooks.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/categories/codex-plugins-developer-workflow-systems.txt", "target": ".claude/stacks/frenxt/categories/codex-plugins-developer-workflow-systems.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/categories/codex-plugins-reasoning-frameworks.txt", "target": ".claude/stacks/frenxt/categories/codex-plugins-reasoning-frameworks.txt", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/categories/codex-plugins-domain-playbooks.txt", "target": ".claude/stacks/frenxt/categories/codex-plugins-domain-playbooks.txt", "action": "copy", "on_conflict": "prompt" },
 
     { "source": "artifact/skills/analyse-langsmith-trace/SKILL.md", "target": ".claude/skills/analyse-langsmith-trace/SKILL.md", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/skills/benchmark/SKILL.md", "target": ".claude/skills/benchmark/SKILL.md", "action": "copy", "on_conflict": "prompt" },
@@ -31,5 +35,5 @@
     { "source": "artifact/skills/qa-release/SKILL.md", "target": ".claude/skills/qa-release/SKILL.md", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/skills/voice-test/SKILL.md", "target": ".claude/skills/voice-test/SKILL.md", "action": "copy", "on_conflict": "prompt" }
   ],
-  "post_install_notes": "Run `bash .claude/stacks/frenxt/bootstrap-frenxt-stack.sh` for full replication, or run the category scripts for selective install/copy."
+  "post_install_notes": "Run `bash .claude/stacks/frenxt/bootstrap-frenxt-stack.sh` for full replication (Claude + Codex plugins, Claude skills), or run the category scripts for selective install/copy."
 }

@@ -7,5 +7,6 @@ if [ -z "$CATEGORY" ]; then
   exit 1
 fi
 
-MANIFEST_FILE=".claude/stacks/frenxt/categories/plugins-${CATEGORY}.txt"
-".claude/stacks/frenxt/install-plugins.sh" "$MANIFEST_FILE"
+CLAUDE_MANIFEST=".claude/stacks/frenxt/categories/plugins-${CATEGORY}.txt"
+CODEX_MANIFEST=".claude/stacks/frenxt/categories/codex-plugins-${CATEGORY}.txt"
+".claude/stacks/frenxt/install-plugins.sh" "$CLAUDE_MANIFEST" "$CODEX_MANIFEST" both

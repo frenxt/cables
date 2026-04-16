@@ -1,6 +1,6 @@
 # Replicate FRE|Nxt Stack
 
-Replicate Ragav's stack from the installed artifacts.
+Replicate Ragav's stack from the installed artifacts (Claude + Codex plugins, Claude skills).
 
 ## Full stack
 
@@ -24,5 +24,6 @@ Categories:
 ## Verify
 
 - `claude plugins list`
+- `rg "^\[plugins\." ~/.codex/config.toml`
 - `ls -1 ~/.claude/skills`
 - `ls -1 ~/.claude-frenxt/skills`
