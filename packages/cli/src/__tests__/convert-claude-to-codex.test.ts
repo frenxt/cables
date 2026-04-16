@@ -56,6 +56,9 @@ describe("convertClaudeToCodex", () => {
     expect(result.writtenFiles).toContain(".codex/rules/default.rules");
 
     const skill = readFileSync(join(targetRoot, ".agents", "skills", "qa", "SKILL.md"), "utf8");
+    expect(skill).toContain('name: "qa"');
+    expect(skill).toContain('description: "Use AGENTS.md and .agents/skills."');
+    expect(skill).toContain('argument-hint: ""');
     expect(skill).toContain("AGENTS.md");
     expect(skill).toContain(".agents/skills");
 
@@ -71,6 +74,37 @@ describe("convertClaudeToCodex", () => {
     expect(rules).toContain('prefix_rule(["git", "status"], decision = "allow")');
     expect(rules).toContain('prefix_rule(["npm", "test"], decision = "prompt")');
     expect(rules).toContain('prefix_rule(["rm", "-rf", "/"], decision = "forbidden")');
+  });
+
+  it("quotes argument-hint in converted skill frontmatter", () => {
+    mkdirSync(join(sourceRoot, ".claude", "skills", "image-gen"), { recursive: true });
+    writeFileSync(
+      join(sourceRoot, ".claude", "skills", "image-gen", "SKILL.md"),
+      [
+        "---",
+        "name: image-gen",
+        "description: Generate images.",
+        "argument-hint: [prompt] [--model MODEL] [--out PATH]",
+        "---",
+        "",
+        "# Image Gen",
+        "",
+        "Use this skill for image generation.",
+        "",
+      ].join("\n")
+    );
+
+    convertClaudeToCodex({
+      sourceRoot,
+      targetRoot,
+      force: false,
+      dryRun: false,
+    });
+
+    const skill = readFileSync(join(targetRoot, ".agents", "skills", "image-gen", "SKILL.md"), "utf8");
+    expect(skill).toContain('name: "image-gen"');
+    expect(skill).toContain('description: "Generate images."');
+    expect(skill).toContain('argument-hint: "[prompt] [--model MODEL] [--out PATH]"');
   });
 
   it("dry-run reports writes without touching disk", () => {
