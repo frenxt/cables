@@ -2,7 +2,7 @@
   "name": "cables",
   "version": "0.0.0",
   "private": true,
-  "description": "Field notes from real projects with Claude Code — written and maintained by FRE|Nxt Labs.",
+  "description": "Installable AI workflow recipes and field notes from real projects, maintained by FRE|Nxt Labs.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/frenxt/cables.git"
