@@ -47,15 +47,94 @@ function ensureTrailingNewline(content: string): string {
   return content.endsWith("\n") ? content : `${content}\n`;
 }
 
-function transformSkill(content: string): string {
-  const normalized = normalizeNewline(content);
-  // Keep the original skill content and only rewrite obvious Claude paths.
-  return ensureTrailingNewline(
-    normalized
-      .replaceAll(".claude/skills", ".agents/skills")
-      .replaceAll("~/.claude/skills", "~/.agents/skills")
-      .replaceAll("CLAUDE.md", "AGENTS.md")
-  );
+interface ParsedSkillFrontmatter {
+  body: string;
+  fields: Map<string, string>;
+}
+
+function unquoteYamlScalar(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length < 2) return trimmed;
+  if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+    try {
+      return JSON.parse(trimmed) as string;
+    } catch {
+      return trimmed.slice(1, -1);
+    }
+  }
+  if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    return trimmed.slice(1, -1).replaceAll("''", "'");
+  }
+  return trimmed;
+}
+
+function parseSkillFrontmatter(content: string): ParsedSkillFrontmatter {
+  const match = content.match(/^---\n([\s\S]*?)\n---\n?/);
+  if (!match) {
+    return { body: content, fields: new Map() };
+  }
+  const fields = new Map<string, string>();
+  for (const line of match[1].split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.length === 0) continue;
+    const keyValue = trimmed.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!keyValue) continue;
+    fields.set(keyValue[1], unquoteYamlScalar(keyValue[2]));
+  }
+  return {
+    body: content.slice(match[0].length),
+    fields,
+  };
+}
+
+function inferSkillDescription(body: string, skillName: string): string {
+  for (const line of body.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.length === 0) continue;
+    if (trimmed.startsWith("#")) continue;
+    return trimmed;
+  }
+  return `Converted from Claude skill ${skillName}.`;
+}
+
+function yamlQuote(value: string): string {
+  return JSON.stringify(value);
+}
+
+function buildCodexSkillFrontmatter(
+  fields: Map<string, string>,
+  skillName: string,
+  body: string
+): string {
+  const lines: string[] = [
+    "---",
+    `name: ${yamlQuote((fields.get("name") ?? skillName).trim())}`,
+    `description: ${yamlQuote((fields.get("description") ?? inferSkillDescription(body, skillName)).trim())}`,
+    `argument-hint: ${yamlQuote((fields.get("argument-hint") ?? "").trim())}`,
+  ];
+
+  for (const [key, value] of fields.entries()) {
+    if (key === "name" || key === "description" || key === "argument-hint") continue;
+    lines.push(`${key}: ${yamlQuote(value.trim())}`);
+  }
+
+  lines.push("---");
+  return lines.join("\n");
+}
+
+function transformSkill(content: string, skillName: string): string {
+  const normalized = normalizeNewline(content)
+    .replaceAll(".claude/skills", ".agents/skills")
+    .replaceAll("~/.claude/skills", "~/.agents/skills")
+    .replaceAll("CLAUDE.md", "AGENTS.md");
+
+  const { body, fields } = parseSkillFrontmatter(normalized);
+  const frontmatter = buildCodexSkillFrontmatter(fields, skillName, body);
+  const bodyWithoutLeadingGaps = body.replace(/^\n+/, "");
+  if (bodyWithoutLeadingGaps.length === 0) {
+    return ensureTrailingNewline(frontmatter);
+  }
+  return ensureTrailingNewline(`${frontmatter}\n\n${bodyWithoutLeadingGaps}`);
 }
 
 function transformCommand(content: string): string {
@@ -189,10 +268,12 @@ function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: stri
     if (!file.endsWith("/SKILL.md")) continue;
     const rel = relative(skillsRoot, dirname(file));
     const target = rel.length > 0 ? join(".agents", "skills", rel, "SKILL.md") : join(".agents", "skills", "SKILL.md");
+    const pathParts = rel.split(/[\\/]/).filter(Boolean);
+    const skillName = pathParts.length > 0 ? pathParts[pathParts.length - 1] : "skill";
     writes.push({
       source: relative(sourceRoot, file),
       target,
-      content: transformSkill(readFileSync(file, "utf8")),
+      content: transformSkill(readFileSync(file, "utf8"), skillName),
     });
   }
 
