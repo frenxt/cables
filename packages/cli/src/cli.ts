@@ -11,6 +11,7 @@ import { runInfo } from "./commands/info";
 import { runAdd } from "./commands/add";
 import { runConvertClaudeToCodex } from "./commands/convert-claude-to-codex";
 import { runConvertCodexToClaude } from "./commands/convert-codex-to-claude";
+import type { CommandConversionMode } from "./lib/convert-claude-to-codex";
 import {
   banner,
   bye,
@@ -197,6 +198,10 @@ export async function run(argv: string[]): Promise<void> {
     .command("convert <direction>", "Convert between Claude and Codex artifact layouts")
     .option("--source <dir>", "Source project root (defaults to current working directory)")
     .option("--target <dir>", "Target project root (defaults to current working directory)")
+    .option(
+      "--commands-as <mode>",
+      "For claude-to-codex: map .claude/commands as skills|prompts|both (default: skills)"
+    )
     .option("--force", "Overwrite existing files in the target")
     .option("--dry-run", "Print what would be written without touching disk")
     .action(async (direction: string, opts) => {
@@ -205,6 +210,17 @@ export async function run(argv: string[]): Promise<void> {
         const targetRoot = opts.target ?? cwd();
         const dryRun = Boolean(opts.dryRun);
         const force = Boolean(opts.force);
+        const commandsAsRaw = (opts.commandsAs ?? "skills").toString().trim().toLowerCase();
+        if (
+          commandsAsRaw !== "skills" &&
+          commandsAsRaw !== "prompts" &&
+          commandsAsRaw !== "both"
+        ) {
+          throw new Error(
+            `Unknown --commands-as value "${commandsAsRaw}". Use "skills", "prompts", or "both".`
+          );
+        }
+        const commandsAs = commandsAsRaw as CommandConversionMode;
         if (direction !== "claude-to-codex" && direction !== "codex-to-claude") {
           throw new Error(
             `Unknown direction "${direction}". Use "claude-to-codex" or "codex-to-claude".`
@@ -212,7 +228,7 @@ export async function run(argv: string[]): Promise<void> {
         }
         const result =
           direction === "claude-to-codex"
-            ? runConvertClaudeToCodex({ sourceRoot, targetRoot, force, dryRun })
+            ? runConvertClaudeToCodex({ sourceRoot, targetRoot, force, dryRun, commandsAs })
             : runConvertCodexToClaude({ sourceRoot, targetRoot, force, dryRun });
         if (result.plannedWrites.length === 0) {
           console.log(

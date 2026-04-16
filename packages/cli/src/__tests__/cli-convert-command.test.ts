@@ -13,6 +13,15 @@ describe("CLI convert command", () => {
     sourceRoot = mkdtempSync(join(tmpdir(), "frenxt-cli-convert-src-"));
     codexRoot = mkdtempSync(join(tmpdir(), "frenxt-cli-convert-codex-"));
     roundtripRoot = mkdtempSync(join(tmpdir(), "frenxt-cli-convert-rt-"));
+    mkdirSync(join(sourceRoot, ".claude", "skills", "qa", "scripts"), { recursive: true });
+    writeFileSync(
+      join(sourceRoot, ".claude", "skills", "qa", "SKILL.md"),
+      "# QA\nUse CLAUDE.md.\n"
+    );
+    writeFileSync(
+      join(sourceRoot, ".claude", "skills", "qa", "scripts", "run.sh"),
+      "#!/usr/bin/env bash\ncat CLAUDE.md\n"
+    );
     mkdirSync(join(sourceRoot, ".claude", "commands"), { recursive: true });
     writeFileSync(join(sourceRoot, ".claude", "commands", "audit.md"), "Audit this repo.\n");
   });
@@ -31,7 +40,8 @@ describe("CLI convert command", () => {
         "--target",
         codexRoot,
       ]);
-      expect(existsSync(join(codexRoot, ".codex", "prompts", "audit.md"))).toBe(true);
+      expect(existsSync(join(codexRoot, ".agents", "skills", "cmd-audit", "SKILL.md"))).toBe(true);
+      expect(existsSync(join(codexRoot, ".agents", "skills", "qa", "scripts", "run.sh"))).toBe(true);
 
       await run([
         "node",
@@ -44,6 +54,7 @@ describe("CLI convert command", () => {
         roundtripRoot,
       ]);
       expect(existsSync(join(roundtripRoot, ".claude", "commands", "audit.md"))).toBe(true);
+      expect(existsSync(join(roundtripRoot, ".claude", "skills", "qa", "scripts", "run.sh"))).toBe(true);
     } finally {
       logSpy.mockRestore();
       errSpy.mockRestore();

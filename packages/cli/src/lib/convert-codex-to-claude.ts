@@ -19,6 +19,12 @@ interface PlannedWrite {
   source: string;
   target: string;
   content: string;
+  mode: number;
+}
+
+interface ParsedFrontmatter {
+  body: string;
+  fields: Map<string, string>;
 }
 
 function walkFiles(root: string): string[] {
@@ -54,6 +60,79 @@ function transformSkill(content: string): string {
       .replaceAll("~/.agents/skills", "~/.claude/skills")
       .replaceAll("AGENTS.md", "CLAUDE.md")
   );
+}
+
+function yamlQuote(value: string): string {
+  return JSON.stringify(value);
+}
+
+function unquoteYamlScalar(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length < 2) return trimmed;
+  if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+    try {
+      return JSON.parse(trimmed) as string;
+    } catch {
+      return trimmed.slice(1, -1);
+    }
+  }
+  if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    return trimmed.slice(1, -1).replaceAll("''", "'");
+  }
+  return trimmed;
+}
+
+function parseFrontmatter(content: string): ParsedFrontmatter {
+  const normalized = normalizeNewline(content);
+  const match = normalized.match(/^---\n([\s\S]*?)\n---\n?/);
+  if (!match) {
+    return { body: normalized, fields: new Map() };
+  }
+  const fields = new Map<string, string>();
+  for (const line of match[1].split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.length === 0) continue;
+    const keyValue = trimmed.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!keyValue) continue;
+    fields.set(keyValue[1], unquoteYamlScalar(keyValue[2]));
+  }
+  return {
+    body: normalized.slice(match[0].length),
+    fields,
+  };
+}
+
+function normalizeClaudeCommandPath(pathValue: string): string | null {
+  const normalized = pathValue
+    .replaceAll("\\", "/")
+    .replace(/^\/+/, "")
+    .trim();
+  if (normalized.length === 0) return null;
+  if (normalized.includes("..")) return null;
+  if (!normalized.endsWith(".md")) return `${normalized}.md`;
+  return normalized;
+}
+
+function buildCommandFromConvertedSkill(fields: Map<string, string>, body: string): string {
+  const convertedBody = ensureTrailingNewline(
+    normalizeNewline(body)
+      .replaceAll(".agents/skills", ".claude/commands")
+      .replaceAll("~/.agents/skills", "~/.claude/commands")
+      .replaceAll("AGENTS.md", "CLAUDE.md")
+  ).replace(/^\n+/, "");
+
+  const description = (fields.get("description") ?? "").trim();
+  const argumentHint = (fields.get("argument-hint") ?? "").trim();
+  if (!description && !argumentHint) {
+    return ensureTrailingNewline(convertedBody);
+  }
+
+  const headerLines = ["---"];
+  if (description) headerLines.push(`description: ${yamlQuote(description)}`);
+  if (argumentHint) headerLines.push(`argument-hint: ${yamlQuote(argumentHint)}`);
+  headerLines.push("---", "");
+
+  return ensureTrailingNewline(`${headerLines.join("\n")}${convertedBody}`);
 }
 
 function transformPrompt(content: string): string {
@@ -143,16 +222,39 @@ function buildClaudeMdFromAgents(path: string): string | null {
 function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: string[] } {
   const writes: PlannedWrite[] = [];
   const warnings: string[] = [];
+  const commandTargets = new Set<string>();
 
   const skillsRoot = join(sourceRoot, ".agents", "skills");
   for (const file of walkFiles(skillsRoot)) {
-    if (!file.endsWith("/SKILL.md")) continue;
-    const rel = relative(skillsRoot, dirname(file));
-    const target = rel.length > 0 ? join(".claude", "skills", rel, "SKILL.md") : join(".claude", "skills", "SKILL.md");
+    const relFile = relative(skillsRoot, file);
+    const isSkillDoc = relFile.split(/[\\/]/).pop() === "SKILL.md";
+    if (isSkillDoc) {
+      const parsed = parseFrontmatter(readFileSync(file, "utf8"));
+      const convertedFrom = (parsed.fields.get("converted-from") ?? "").trim().toLowerCase();
+      const commandPathRaw = parsed.fields.get("claude-command-path") ?? "";
+      if (convertedFrom === "claude-command") {
+        const commandRel = normalizeClaudeCommandPath(commandPathRaw);
+        if (commandRel) {
+          const target = join(".claude", "commands", commandRel);
+          writes.push({
+            source: relative(sourceRoot, file),
+            target,
+            content: buildCommandFromConvertedSkill(parsed.fields, parsed.body),
+            mode: statSync(file).mode & 0o777,
+          });
+          commandTargets.add(target);
+          continue;
+        }
+        warnings.push(
+          `Invalid claude-command-path in ${relative(sourceRoot, file)}; converting as a regular skill instead.`
+        );
+      }
+    }
     writes.push({
       source: relative(sourceRoot, file),
-      target,
+      target: join(".claude", "skills", relFile),
       content: transformSkill(readFileSync(file, "utf8")),
+      mode: statSync(file).mode & 0o777,
     });
   }
 
@@ -160,10 +262,18 @@ function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: stri
   for (const file of walkFiles(promptsRoot)) {
     if (!file.endsWith(".md")) continue;
     const rel = relative(promptsRoot, file);
+    const commandTarget = join(".claude", "commands", rel);
+    if (commandTargets.has(commandTarget)) {
+      warnings.push(
+        `Skipped prompt ${relative(sourceRoot, file)} because ${commandTarget} was already generated from a converted command skill.`
+      );
+      continue;
+    }
     writes.push({
       source: relative(sourceRoot, file),
-      target: join(".claude", "commands", rel),
+      target: commandTarget,
       content: transformPrompt(readFileSync(file, "utf8")),
+      mode: statSync(file).mode & 0o777,
     });
   }
 
@@ -173,6 +283,7 @@ function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: stri
       source: "AGENTS.md",
       target: "CLAUDE.md",
       content: claudeMd,
+      mode: 0o644,
     });
   }
 
@@ -184,12 +295,13 @@ function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: stri
       source: relative(sourceRoot, rulesPath),
       target: join(".claude", "settings.json"),
       content: settingsContent,
+      mode: 0o644,
     });
   }
 
   if (writes.length === 0) {
     warnings.push(
-      `Nothing to convert in ${sourceRoot}. Expected at least one of: .agents/skills, .codex/prompts, AGENTS.md, .codex/rules/default.rules`
+      `Nothing to convert in ${sourceRoot}. Expected at least one of: .agents/skills, converted command skills, .codex/prompts, AGENTS.md, .codex/rules/default.rules`
     );
   }
 
@@ -217,7 +329,7 @@ export function convertCodexToClaude(options: ConvertCodexToClaudeOptions): Conv
       continue;
     }
     mkdirSync(dirname(absTarget), { recursive: true });
-    writeFileSync(absTarget, write.content, "utf8");
+    writeFileSync(absTarget, write.content, { encoding: "utf8", mode: write.mode });
     writtenFiles.push(write.target);
   }
 

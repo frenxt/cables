@@ -19,6 +19,11 @@ describe("convertCodexToClaude", () => {
       join(sourceRoot, ".agents", "skills", "review", "SKILL.md"),
       "# Review Skill\n\nUse AGENTS.md and .agents/skills.\n"
     );
+    mkdirSync(join(sourceRoot, ".agents", "skills", "review", "scripts"), { recursive: true });
+    writeFileSync(
+      join(sourceRoot, ".agents", "skills", "review", "scripts", "scan.sh"),
+      "#!/usr/bin/env bash\ncat AGENTS.md\n"
+    );
 
     mkdirSync(join(sourceRoot, ".codex", "prompts"), { recursive: true });
     writeFileSync(
@@ -47,6 +52,7 @@ describe("convertCodexToClaude", () => {
     });
 
     expect(result.writtenFiles).toContain(".claude/skills/review/SKILL.md");
+    expect(result.writtenFiles).toContain(".claude/skills/review/scripts/scan.sh");
     expect(result.writtenFiles).toContain(".claude/commands/release.md");
     expect(result.writtenFiles).toContain("CLAUDE.md");
     expect(result.writtenFiles).toContain(".claude/settings.json");
@@ -54,6 +60,11 @@ describe("convertCodexToClaude", () => {
     const skill = readFileSync(join(targetRoot, ".claude", "skills", "review", "SKILL.md"), "utf8");
     expect(skill).toContain(".claude/skills");
     expect(skill).toContain("CLAUDE.md");
+    const script = readFileSync(
+      join(targetRoot, ".claude", "skills", "review", "scripts", "scan.sh"),
+      "utf8"
+    );
+    expect(script).toContain("CLAUDE.md");
 
     const command = readFileSync(join(targetRoot, ".claude", "commands", "release.md"), "utf8");
     expect(command).toContain("Release checks.");
@@ -108,5 +119,39 @@ describe("convertCodexToClaude", () => {
       dryRun: false,
     });
     expect(second.writtenFiles).toContain(".claude/commands/release.md");
+  });
+
+  it("maps converted command skills back to .claude/commands", () => {
+    mkdirSync(join(sourceRoot, ".agents", "skills", "cmd-audit"), { recursive: true });
+    writeFileSync(
+      join(sourceRoot, ".agents", "skills", "cmd-audit", "SKILL.md"),
+      [
+        "---",
+        'name: "cmd-audit"',
+        'description: "Audit repo state"',
+        'argument-hint: "[TARGET=<path>]"',
+        'converted-from: "claude-command"',
+        'claude-command-path: "audit.md"',
+        "---",
+        "",
+        "Use `.agents/skills` and `AGENTS.md` while auditing.",
+        "",
+      ].join("\n")
+    );
+
+    const result = convertCodexToClaude({
+      sourceRoot,
+      targetRoot,
+      force: false,
+      dryRun: false,
+    });
+
+    expect(result.writtenFiles).toContain(".claude/commands/audit.md");
+    expect(result.writtenFiles).not.toContain(".claude/skills/cmd-audit/SKILL.md");
+    const command = readFileSync(join(targetRoot, ".claude", "commands", "audit.md"), "utf8");
+    expect(command).toContain('description: "Audit repo state"');
+    expect(command).toContain('argument-hint: "[TARGET=<path>]"');
+    expect(command).toContain(".claude/commands");
+    expect(command).toContain("CLAUDE.md");
   });
 });
