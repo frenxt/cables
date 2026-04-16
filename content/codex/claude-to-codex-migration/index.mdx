@@ -30,18 +30,31 @@ Claude to Codex:
 npx frenxt-cables convert claude-to-codex --source . --target .
 ```
 
+Claude to Codex (legacy prompt output):
+
+```bash
+npx frenxt-cables convert claude-to-codex --source . --target . --commands-as prompts
+```
+
+Claude to Codex (skills + prompts):
+
+```bash
+npx frenxt-cables convert claude-to-codex --source . --target . --commands-as both
+```
+
 Codex to Claude:
 
 ```bash
 npx frenxt-cables convert codex-to-claude --source . --target .
 ```
 
-Both commands support `--dry-run` and `--force`.
+`claude-to-codex` defaults to `--commands-as skills`, and both directions support `--dry-run` and `--force`.
 
 ## Mapping we use
 
 - `.claude/skills/**/SKILL.md` &lt;-&gt; `.agents/skills/**/SKILL.md`
-- `.claude/commands/**/*.md` &lt;-&gt; `.codex/prompts/**/*.md`
+- `.claude/commands/**/*.md` &lt;-&gt; `.agents/skills/cmd-*/SKILL.md` (default path)
+- `.claude/commands/**/*.md` &lt;-&gt; `.codex/prompts/**/*.md` (optional legacy output via `--commands-as prompts|both`)
 - `CLAUDE.md` / `.claude/CLAUDE.md` &lt;-&gt; `AGENTS.md`
 - `.claude/settings.json` permissions &lt;-&gt; `.codex/rules/default.rules`
 
