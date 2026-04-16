@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "build-with-ai entry schema",
-  "description": "Schema for frontmatter and registry.json files in content/",
+  "title": "cables content schema",
+  "description": "Schema for frontmatter, registry, skill compatibility, and third-party publisher/import manifests.",
   "definitions": {
     "Frontmatter": {
       "type": "object",
@@ -121,6 +121,18 @@
             ],
             "additionalProperties": false
           }
+        },
+        "publisher": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "provenance_repo": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+\\/[A-Za-z0-9_.-]+$"
+        },
+        "provenance_ref": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
         }
       },
       "required": [
@@ -210,6 +222,411 @@
         "version",
         "requires",
         "files"
+      ],
+      "additionalProperties": false
+    },
+    "SkillSpec": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "canonical_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capability_cluster": {
+          "type": "string",
+          "enum": [
+            "workflow-automation",
+            "qa-testing",
+            "debugging-observability",
+            "performance-optimization",
+            "content-ops",
+            "developer-productivity"
+          ]
+        },
+        "maturity": {
+          "type": "string",
+          "enum": [
+            "stable",
+            "beta",
+            "experimental"
+          ]
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "path",
+                  "url",
+                  "enum"
+                ]
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "name",
+              "type",
+              "required",
+              "description"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "file",
+                  "command-plan",
+                  "report",
+                  "patch"
+                ]
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "name",
+              "type",
+              "description"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        },
+        "dependencies": {
+          "type": "object",
+          "properties": {
+            "env_vars": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "binaries": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "services": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "plugins": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "env_vars": [],
+            "binaries": [],
+            "services": [],
+            "plugins": []
+          }
+        },
+        "workflow_steps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "verification": {
+          "type": "object",
+          "properties": {
+            "smoke_test": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expected_artifacts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            }
+          },
+          "required": [
+            "smoke_test"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "slug",
+        "canonical_name",
+        "summary",
+        "capability_cluster",
+        "maturity",
+        "owner",
+        "version",
+        "workflow_steps",
+        "verification"
+      ],
+      "additionalProperties": false
+    },
+    "SkillCompatibility": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewed_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "tier": {
+          "type": "string",
+          "enum": [
+            "core",
+            "extended",
+            "experimental"
+          ]
+        },
+        "quality_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "matrix": {
+          "type": "object",
+          "properties": {
+            "claude-code": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pass",
+                    "partial",
+                    "fail"
+                  ]
+                },
+                "adapter_version": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "verified_on": {
+                  "$ref": "#/definitions/SkillCompatibility/properties/reviewed_at"
+                },
+                "plugin_equivalents": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "default": []
+                },
+                "skill_fallbacks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "default": []
+                },
+                "notes": {
+                  "type": "string"
+                },
+                "blockers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "default": []
+                }
+              },
+              "required": [
+                "status",
+                "adapter_version",
+                "verified_on"
+              ],
+              "additionalProperties": false
+            },
+            "codex": {
+              "$ref": "#/definitions/SkillCompatibility/properties/matrix/properties/claude-code"
+            }
+          },
+          "required": [
+            "claude-code",
+            "codex"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "slug",
+        "owner",
+        "reviewed_at",
+        "tier",
+        "matrix"
+      ],
+      "additionalProperties": false
+    },
+    "Publisher": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repo": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+\\/[A-Za-z0-9_.-]+$"
+        },
+        "default_branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "probation",
+            "suspended"
+          ]
+        },
+        "tier": {
+          "type": "string",
+          "enum": [
+            "reviewed",
+            "probation"
+          ]
+        },
+        "contacts": {
+          "type": "object",
+          "properties": {
+            "github": {
+              "type": "string",
+              "pattern": "^@[A-Za-z0-9_.-]+$"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "repo",
+        "default_branch",
+        "status",
+        "tier",
+        "contacts"
+      ],
+      "additionalProperties": false
+    },
+    "ImportManifest": {
+      "type": "object",
+      "properties": {
+        "publisher_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "repo": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+\\/[A-Za-z0-9_.-]+$"
+            },
+            "ref": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "path": {
+              "type": "string",
+              "pattern": "^content\\/[a-z0-9-]+\\/[a-z0-9-]+$"
+            }
+          },
+          "required": [
+            "repo",
+            "ref",
+            "path"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "publisher_id",
+        "slug",
+        "tool",
+        "source"
       ],
       "additionalProperties": false
     }

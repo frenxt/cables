@@ -1,0 +1,70 @@
+{
+  "slug": "browser-use-qa",
+  "canonical_name": "Browser QA",
+  "summary": "Run autonomous browser QA against critical user journeys and return reproducible failure evidence.",
+  "capability_cluster": "qa-testing",
+  "maturity": "stable",
+  "owner": "frenxt",
+  "version": "1.0.0",
+  "inputs": [
+    {
+      "name": "base_url",
+      "type": "url",
+      "required": true,
+      "description": "Primary environment URL to test."
+    },
+    {
+      "name": "credential_strategy",
+      "type": "string",
+      "required": true,
+      "description": "How login credentials are provided to browser automation."
+    },
+    {
+      "name": "journey_list",
+      "type": "string",
+      "required": true,
+      "description": "Ordered list of high-value user flows to execute."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "journey_results",
+      "type": "report",
+      "description": "Pass/fail and error detail for each journey."
+    },
+    {
+      "name": "reproduction_steps",
+      "type": "text",
+      "description": "Deterministic repro steps for each failing journey."
+    },
+    {
+      "name": "failure_screenshots",
+      "type": "file",
+      "description": "Screenshot references for failed browser states."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [
+      "node"
+    ],
+    "services": [
+      "browser-use"
+    ],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Define journey scope around business-critical paths.",
+    "Run browser automation against each journey with stable test data.",
+    "Capture pass/fail outcomes and evidence for failures.",
+    "Return prioritized failure list with reproduction guidance."
+  ],
+  "verification": {
+    "smoke_test": "Run against a staging URL with at least three journeys and verify each result includes pass/fail plus repro details.",
+    "expected_artifacts": [
+      "journey_results_report",
+      "reproduction_steps",
+      "failure_screenshot_references"
+    ]
+  }
+}

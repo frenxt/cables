@@ -21,7 +21,61 @@ interface IndexEntry {
   artifact_type: string | null;
   has_war_story: boolean;
   last_verified: string;
+  publisher: string | null;
+  provenance_repo: string | null;
+  provenance_ref: string | null;
+  skill_capability_cluster: string | null;
+  skill_maturity: string | null;
+  compatibility_tier: string | null;
+  compatibility_quality_score: number | null;
+  compatibility_claude_status: string | null;
+  compatibility_codex_status: string | null;
+  compatibility_reviewed_at: string | null;
+  compatibility_rank: number | null;
   path: string;
+}
+
+const tierWeight: Record<string, number> = {
+  core: 3,
+  extended: 2,
+  experimental: 1,
+};
+
+function isRankEligible(entry: IndexEntry): boolean {
+  return (
+    entry.artifact_type === "skill" &&
+    entry.compatibility_claude_status === "pass" &&
+    entry.compatibility_codex_status !== "fail"
+  );
+}
+
+function toRankableScore(value: number | null): number {
+  return value ?? -1;
+}
+
+function applyCompatibilityRanks(entries: IndexEntry[]): IndexEntry[] {
+  const ranked = entries
+    .filter((entry) => isRankEligible(entry))
+    .slice()
+    .sort((a, b) => {
+      const qualityDelta = toRankableScore(b.compatibility_quality_score) - toRankableScore(a.compatibility_quality_score);
+      if (qualityDelta !== 0) return qualityDelta;
+      const tierDelta = (tierWeight[b.compatibility_tier ?? ""] ?? 0) - (tierWeight[a.compatibility_tier ?? ""] ?? 0);
+      if (tierDelta !== 0) return tierDelta;
+      const reviewedDelta = (b.compatibility_reviewed_at ?? "").localeCompare(a.compatibility_reviewed_at ?? "");
+      if (reviewedDelta !== 0) return reviewedDelta;
+      return a.slug.localeCompare(b.slug);
+    });
+
+  const rankBySlug = new Map<string, number>();
+  ranked.forEach((entry, index) => {
+    rankBySlug.set(entry.slug, index + 1);
+  });
+
+  return entries.map((entry) => ({
+    ...entry,
+    compatibility_rank: rankBySlug.get(entry.slug) ?? null,
+  }));
 }
 
 function toIndexEntry(entry: Entry, contentRoot: string): IndexEntry {
@@ -43,6 +97,17 @@ function toIndexEntry(entry: Entry, contentRoot: string): IndexEntry {
     artifact_type: fm.artifact_type ?? null,
     has_war_story: fm.has_war_story ?? false,
     last_verified: fm.last_verified,
+    publisher: fm.publisher ?? null,
+    provenance_repo: fm.provenance_repo ?? null,
+    provenance_ref: fm.provenance_ref ?? null,
+    skill_capability_cluster: entry.skillSpec?.capability_cluster ?? null,
+    skill_maturity: entry.skillSpec?.maturity ?? null,
+    compatibility_tier: entry.compatibility?.tier ?? null,
+    compatibility_quality_score: entry.compatibility?.quality_score ?? null,
+    compatibility_claude_status: entry.compatibility?.matrix["claude-code"].status ?? null,
+    compatibility_codex_status: entry.compatibility?.matrix.codex.status ?? null,
+    compatibility_reviewed_at: entry.compatibility?.reviewed_at ?? null,
+    compatibility_rank: null,
     path: "content/" + relative(contentRoot, entry.folder),
   };
 }
@@ -54,9 +119,9 @@ export function buildIndex(contentRoot: string, outputPath: string): void {
       `build-index aborted: ${errors.length} validation error(s). Run \`pnpm validate\` for details.`
     );
   }
-  const indexEntries = entries
-    .map((e) => toIndexEntry(e, contentRoot))
-    .sort((a, b) => a.slug.localeCompare(b.slug));
+  const indexEntries = applyCompatibilityRanks(entries.map((e) => toIndexEntry(e, contentRoot))).sort((a, b) =>
+    a.slug.localeCompare(b.slug)
+  );
   const index = {
     generated_at: new Date().toISOString(),
     entries: indexEntries,

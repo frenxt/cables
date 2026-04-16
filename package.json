@@ -20,6 +20,8 @@
   "scripts": {
     "validate": "tsx scripts/validate.ts",
     "build-index": "tsx scripts/build-index.ts",
+    "sync-imports": "tsx scripts/sync-imports.ts",
+    "build-compatibility": "tsx scripts/build-compatibility.ts",
     "generate-schema": "tsx scripts/generate-schema.ts",
     "new-cable": "tsx scripts/new-cable.ts",
     "test": "vitest run",

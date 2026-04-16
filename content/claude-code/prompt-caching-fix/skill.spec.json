@@ -1,0 +1,68 @@
+{
+  "slug": "prompt-caching-fix",
+  "canonical_name": "Debug Prompt Caching",
+  "summary": "Diagnose low cache-hit performance and redesign prompt layout for stable cache prefixes.",
+  "capability_cluster": "performance-optimization",
+  "maturity": "stable",
+  "owner": "frenxt",
+  "version": "1.0.0",
+  "inputs": [
+    {
+      "name": "workflow_name",
+      "type": "string",
+      "required": true,
+      "description": "API path or workflow being optimized."
+    },
+    {
+      "name": "sample_prompts",
+      "type": "string",
+      "required": true,
+      "description": "At least three representative prompt payloads."
+    },
+    {
+      "name": "latency_and_token_metrics",
+      "type": "string",
+      "required": false,
+      "description": "Optional before-state metrics for impact calculation."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "anti_pattern_report",
+      "type": "report",
+      "description": "Current cache-breaking patterns in prompt assembly."
+    },
+    {
+      "name": "revised_prompt_layout",
+      "type": "text",
+      "description": "Before/after prompt structure optimized for cache reuse."
+    },
+    {
+      "name": "validation_plan",
+      "type": "command-plan",
+      "description": "Measurable checks for hit ratio, latency, and token improvements."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [
+      "node"
+    ],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Inspect prompt payloads and identify immutable prefix candidates.",
+    "Locate unstable fields currently inserted in cache prefix regions.",
+    "Design cache-safe prompt layout with stable top-level instruction blocks.",
+    "Define quantitative validation checks for post-change performance."
+  ],
+  "verification": {
+    "smoke_test": "Analyze a high-traffic workflow and verify output contains anti-patterns, revised template, and measurable success criteria.",
+    "expected_artifacts": [
+      "prompt_cache_diagnostics",
+      "cache_safe_template",
+      "metric_validation_plan"
+    ]
+  }
+}

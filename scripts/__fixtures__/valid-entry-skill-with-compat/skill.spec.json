@@ -1,0 +1,25 @@
+{
+  "slug": "valid-entry-skill-with-compat",
+  "canonical_name": "Valid Fixture Skill",
+  "summary": "Fixture skill to validate skill spec loading.",
+  "capability_cluster": "workflow-automation",
+  "maturity": "stable",
+  "owner": "@frenxt",
+  "version": "1.0.0",
+  "inputs": [],
+  "outputs": [],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Step one",
+    "Step two"
+  ],
+  "verification": {
+    "smoke_test": "echo ok",
+    "expected_artifacts": []
+  }
+}

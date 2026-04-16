@@ -1,0 +1,29 @@
+{
+  "slug": "prompt-caching-fix",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-16",
+  "tier": "core",
+  "quality_score": 89,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Validated for Anthropic prompt-cache debugging workflows.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "pass",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [
+        "debug-prompt-caching"
+      ],
+      "notes": "Same cache audit workflow works for Codex/OpenRouter style traces.",
+      "blockers": []
+    }
+  }
+}

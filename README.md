@@ -23,7 +23,8 @@ Prerequisites: Node 22, pnpm 10.
 pnpm install
 pnpm validate        # validate all entries against the schema
 pnpm build-index     # regenerate content/index.json
-pnpm new-entry       # scaffold a new entry from template
+pnpm build-compatibility -- --limit=200  # regenerate compatibility leaderboard/report
+pnpm new-cable       # scaffold a new entry from template
 pnpm test            # run the test suite
 ```
 
@@ -33,6 +34,8 @@ pnpm test            # run the test suite
 content/<tool>/<slug>/
 ├── index.mdx          # the tutorial / war story (rendered on the site)
 ├── registry.json      # optional — describes the installable artifact
+├── skill.spec.json    # required for artifact_type: "skill" (canonical capability metadata)
+├── compatibility.json # required for artifact_type: "skill" (Claude/Codex compatibility matrix)
 └── artifact/          # optional — files the CLI copies into the user's project
 ```
 

@@ -1,0 +1,70 @@
+{
+  "slug": "publish-to-frenxt-cables",
+  "canonical_name": "Publish To FRE|Nxt Cables",
+  "summary": "Execute deterministic cable publishing from content edits through submodule and parent-repo push.",
+  "capability_cluster": "content-ops",
+  "maturity": "stable",
+  "owner": "frenxt",
+  "version": "1.0.0",
+  "inputs": [
+    {
+      "name": "slug",
+      "type": "string",
+      "required": true,
+      "description": "Cable slug being created or updated."
+    },
+    {
+      "name": "intent",
+      "type": "enum",
+      "required": true,
+      "description": "Whether the change is a new cable or update to existing cable."
+    },
+    {
+      "name": "branch_names",
+      "type": "string",
+      "required": true,
+      "description": "Submodule and parent-repo branch names for publish sequence."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "publish_report",
+      "type": "report",
+      "description": "Structured report with scope, changes, validation, and risks."
+    },
+    {
+      "name": "git_state",
+      "type": "text",
+      "description": "Submodule and parent commit pointers ready for push."
+    },
+    {
+      "name": "publish_command_sequence",
+      "type": "command-plan",
+      "description": "Ordered commands for validate, index build, commit, and push."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [
+      "git",
+      "node",
+      "npm"
+    ],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Run preflight checks for parent and submodule git state.",
+    "Apply content/artifact updates with frontmatter and registry validation.",
+    "Run validation and index regeneration in the cables submodule.",
+    "Commit and push submodule first, then update and push parent pointer."
+  ],
+  "verification": {
+    "smoke_test": "Perform an update flow and verify report includes validation command results and both pushed commit SHAs.",
+    "expected_artifacts": [
+      "publish_scope_report",
+      "validation_results",
+      "submodule_parent_commit_chain"
+    ]
+  }
+}

@@ -8,11 +8,26 @@ export interface IndexEntry {
   category: string;
   difficulty: "beginner" | "intermediate" | "advanced";
   day: number | null;
+  series?: string | null;
+  series_title?: string | null;
+  series_order?: number | null;
+  series_total?: number | null;
   tags: string[];
   time_required: string | null;
   artifact_type: ArtifactType | null;
   has_war_story: boolean;
   last_verified: string;
+  publisher?: string | null;
+  provenance_repo?: string | null;
+  provenance_ref?: string | null;
+  skill_capability_cluster?: string | null;
+  skill_maturity?: "stable" | "beta" | "experimental" | null;
+  compatibility_tier?: "core" | "extended" | "experimental" | null;
+  compatibility_quality_score?: number | null;
+  compatibility_claude_status?: "pass" | "partial" | "fail" | null;
+  compatibility_codex_status?: "pass" | "partial" | "fail" | null;
+  compatibility_reviewed_at?: string | null;
+  compatibility_rank?: number | null;
   path: string;
   contributors?: string[];
 }

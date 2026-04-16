@@ -1,0 +1,14 @@
+{
+  "slug": "valid-entry-skill-with-compat",
+  "artifact_type": "skill",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/valid-entry-skill-with-compat/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ]
+}

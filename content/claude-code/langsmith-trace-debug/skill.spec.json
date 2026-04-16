@@ -1,0 +1,70 @@
+{
+  "slug": "langsmith-trace-debug",
+  "canonical_name": "Analyse LangSmith Trace",
+  "summary": "Identify the earliest causal divergence in a failing LangSmith run and propose minimal corrective diffs.",
+  "capability_cluster": "debugging-observability",
+  "maturity": "stable",
+  "owner": "frenxt",
+  "version": "1.0.0",
+  "inputs": [
+    {
+      "name": "failing_trace_url",
+      "type": "url",
+      "required": true,
+      "description": "Public LangSmith trace URL for the failing run."
+    },
+    {
+      "name": "expected_behavior",
+      "type": "string",
+      "required": true,
+      "description": "Expected result to compare against actual run behavior."
+    },
+    {
+      "name": "known_good_trace_url",
+      "type": "url",
+      "required": false,
+      "description": "Optional reference trace used for diffing."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "root_cause_statement",
+      "type": "text",
+      "description": "Single causal root cause tied to first divergence point."
+    },
+    {
+      "name": "evidence_snippets",
+      "type": "report",
+      "description": "Trace evidence supporting the diagnosis."
+    },
+    {
+      "name": "fix_and_verification_plan",
+      "type": "command-plan",
+      "description": "Minimal corrective diff and verification steps."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [
+      "node"
+    ],
+    "services": [
+      "langsmith"
+    ],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Build timeline of the failing run.",
+    "Find the earliest step that diverges from expected behavior.",
+    "Classify failure source across prompt, tool, retrieval, routing, and guardrails.",
+    "Return root-cause evidence with minimal corrective plan."
+  ],
+  "verification": {
+    "smoke_test": "Analyze one failing trace and verify output includes first divergence point, source classification, and concrete fix plan.",
+    "expected_artifacts": [
+      "trace_timeline",
+      "root_cause_classification",
+      "fix_verification_plan"
+    ]
+  }
+}

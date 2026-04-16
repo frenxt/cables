@@ -1,0 +1,24 @@
+{
+  "slug": "invalid-entry-skill-missing-compat",
+  "canonical_name": "Missing Compatibility Fixture",
+  "summary": "Fixture with missing compatibility manifest.",
+  "capability_cluster": "workflow-automation",
+  "maturity": "beta",
+  "owner": "@frenxt",
+  "version": "1.0.0",
+  "inputs": [],
+  "outputs": [],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "step"
+  ],
+  "verification": {
+    "smoke_test": "echo ok",
+    "expected_artifacts": []
+  }
+}

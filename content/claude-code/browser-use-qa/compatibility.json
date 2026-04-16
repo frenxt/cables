@@ -1,0 +1,29 @@
+{
+  "slug": "browser-use-qa",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-16",
+  "tier": "core",
+  "quality_score": 86,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Runs as-is with Browser Use workflow.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "partial",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [
+        "qa-release"
+      ],
+      "notes": "Requires Browser Use tooling configured in the Codex runtime profile.",
+      "blockers": []
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "slug": "reproduce-fix-verify",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-16",
+  "tier": "core",
+  "quality_score": 92,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Validated with bugfix-cycle workflow.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "pass",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [
+        "bugfix-cycle"
+      ],
+      "notes": "Works equivalently for Codex agent bugfix flows.",
+      "blockers": []
+    }
+  }
+}

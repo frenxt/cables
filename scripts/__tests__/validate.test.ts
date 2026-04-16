@@ -23,10 +23,11 @@ describe("validateAll", () => {
     const contentRoot = makeTempContent([
       "valid-entry-no-artifact",
       "valid-entry-with-artifact",
+      "valid-entry-skill-with-compat",
     ]);
     const result = validateAll(contentRoot);
     expect(result.errors).toHaveLength(0);
-    expect(result.entries).toHaveLength(2);
+    expect(result.entries).toHaveLength(3);
   });
 
   it("collects errors from invalid entries without throwing", () => {
@@ -46,5 +47,19 @@ describe("validateAll", () => {
     const result = validateAll(root);
     expect(result.errors).toEqual([]);
     expect(result.entries).toEqual([]);
+  });
+
+  it("reports validation error when skill compatibility metadata is missing", () => {
+    const contentRoot = makeTempContent([
+      "valid-entry-no-artifact",
+      "invalid-entry-skill-missing-compat",
+      "invalid-entry-skill-missing-spec",
+    ]);
+    const result = validateAll(contentRoot);
+    expect(result.errors).toHaveLength(2);
+    expect(result.errors.some((e) => e.message.includes("compatibility.json is missing"))).toBe(
+      true
+    );
+    expect(result.errors.some((e) => e.message.includes("skill.spec.json is missing"))).toBe(true);
   });
 });

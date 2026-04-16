@@ -1,0 +1,125 @@
+{
+  "generated_at": "2026-04-16T07:54:31.555Z",
+  "limit": 200,
+  "summary": {
+    "total_entries": 23,
+    "skill_entries": 8,
+    "dual_pass_count": 6,
+    "dual_pass_rate": 0.75,
+    "claude_status_counts": {
+      "pass": 8,
+      "partial": 0,
+      "fail": 0
+    },
+    "codex_status_counts": {
+      "pass": 6,
+      "partial": 2,
+      "fail": 0
+    },
+    "tier_counts": {
+      "core": 6,
+      "extended": 2,
+      "experimental": 0
+    }
+  },
+  "top_compatible": [
+    {
+      "slug": "reproduce-fix-verify",
+      "title": "Reproduce -> fix -> verify",
+      "tool": "claude-code",
+      "tier": "core",
+      "quality_score": 92,
+      "claude_status": "pass",
+      "codex_status": "pass",
+      "reviewed_at": "2026-04-16",
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/reproduce-fix-verify"
+    },
+    {
+      "slug": "langsmith-trace-debug",
+      "title": "Debug an agent from a LangSmith trace",
+      "tool": "claude-code",
+      "tier": "core",
+      "quality_score": 91,
+      "claude_status": "pass",
+      "codex_status": "pass",
+      "reviewed_at": "2026-04-16",
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/langsmith-trace-debug"
+    },
+    {
+      "slug": "e2e-coverage-audit",
+      "title": "Audit your E2E coverage",
+      "tool": "claude-code",
+      "tier": "core",
+      "quality_score": 90,
+      "claude_status": "pass",
+      "codex_status": "pass",
+      "reviewed_at": "2026-04-16",
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/e2e-coverage-audit"
+    },
+    {
+      "slug": "prompt-caching-fix",
+      "title": "Fix your prompt caching",
+      "tool": "claude-code",
+      "tier": "core",
+      "quality_score": 89,
+      "claude_status": "pass",
+      "codex_status": "pass",
+      "reviewed_at": "2026-04-16",
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/prompt-caching-fix"
+    },
+    {
+      "slug": "skill-stack-replication",
+      "title": "Replicate Ragav's stack (skills + plugins + scripts)",
+      "tool": "claude-code",
+      "tier": "extended",
+      "quality_score": 88,
+      "claude_status": "pass",
+      "codex_status": "pass",
+      "reviewed_at": "2026-04-16",
+      "last_verified": "2026-04-16",
+      "path": "content/claude-code/skill-stack-replication"
+    },
+    {
+      "slug": "langgraph-agent-benchmark",
+      "title": "Benchmark a LangGraph agent",
+      "tool": "claude-code",
+      "tier": "extended",
+      "quality_score": 84,
+      "claude_status": "pass",
+      "codex_status": "pass",
+      "reviewed_at": "2026-04-16",
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/langgraph-agent-benchmark"
+    }
+  ],
+  "watchlist": [
+    {
+      "slug": "publish-to-frenxt-cables",
+      "title": "Publish to FRE|Nxt cables end-to-end",
+      "tool": "claude-code",
+      "tier": "core",
+      "quality_score": 87,
+      "claude_status": "pass",
+      "codex_status": "partial",
+      "reviewed_at": "2026-04-16",
+      "last_verified": "2026-04-16",
+      "path": "content/claude-code/publish-to-frenxt-cables"
+    },
+    {
+      "slug": "browser-use-qa",
+      "title": "Autonomous browser QA with browser-use",
+      "tool": "claude-code",
+      "tier": "core",
+      "quality_score": 86,
+      "claude_status": "pass",
+      "codex_status": "partial",
+      "reviewed_at": "2026-04-16",
+      "last_verified": "2026-04-15",
+      "path": "content/claude-code/browser-use-qa"
+    }
+  ]
+}

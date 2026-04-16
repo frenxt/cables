@@ -1,0 +1,68 @@
+{
+  "slug": "e2e-coverage-audit",
+  "canonical_name": "E2E Coverage Review",
+  "summary": "Audit user-journey coverage across end-to-end tests and propose smallest high-impact additions.",
+  "capability_cluster": "qa-testing",
+  "maturity": "stable",
+  "owner": "frenxt",
+  "version": "1.0.0",
+  "inputs": [
+    {
+      "name": "test_suite_path",
+      "type": "path",
+      "required": true,
+      "description": "Path to existing E2E suite and supporting fixtures."
+    },
+    {
+      "name": "critical_journeys",
+      "type": "string",
+      "required": true,
+      "description": "List of business-critical journeys expected in production."
+    },
+    {
+      "name": "risk_context",
+      "type": "string",
+      "required": false,
+      "description": "Optional launch or incident context to prioritize gaps."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "journey_matrix",
+      "type": "report",
+      "description": "Coverage status by journey: covered, partial, or missing."
+    },
+    {
+      "name": "risk_notes",
+      "type": "text",
+      "description": "Business impact notes for missing assertions."
+    },
+    {
+      "name": "next_test_additions",
+      "type": "command-plan",
+      "description": "Top three test additions ranked by impact and effort."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [
+      "node"
+    ],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Inventory current E2E tests and map them to named user journeys.",
+    "Classify each journey as covered, partial, or missing.",
+    "Attach risk level and likely regression impact per gap.",
+    "Recommend smallest high-impact additions with effort estimate."
+  ],
+  "verification": {
+    "smoke_test": "Run on a repo with at least five user journeys and confirm output includes matrix, risk notes, and three prioritized additions.",
+    "expected_artifacts": [
+      "coverage_matrix",
+      "journey_risk_summary",
+      "prioritized_test_additions"
+    ]
+  }
+}

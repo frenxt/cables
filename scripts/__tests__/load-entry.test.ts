@@ -23,6 +23,15 @@ describe("loadEntry", () => {
     expect(entry.registry?.files[0].target).toBe("CLAUDE.md");
   });
 
+  it("loads a valid skill entry with skill.spec.json and compatibility.json", () => {
+    const entry = loadEntry(resolve(fixturesRoot, "valid-entry-skill-with-compat"));
+    expect(entry.frontmatter.artifact_type).toBe("skill");
+    expect(entry.skillSpec).not.toBeNull();
+    expect(entry.skillSpec?.slug).toBe("valid-entry-skill-with-compat");
+    expect(entry.compatibility).not.toBeNull();
+    expect(entry.compatibility?.matrix.codex.status).toBe("partial");
+  });
+
   it("throws EntryLoadError when frontmatter is missing required fields", () => {
     expect(() =>
       loadEntry(resolve(fixturesRoot, "invalid-entry-bad-frontmatter"))
@@ -39,6 +48,18 @@ describe("loadEntry", () => {
     expect(() =>
       loadEntry(resolve(fixturesRoot, "invalid-entry-missing-artifact-dir"))
     ).toThrow(/artifact.*directory/i);
+  });
+
+  it("throws EntryLoadError when skill entry is missing compatibility.json", () => {
+    expect(() =>
+      loadEntry(resolve(fixturesRoot, "invalid-entry-skill-missing-compat"))
+    ).toThrow(/compatibility\.json is missing/i);
+  });
+
+  it("throws EntryLoadError when skill entry is missing skill.spec.json", () => {
+    expect(() =>
+      loadEntry(resolve(fixturesRoot, "invalid-entry-skill-missing-spec"))
+    ).toThrow(/skill\.spec\.json is missing/i);
   });
 
   it("throws EntryLoadError when the folder does not exist", () => {

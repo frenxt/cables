@@ -1,0 +1,24 @@
+{
+  "slug": "invalid-entry-skill-missing-spec",
+  "owner": "@frenxt",
+  "reviewed_at": "2026-04-16",
+  "tier": "extended",
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "cli-0.1.5",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "blockers": []
+    },
+    "codex": {
+      "status": "partial",
+      "adapter_version": "cli-0.1.5",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "blockers": []
+    }
+  }
+}

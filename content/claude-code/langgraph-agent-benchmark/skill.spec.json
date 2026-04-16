@@ -1,0 +1,70 @@
+{
+  "slug": "langgraph-agent-benchmark",
+  "canonical_name": "Agent Benchmark",
+  "summary": "Benchmark agent variants against fixed workloads using quality, latency, and reliability metrics.",
+  "capability_cluster": "performance-optimization",
+  "maturity": "beta",
+  "owner": "frenxt",
+  "version": "1.0.0",
+  "inputs": [
+    {
+      "name": "benchmark_dataset",
+      "type": "path",
+      "required": true,
+      "description": "Versioned scenario set grouped by task class."
+    },
+    {
+      "name": "agent_variants",
+      "type": "string",
+      "required": true,
+      "description": "List of variants or model configs to evaluate."
+    },
+    {
+      "name": "evaluation_metrics",
+      "type": "enum",
+      "required": true,
+      "description": "Scoring dimensions such as latency, token usage, success rate, and tool failures."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "benchmark_report",
+      "type": "report",
+      "description": "Per-variant scores split by task class."
+    },
+    {
+      "name": "trace_failure_summary",
+      "type": "text",
+      "description": "Root-cause notes for failed benchmark cases."
+    },
+    {
+      "name": "variant_recommendation",
+      "type": "text",
+      "description": "Recommended default variant by risk profile."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [
+      "node"
+    ],
+    "services": [
+      "langgraph"
+    ],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Lock benchmark scenarios and scoring rubric.",
+    "Execute each variant across the same scenario set.",
+    "Aggregate latency, token, success, and tool-failure metrics.",
+    "Produce recommendation by task class and risk tolerance."
+  ],
+  "verification": {
+    "smoke_test": "Run at least two agent variants on the same scenario set and verify the report includes p50/p95 latency and task-class recommendation.",
+    "expected_artifacts": [
+      "benchmark_score_table",
+      "failure_trace_notes",
+      "variant_recommendation"
+    ]
+  }
+}

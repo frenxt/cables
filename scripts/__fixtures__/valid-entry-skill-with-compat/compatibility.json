@@ -1,0 +1,27 @@
+{
+  "slug": "valid-entry-skill-with-compat",
+  "owner": "@frenxt",
+  "reviewed_at": "2026-04-16",
+  "tier": "core",
+  "quality_score": 90,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "cli-0.1.5",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "blockers": []
+    },
+    "codex": {
+      "status": "partial",
+      "adapter_version": "cli-0.1.5",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [
+        "cmd-valid-entry-skill-with-compat"
+      ],
+      "blockers": []
+    }
+  }
+}

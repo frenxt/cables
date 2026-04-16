@@ -1,0 +1,14 @@
+{
+  "slug": "invalid-entry-skill-missing-spec",
+  "artifact_type": "skill",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/invalid-entry-skill-missing-spec/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
+  ]
+}
