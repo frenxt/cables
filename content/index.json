@@ -1,5 +1,5 @@
 {
-"generated_at": "2026-04-16T07:54:31.230Z",
+"generated_at": "2026-04-16T15:43:27.005Z",
   "entries": [
     {
       "title": "Autonomous browser QA with browser-use",
@@ -122,9 +122,9 @@
       "artifact_type": null,
       "has_war_story": false,
       "last_verified": "2026-04-13",
-      "publisher": null,
-      "provenance_repo": null,
-      "provenance_ref": null,
+      "publisher": "frenxt-labs",
+      "provenance_repo": "frenxt/cables",
+      "provenance_ref": "0f0612e89736ec41d0602e6dc735fe5c670c8575",
       "skill_capability_cluster": null,
       "skill_maturity": null,
       "compatibility_tier": null,
@@ -156,9 +156,9 @@
       "artifact_type": "claude-md",
       "has_war_story": true,
       "last_verified": "2026-04-15",
-      "publisher": null,
-      "provenance_repo": null,
-      "provenance_ref": null,
+      "publisher": "frenxt-labs",
+      "provenance_repo": "frenxt/cables",
+      "provenance_ref": "0f0612e89736ec41d0602e6dc735fe5c670c8575",
       "skill_capability_cluster": null,
       "skill_maturity": null,
       "compatibility_tier": null,

@@ -1,0 +1,13 @@
+{
+  "id": "frenxt-labs",
+  "name": "FRE|Nxt Labs",
+  "repo": "frenxt/cables",
+  "default_branch": "main",
+  "status": "active",
+  "tier": "reviewed",
+  "contacts": {
+    "github": "@frenxt",
+    "email": "hello@frenxt.com"
+  }
+}
+
