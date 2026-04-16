@@ -13,11 +13,16 @@ describe("convertClaudeToCodex", () => {
     targetRoot = mkdtempSync(join(tmpdir(), "frenxt-convert-target-"));
   });
 
-  it("converts skills, commands, CLAUDE.md, and settings permissions", () => {
+  it("converts skills, commands (as skills), CLAUDE.md, and settings permissions", () => {
     mkdirSync(join(sourceRoot, ".claude", "skills", "qa"), { recursive: true });
     writeFileSync(
       join(sourceRoot, ".claude", "skills", "qa", "SKILL.md"),
       "# QA Skill\n\nUse CLAUDE.md and .claude/skills.\n"
+    );
+    mkdirSync(join(sourceRoot, ".claude", "skills", "qa", "scripts"), { recursive: true });
+    writeFileSync(
+      join(sourceRoot, ".claude", "skills", "qa", "scripts", "run-checks.sh"),
+      "#!/usr/bin/env bash\ncat CLAUDE.md\n"
     );
 
     mkdirSync(join(sourceRoot, ".claude", "commands"), { recursive: true });
@@ -51,7 +56,8 @@ describe("convertClaudeToCodex", () => {
     });
 
     expect(result.writtenFiles).toContain(".agents/skills/qa/SKILL.md");
-    expect(result.writtenFiles).toContain(".codex/prompts/ship.md");
+    expect(result.writtenFiles).toContain(".agents/skills/qa/scripts/run-checks.sh");
+    expect(result.writtenFiles).toContain(".agents/skills/cmd-ship/SKILL.md");
     expect(result.writtenFiles).toContain("AGENTS.md");
     expect(result.writtenFiles).toContain(".codex/rules/default.rules");
 
@@ -61,10 +67,16 @@ describe("convertClaudeToCodex", () => {
     expect(skill).toContain('argument-hint: ""');
     expect(skill).toContain("AGENTS.md");
     expect(skill).toContain(".agents/skills");
+    const script = readFileSync(
+      join(targetRoot, ".agents", "skills", "qa", "scripts", "run-checks.sh"),
+      "utf8"
+    );
+    expect(script).toContain("AGENTS.md");
 
-    const command = readFileSync(join(targetRoot, ".codex", "prompts", "ship.md"), "utf8");
-    expect(command).toContain("Converted from a Claude Code slash command.");
-    expect(command).toContain("Run release checks.");
+    const commandSkill = readFileSync(join(targetRoot, ".agents", "skills", "cmd-ship", "SKILL.md"), "utf8");
+    expect(commandSkill).toContain('converted-from: "claude-command"');
+    expect(commandSkill).toContain('claude-command-path: "ship.md"');
+    expect(commandSkill).toContain("Run release checks.");
 
     const agents = readFileSync(join(targetRoot, "AGENTS.md"), "utf8");
     expect(agents).toContain("Source: CLAUDE.md");
@@ -118,15 +130,15 @@ describe("convertClaudeToCodex", () => {
       dryRun: true,
     });
 
-    expect(result.writtenFiles).toContain(".codex/prompts/audit.md");
-    expect(existsSync(join(targetRoot, ".codex", "prompts", "audit.md"))).toBe(false);
+    expect(result.writtenFiles).toContain(".agents/skills/cmd-audit/SKILL.md");
+    expect(existsSync(join(targetRoot, ".agents", "skills", "cmd-audit", "SKILL.md"))).toBe(false);
   });
 
   it("skips existing files unless force is true", () => {
     mkdirSync(join(sourceRoot, ".claude", "commands"), { recursive: true });
     writeFileSync(join(sourceRoot, ".claude", "commands", "ship.md"), "new content\n");
-    mkdirSync(join(targetRoot, ".codex", "prompts"), { recursive: true });
-    writeFileSync(join(targetRoot, ".codex", "prompts", "ship.md"), "old content\n");
+    mkdirSync(join(targetRoot, ".agents", "skills", "cmd-ship"), { recursive: true });
+    writeFileSync(join(targetRoot, ".agents", "skills", "cmd-ship", "SKILL.md"), "old content\n");
 
     const first = convertClaudeToCodex({
       sourceRoot,
@@ -134,8 +146,8 @@ describe("convertClaudeToCodex", () => {
       force: false,
       dryRun: false,
     });
-    expect(first.skippedFiles).toContain(".codex/prompts/ship.md");
-    expect(readFileSync(join(targetRoot, ".codex", "prompts", "ship.md"), "utf8")).toBe("old content\n");
+    expect(first.skippedFiles).toContain(".agents/skills/cmd-ship/SKILL.md");
+    expect(readFileSync(join(targetRoot, ".agents", "skills", "cmd-ship", "SKILL.md"), "utf8")).toBe("old content\n");
 
     const second = convertClaudeToCodex({
       sourceRoot,
@@ -143,6 +155,24 @@ describe("convertClaudeToCodex", () => {
       force: true,
       dryRun: false,
     });
-    expect(second.writtenFiles).toContain(".codex/prompts/ship.md");
+    expect(second.writtenFiles).toContain(".agents/skills/cmd-ship/SKILL.md");
+  });
+
+  it("can map commands to prompts when requested", () => {
+    mkdirSync(join(sourceRoot, ".claude", "commands"), { recursive: true });
+    writeFileSync(join(sourceRoot, ".claude", "commands", "release.md"), "Run release checks.\n");
+
+    const result = convertClaudeToCodex({
+      sourceRoot,
+      targetRoot,
+      force: false,
+      dryRun: false,
+      commandsAs: "prompts",
+    });
+
+    expect(result.writtenFiles).toContain(".codex/prompts/release.md");
+    expect(result.warnings.some((w) => w.includes("deprecated"))).toBe(true);
+    const prompt = readFileSync(join(targetRoot, ".codex", "prompts", "release.md"), "utf8");
+    expect(prompt).toContain("Converted from a Claude Code slash command.");
   });
 });

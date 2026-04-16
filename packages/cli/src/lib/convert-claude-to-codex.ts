@@ -6,6 +6,7 @@ export interface ConvertClaudeToCodexOptions {
   targetRoot: string;
   force: boolean;
   dryRun: boolean;
+  commandsAs?: CommandConversionMode;
 }
 
 export interface ConvertClaudeToCodexResult {
@@ -19,7 +20,10 @@ interface PlannedWrite {
   source: string;
   target: string;
   content: string;
+  mode: number;
 }
+
+export type CommandConversionMode = "skills" | "prompts" | "both";
 
 function walkFiles(root: string): string[] {
   if (!existsSync(root)) return [];
@@ -52,6 +56,11 @@ interface ParsedSkillFrontmatter {
   fields: Map<string, string>;
 }
 
+interface ParsedFrontmatter {
+  body: string;
+  fields: Map<string, string>;
+}
+
 function unquoteYamlScalar(value: string): string {
   const trimmed = value.trim();
   if (trimmed.length < 2) return trimmed;
@@ -68,7 +77,7 @@ function unquoteYamlScalar(value: string): string {
   return trimmed;
 }
 
-function parseSkillFrontmatter(content: string): ParsedSkillFrontmatter {
+function parseFrontmatter(content: string): ParsedFrontmatter {
   const match = content.match(/^---\n([\s\S]*?)\n---\n?/);
   if (!match) {
     return { body: content, fields: new Map() };
@@ -85,6 +94,10 @@ function parseSkillFrontmatter(content: string): ParsedSkillFrontmatter {
     body: content.slice(match[0].length),
     fields,
   };
+}
+
+function parseSkillFrontmatter(content: string): ParsedSkillFrontmatter {
+  return parseFrontmatter(content);
 }
 
 function inferSkillDescription(body: string, skillName: string): string {
@@ -137,6 +150,15 @@ function transformSkill(content: string, skillName: string): string {
   return ensureTrailingNewline(`${frontmatter}\n\n${bodyWithoutLeadingGaps}`);
 }
 
+function transformSkillSupportFile(content: string): string {
+  return ensureTrailingNewline(
+    normalizeNewline(content)
+      .replaceAll(".claude/skills", ".agents/skills")
+      .replaceAll("~/.claude/skills", "~/.agents/skills")
+      .replaceAll("CLAUDE.md", "AGENTS.md")
+  );
+}
+
 function transformCommand(content: string): string {
   const normalized = normalizeNewline(content);
   const header = [
@@ -152,6 +174,60 @@ function transformCommand(content: string): string {
       .replaceAll("~/.claude/commands", "~/.codex/prompts")
       .replaceAll("CLAUDE.md", "AGENTS.md")
   );
+}
+
+function transformCommandBodyForSkill(content: string): string {
+  return ensureTrailingNewline(
+    normalizeNewline(content)
+      .replaceAll(".claude/commands", ".agents/skills")
+      .replaceAll("~/.claude/commands", "~/.agents/skills")
+      .replaceAll("CLAUDE.md", "AGENTS.md")
+  );
+}
+
+function inferCommandDescription(body: string, commandPath: string): string {
+  for (const line of body.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.length === 0) continue;
+    if (trimmed.startsWith("#")) continue;
+    return trimmed;
+  }
+  return `Converted from Claude slash command ${commandPath}.`;
+}
+
+function commandPathToSkillName(rel: string): string {
+  const withoutExt = rel.replace(/\.md$/i, "");
+  const flattened = withoutExt.split(/[\\/]+/).filter(Boolean).join("-");
+  const sanitized = flattened
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return sanitized.length > 0 ? `cmd-${sanitized}` : "cmd-command";
+}
+
+function buildCommandSkill(content: string, commandRelPath: string): string {
+  const parsed = parseFrontmatter(normalizeNewline(content));
+  const body = transformCommandBodyForSkill(parsed.body).replace(/^\n+/, "");
+  const skillName = commandPathToSkillName(commandRelPath);
+  const description = (
+    parsed.fields.get("description") ?? inferCommandDescription(body, commandRelPath)
+  ).trim();
+  const argumentHint = (parsed.fields.get("argument-hint") ?? "").trim();
+
+  const lines = [
+    "---",
+    `name: ${yamlQuote(skillName)}`,
+    `description: ${yamlQuote(description)}`,
+    `argument-hint: ${yamlQuote(argumentHint)}`,
+    `converted-from: ${yamlQuote("claude-command")}`,
+    `claude-command-path: ${yamlQuote(commandRelPath)}`,
+    "---",
+  ];
+  if (body.length === 0) {
+    return ensureTrailingNewline(lines.join("\n"));
+  }
+  return ensureTrailingNewline(`${lines.join("\n")}\n\n${body}`);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -259,21 +335,26 @@ function buildAgentsFile(claudeSources: Array<{ path: string; content: string }>
   return ensureTrailingNewline(sections.join("\n"));
 }
 
-function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: string[] } {
+function buildPlan(
+  sourceRoot: string,
+  commandsAs: CommandConversionMode
+): { writes: PlannedWrite[]; warnings: string[] } {
   const writes: PlannedWrite[] = [];
   const warnings: string[] = [];
 
   const skillsRoot = join(sourceRoot, ".claude", "skills");
   for (const file of walkFiles(skillsRoot)) {
-    if (!file.endsWith("/SKILL.md")) continue;
-    const rel = relative(skillsRoot, dirname(file));
-    const target = rel.length > 0 ? join(".agents", "skills", rel, "SKILL.md") : join(".agents", "skills", "SKILL.md");
-    const pathParts = rel.split(/[\\/]/).filter(Boolean);
-    const skillName = pathParts.length > 0 ? pathParts[pathParts.length - 1] : "skill";
+    const relFile = relative(skillsRoot, file);
+    const pathParts = relFile.split(/[\\/]/).filter(Boolean);
+    const skillName = pathParts.length > 0 ? pathParts[0] : "skill";
+    const isSkillRootDoc = pathParts[pathParts.length - 1] === "SKILL.md";
     writes.push({
       source: relative(sourceRoot, file),
-      target,
-      content: transformSkill(readFileSync(file, "utf8"), skillName),
+      target: join(".agents", "skills", relFile),
+      content: isSkillRootDoc
+        ? transformSkill(readFileSync(file, "utf8"), skillName)
+        : transformSkillSupportFile(readFileSync(file, "utf8")),
+      mode: statSync(file).mode & 0o777,
     });
   }
 
@@ -281,11 +362,34 @@ function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: stri
   for (const file of walkFiles(commandsRoot)) {
     if (!file.endsWith(".md")) continue;
     const rel = relative(commandsRoot, file);
-    writes.push({
-      source: relative(sourceRoot, file),
-      target: join(".codex", "prompts", rel),
-      content: transformCommand(readFileSync(file, "utf8")),
-    });
+    const source = relative(sourceRoot, file);
+    const content = readFileSync(file, "utf8");
+    const mode = statSync(file).mode & 0o777;
+
+    if (commandsAs === "skills" || commandsAs === "both") {
+      const skillName = commandPathToSkillName(rel);
+      writes.push({
+        source,
+        target: join(".agents", "skills", skillName, "SKILL.md"),
+        content: buildCommandSkill(content, rel),
+        mode,
+      });
+    }
+
+    if (commandsAs === "prompts" || commandsAs === "both") {
+      writes.push({
+        source,
+        target: join(".codex", "prompts", rel),
+        content: transformCommand(content),
+        mode,
+      });
+    }
+  }
+
+  if (commandsAs === "prompts" || commandsAs === "both") {
+    warnings.push(
+      "Codex custom prompts are deprecated and load from ~/.codex/prompts. Prefer commands-as=skills for repository-local conversion."
+    );
   }
 
   const claudeMdPaths = [join(sourceRoot, "CLAUDE.md"), join(sourceRoot, ".claude", "CLAUDE.md")];
@@ -303,6 +407,7 @@ function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: stri
       source: "CLAUDE.md/.claude/CLAUDE.md",
       target: "AGENTS.md",
       content: agentsContent,
+      mode: 0o644,
     });
   }
 
@@ -314,6 +419,7 @@ function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: stri
       source: relative(sourceRoot, settingsPath),
       target: join(".codex", "rules", "default.rules"),
       content: rulesContent,
+      mode: 0o644,
     });
   }
 
@@ -329,7 +435,8 @@ function buildPlan(sourceRoot: string): { writes: PlannedWrite[]; warnings: stri
 export function convertClaudeToCodex(options: ConvertClaudeToCodexOptions): ConvertClaudeToCodexResult {
   const sourceRoot = resolve(options.sourceRoot);
   const targetRoot = resolve(options.targetRoot);
-  const { writes, warnings } = buildPlan(sourceRoot);
+  const commandsAs = options.commandsAs ?? "skills";
+  const { writes, warnings } = buildPlan(sourceRoot, commandsAs);
   const plannedWrites = writes.map((w) => w.target);
   const writtenFiles: string[] = [];
   const skippedFiles: string[] = [];
@@ -347,7 +454,7 @@ export function convertClaudeToCodex(options: ConvertClaudeToCodexOptions): Conv
       continue;
     }
     mkdirSync(dirname(absTarget), { recursive: true });
-    writeFileSync(absTarget, write.content, "utf8");
+    writeFileSync(absTarget, write.content, { encoding: "utf8", mode: write.mode });
     writtenFiles.push(write.target);
   }
 
