@@ -1,45 +1,66 @@
 # Cables
 
-Field notes from real projects with AI coding tools (Claude Code, Codex, and more). Written and maintained by [FRE|Nxt Labs](https://frenxt.com).
+Installable AI workflow recipes from real projects.
 
-Every cable is a dispatch from someone who actually did the work — what we tried, what broke, what we learned, and the artifacts you can drop into your own setup.
+Every cable combines two things:
 
-Built to expand across AI coding tools over time.
+- a short field note about what we tried, what broke, and what we learned
+- an optional artifact you can install directly into your project
 
-## Three ways to use this
+The point is not to collect prompts. The point is to help teams ship faster with working baselines for real AI coding workflows.
 
-- **Day 1 → Day N track** — a sequenced path for someone new to Claude Code.
-- **Catalog** — browse by category, tag, or difficulty when you need one specific thing.
-- **Registry** — `npx frenxt-cables add <slug>` installs real artifacts (CLAUDE.md templates, skills, subagents, slash commands) directly into your project.
-- **Interoperability** — `npx frenxt-cables convert claude-to-codex` and `npx frenxt-cables convert codex-to-claude` map skills, commands/prompts, and instruction/rule files between agent ecosystems.
+Examples:
 
-## Local development
+- `npx frenxt-cables add prompt-caching-fix`
+- `npx frenxt-cables add browser-use-qa`
+- `npx frenxt-cables add reproduce-fix-verify`
+- `npx frenxt-cables convert claude-to-codex`
 
-This repo is a local-first monorepo. The companion site (rendering layer) and the `frenxt` CLI live in separate phases and will be wired in later.
+## How people use this
 
-Prerequisites: Node 22, pnpm 10.
-
-```bash
-pnpm install
-pnpm validate        # validate all entries against the schema
-pnpm build-index     # regenerate content/index.json
-pnpm build-compatibility -- --limit=200  # regenerate compatibility leaderboard/report
-pnpm new-cable       # scaffold a new entry from template
-pnpm test            # run the test suite
-```
+- Fix one specific problem: prompt caching, browser QA, subagents, bugfix loops, setup drift.
+- Follow a track: start at Day 1 and work forward when you are new to Claude Code or Codex.
+- Install reusable files: `CLAUDE.md`, skills, subagents, and slash commands.
+- Move between ecosystems: convert Claude assets to Codex and back without hand-copying rules and command packs.
 
 ## Repo layout
 
-```
+```text
 content/<tool>/<slug>/
-├── index.mdx          # the tutorial / war story (rendered on the site)
+├── index.mdx          # the field note / tutorial
 ├── registry.json      # optional — describes the installable artifact
-├── skill.spec.json    # required for artifact_type: "skill" (canonical capability metadata)
-├── compatibility.json # required for artifact_type: "skill" (Claude/Codex compatibility matrix)
+├── skill.spec.json    # required for artifact_type: "skill"
+├── compatibility.json # required for artifact_type: "skill"
 └── artifact/          # optional — files the CLI copies into the user's project
 ```
 
-See `CONTRIBUTING.md` for the house voice rules and PR checklist.
+## Local development
+
+Prerequisites:
+
+- Node 22
+- pnpm 10
+
+Commands:
+
+```bash
+pnpm install
+pnpm sync-imports
+pnpm validate
+pnpm build-index
+pnpm build-compatibility -- --limit=200
+pnpm new-cable
+pnpm test
+```
+
+## Third-party publishers
+
+Third-party publishers are onboarded through two repo-level manifests:
+
+- `publishers/<publisher-id>.json` for approved publisher metadata and trust status
+- `imports/<publisher-id>/<slug>.json` for the pinned source pointer (`repo + SHA + path`)
+
+Running `pnpm sync-imports` fetches pinned source snapshots from GitHub raw and materializes them into `content/<tool>/<slug>/`, injecting provenance fields in frontmatter.
 
 ## License
 
