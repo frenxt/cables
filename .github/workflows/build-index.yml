@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'content/claude-code/**'
+      - 'imports/**'
+      - 'publishers/**'
       - 'contributors/**'
       - 'schema/**'
       - 'scripts/**'
@@ -27,6 +29,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm sync-imports
       - run: pnpm build-index
       - name: Commit updated index if changed
         run: |

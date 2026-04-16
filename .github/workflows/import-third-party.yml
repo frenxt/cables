@@ -1,0 +1,29 @@
+name: import-third-party
+
+on:
+  pull_request:
+    paths:
+      - "imports/**"
+      - "publishers/**"
+      - "scripts/**"
+      - "schema/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm sync-imports
+      - run: pnpm validate
+      - name: Ensure imported snapshots are current
+        run: git diff --exit-code -- content

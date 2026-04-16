@@ -1,0 +1,11 @@
+{
+  "publisher_id": "frenxt-labs",
+  "slug": "day-02-claude-md-basics",
+  "tool": "claude-code",
+  "source": {
+    "repo": "frenxt/cables",
+    "ref": "0f0612e89736ec41d0602e6dc735fe5c670c8575",
+    "path": "content/claude-code/day-02-claude-md-basics"
+  }
+}
+

@@ -43,6 +43,7 @@ If `artifact_type` is set, the folder must also contain a `registry.json` and an
 
 - [ ] `pnpm validate` passes on my branch
 - [ ] `pnpm test` passes on my branch
+- [ ] If I changed `imports/**` or `publishers/**`, `pnpm sync-imports` has been run and generated snapshots are committed under `content/**`
 - [ ] Cable frontmatter has all required fields (including `contributors`)
 - [ ] `last_verified` is today's date, and I actually verified the claims today
 - [ ] Cable follows all three house voice rules (no second person, leads with a moment, every claim has a source)
@@ -57,6 +58,15 @@ pnpm new-cable
 ```
 
 Follow the prompts. The script creates a folder under `content/claude-code/` with a pre-filled `index.mdx` template (including a `contributors: ["@TODO-your-handle"]` placeholder you must edit before committing) and (optionally) a `registry.json` stub.
+
+## Third-party import flow
+
+Third-party cables are imported via pinned manifests, not by writing directly into `content/**` first:
+
+1. Add/update `publishers/<publisher-id>.json` (once per publisher).
+2. Add/update `imports/<publisher-id>/<slug>.json` with immutable `source.ref` (40-char SHA).
+3. Run `pnpm sync-imports`.
+4. Commit both the manifest change and the generated `content/<tool>/<slug>/` snapshot.
 
 ## Expected categories
 
