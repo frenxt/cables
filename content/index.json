@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-16T06:06:16.635Z",
+  "generated_at": "2026-04-16T06:49:04.663Z",
   "entries": [
     {
       "title": "Autonomous browser QA with browser-use",
@@ -529,7 +529,7 @@
       "time_required": "20 min",
       "artifact_type": "skill",
       "has_war_story": true,
-      "last_verified": "2026-04-15",
+      "last_verified": "2026-04-16",
       "path": "content/claude-code/skill-stack-replication"
     }
   ]

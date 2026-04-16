@@ -11,14 +11,14 @@ time_required: "20 min"
 artifact_type: "skill"
 has_war_story: true
 contributors: ["@frenxt"]
-last_verified: "2026-04-15"
+last_verified: "2026-04-16"
 source_links:
   - { label: "Claude Code docs", url: "https://docs.claude.com/en/docs/claude-code" }
 ---
 
 # Replicate Ragav's stack (skills + plugins + scripts)
 
-This cable installs the actual stack artifacts from Ragav's `~/.claude*` setup so anyone can replicate it quickly.
+This cable installs the actual stack artifacts from Ragav's `~/.claude*` and `~/.codex` setup so anyone can replicate it quickly.
 
 <WarStory title="Same prompt, different output across profiles">
 The gap was stack drift: different skills and plugins loaded in different profiles. This pack removes that drift by shipping one installable baseline.
@@ -33,7 +33,7 @@ npx frenxt-cables add skill-stack-replication
 What gets installed in your project:
 
 - Core personal skills (`analyse-langsmith-trace`, `benchmark`, `e2e-review`, `qa`, `bugfix-cycle`, `debug-prompt-caching`, `qa-release`, `voice-test`)
-- Plugin manifest and install script
+- Claude + Codex plugin manifests and install script
 - Bootstrap scripts
 - Category manifests for selective copy/install
 
@@ -45,7 +45,7 @@ What gets installed in your project:
 
 After install, copy by subcategory:
 
-Install only category plugins:
+Install only category plugins (Claude + Codex):
 
 ```bash
 bash .claude/stacks/frenxt/install-category-plugins.sh developer-workflow-systems
@@ -73,4 +73,4 @@ bash .claude/stacks/frenxt/bootstrap-frenxt-stack.sh
 
 - Shared baseline skills remove behavior drift.
 - Category manifests let readers adopt only the parts they need.
-- Plugin setup becomes repeatable with explicit manifests instead of manual memory.
+- Plugin setup becomes repeatable across both tools with explicit manifests instead of manual memory.
