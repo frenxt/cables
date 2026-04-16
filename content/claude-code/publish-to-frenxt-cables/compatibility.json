@@ -1,0 +1,29 @@
+{
+  "slug": "publish-to-frenxt-cables",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-16",
+  "tier": "core",
+  "quality_score": 87,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Canonical publishing flow for current repo and submodule setup.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "partial",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [
+        "skill-stack-replication"
+      ],
+      "notes": "Workflow is compatible, but path defaults in examples target .claude and need codex-path substitutions in some repos.",
+      "blockers": []
+    }
+  }
+}

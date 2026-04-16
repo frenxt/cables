@@ -8,6 +8,12 @@ import {
   type Registry,
   type Entry,
 } from "../../schema/entry";
+import {
+  SkillCompatibilitySchema,
+  SkillSpecSchema,
+  type SkillCompatibility,
+  type SkillSpec,
+} from "../../schema/skill";
 
 export class EntryLoadError extends Error {
   constructor(
@@ -66,7 +72,55 @@ function loadRegistry(folder: string): Registry | null {
   return result.data;
 }
 
-function assertConsistency(folder: string, frontmatter: Frontmatter, registry: Registry | null): void {
+function loadSkillSpec(folder: string): SkillSpec | null {
+  const path = join(folder, "skill.spec.json");
+  if (!existsSync(path)) return null;
+  let json: unknown;
+  try {
+    json = JSON.parse(readFileSync(path, "utf8"));
+  } catch (e) {
+    throw new EntryLoadError(folder, `skill.spec.json is not valid JSON: ${(e as Error).message}`);
+  }
+  const result = SkillSpecSchema.safeParse(json);
+  if (!result.success) {
+    throw new EntryLoadError(
+      folder,
+      `skill.spec.json validation failed: ${result.error.issues
+        .map((i) => `${i.path.join(".")}: ${i.message}`)
+        .join("; ")}`
+    );
+  }
+  return result.data;
+}
+
+function loadCompatibility(folder: string): SkillCompatibility | null {
+  const path = join(folder, "compatibility.json");
+  if (!existsSync(path)) return null;
+  let json: unknown;
+  try {
+    json = JSON.parse(readFileSync(path, "utf8"));
+  } catch (e) {
+    throw new EntryLoadError(folder, `compatibility.json is not valid JSON: ${(e as Error).message}`);
+  }
+  const result = SkillCompatibilitySchema.safeParse(json);
+  if (!result.success) {
+    throw new EntryLoadError(
+      folder,
+      `compatibility.json validation failed: ${result.error.issues
+        .map((i) => `${i.path.join(".")}: ${i.message}`)
+        .join("; ")}`
+    );
+  }
+  return result.data;
+}
+
+function assertConsistency(
+  folder: string,
+  frontmatter: Frontmatter,
+  registry: Registry | null,
+  skillSpec: SkillSpec | null,
+  compatibility: SkillCompatibility | null
+): void {
   const folderName = basename(folder);
   if (frontmatter.slug !== folderName) {
     throw new EntryLoadError(
@@ -112,12 +166,48 @@ function assertConsistency(folder: string, frontmatter: Frontmatter, registry: R
       }
     }
   }
+
+  if (frontmatter.artifact_type === "skill") {
+    if (!skillSpec) {
+      throw new EntryLoadError(folder, `artifact_type is "skill" but skill.spec.json is missing`);
+    }
+    if (!compatibility) {
+      throw new EntryLoadError(folder, `artifact_type is "skill" but compatibility.json is missing`);
+    }
+    if (skillSpec.slug !== frontmatter.slug) {
+      throw new EntryLoadError(
+        folder,
+        `skill.spec.json slug "${skillSpec.slug}" must match frontmatter.slug "${frontmatter.slug}"`
+      );
+    }
+    if (compatibility.slug !== frontmatter.slug) {
+      throw new EntryLoadError(
+        folder,
+        `compatibility.json slug "${compatibility.slug}" must match frontmatter.slug "${frontmatter.slug}"`
+      );
+    }
+  } else {
+    if (skillSpec) {
+      throw new EntryLoadError(
+        folder,
+        `skill.spec.json exists but frontmatter artifact_type is "${frontmatter.artifact_type ?? "null"}"`
+      );
+    }
+    if (compatibility) {
+      throw new EntryLoadError(
+        folder,
+        `compatibility.json exists but frontmatter artifact_type is "${frontmatter.artifact_type ?? "null"}"`
+      );
+    }
+  }
 }
 
 export function loadEntry(folder: string): Entry {
   assertDirExists(folder);
   const { frontmatter, body } = loadFrontmatterAndBody(folder);
   const registry = loadRegistry(folder);
-  assertConsistency(folder, frontmatter, registry);
-  return { folder, frontmatter, body, registry };
+  const skillSpec = loadSkillSpec(folder);
+  const compatibility = loadCompatibility(folder);
+  assertConsistency(folder, frontmatter, registry, skillSpec, compatibility);
+  return { folder, frontmatter, body, registry, skillSpec, compatibility };
 }

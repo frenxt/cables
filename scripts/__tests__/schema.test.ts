@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { FrontmatterSchema, RegistrySchema } from "../../schema/entry";
+import { SkillCompatibilitySchema, SkillSpecSchema } from "../../schema/skill";
+import { ImportManifestSchema, PublisherSchema } from "../../schema/publisher";
 
 describe("FrontmatterSchema", () => {
   const validFrontmatter = {
@@ -28,6 +30,9 @@ describe("FrontmatterSchema", () => {
       has_war_story: true,
       contributors: ["@sragav"],
       source_links: [{ label: "Docs", url: "https://example.com" }],
+      publisher: "acme-labs",
+      provenance_repo: "acme-labs/cables",
+      provenance_ref: "0123456789abcdef0123456789abcdef01234567",
     };
     const result = FrontmatterSchema.safeParse(full);
     expect(result.success).toBe(true);
@@ -79,6 +84,99 @@ describe("FrontmatterSchema", () => {
     const ok = { ...validFrontmatter, artifact_type: null };
     const result = FrontmatterSchema.safeParse(ok);
     expect(result.success).toBe(true);
+  });
+
+  it("rejects invalid provenance_repo format", () => {
+    const bad = { ...validFrontmatter, provenance_repo: "https://github.com/acme-labs/cables" };
+    const result = FrontmatterSchema.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid provenance_ref format", () => {
+    const bad = { ...validFrontmatter, provenance_ref: "main" };
+    const result = FrontmatterSchema.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("SkillSpecSchema", () => {
+  const validSkillSpec = {
+    slug: "sample-skill",
+    canonical_name: "Sample Skill",
+    summary: "A sample skill used for testing schema validation.",
+    capability_cluster: "workflow-automation",
+    maturity: "stable",
+    owner: "@frenxt",
+    version: "1.0.0",
+    inputs: [],
+    outputs: [],
+    dependencies: {
+      env_vars: [],
+      binaries: [],
+      services: [],
+      plugins: [],
+    },
+    workflow_steps: ["Run command A", "Verify output B"],
+    verification: {
+      smoke_test: "echo ok",
+      expected_artifacts: [],
+    },
+  };
+
+  it("accepts valid skill spec", () => {
+    const result = SkillSpecSchema.safeParse(validSkillSpec);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects invalid capability cluster", () => {
+    const bad = { ...validSkillSpec, capability_cluster: "unknown-cluster" };
+    const result = SkillSpecSchema.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("SkillCompatibilitySchema", () => {
+  const validCompatibility = {
+    slug: "sample-skill",
+    owner: "@frenxt",
+    reviewed_at: "2026-04-16",
+    tier: "core",
+    quality_score: 84,
+    matrix: {
+      "claude-code": {
+        status: "pass",
+        adapter_version: "cli-0.1.5",
+        verified_on: "2026-04-16",
+        plugin_equivalents: [],
+        skill_fallbacks: [],
+        blockers: [],
+      },
+      codex: {
+        status: "partial",
+        adapter_version: "cli-0.1.5",
+        verified_on: "2026-04-16",
+        plugin_equivalents: [],
+        skill_fallbacks: ["cmd-sample-skill"],
+        blockers: [],
+      },
+    },
+  };
+
+  it("accepts valid compatibility manifest", () => {
+    const result = SkillCompatibilitySchema.safeParse(validCompatibility);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects matrix where both tools are fail", () => {
+    const bad = {
+      ...validCompatibility,
+      matrix: {
+        "claude-code": { ...validCompatibility.matrix["claude-code"], status: "fail" },
+        codex: { ...validCompatibility.matrix.codex, status: "fail" },
+      },
+    };
+    const result = SkillCompatibilitySchema.safeParse(bad);
+    expect(result.success).toBe(false);
   });
 });
 
@@ -137,6 +235,68 @@ describe("RegistrySchema", () => {
   it("rejects empty files array", () => {
     const bad = { ...validRegistry, files: [] };
     const result = RegistrySchema.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("PublisherSchema", () => {
+  const validPublisher = {
+    id: "acme-labs",
+    name: "Acme Labs",
+    repo: "acme-labs/cables",
+    default_branch: "main",
+    status: "active",
+    tier: "reviewed",
+    contacts: {
+      github: "@acme",
+      email: "oss@acme.dev",
+    },
+  };
+
+  it("accepts a valid publisher manifest", () => {
+    const result = PublisherSchema.safeParse(validPublisher);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects publisher contacts without github/email", () => {
+    const bad = { ...validPublisher, contacts: {} };
+    const result = PublisherSchema.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("ImportManifestSchema", () => {
+  const validImportManifest = {
+    publisher_id: "acme-labs",
+    slug: "multi-agent-release-gate",
+    tool: "claude-code",
+    source: {
+      repo: "acme-labs/cables",
+      ref: "9f1c4d7c0f97f58b4aa8a0f53f2f9c7d4c12ab99",
+      path: "content/claude-code/multi-agent-release-gate",
+    },
+  };
+
+  it("accepts a valid import manifest", () => {
+    const result = ImportManifestSchema.safeParse(validImportManifest);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects non-SHA source ref", () => {
+    const bad = {
+      ...validImportManifest,
+      source: { ...validImportManifest.source, ref: "main" },
+    };
+    const result = ImportManifestSchema.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid source path shape", () => {
+    const bad = {
+      ...validImportManifest,
+      source: { ...validImportManifest.source, path: "docs/multi-agent-release-gate" },
+    };
+    const result = ImportManifestSchema.safeParse(bad);
     expect(result.success).toBe(false);
   });
 });

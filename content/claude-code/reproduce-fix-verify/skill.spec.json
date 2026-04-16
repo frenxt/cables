@@ -1,0 +1,68 @@
+{
+  "slug": "reproduce-fix-verify",
+  "canonical_name": "Bugfix Cycle",
+  "summary": "Run a strict reproduce, fix, and verify loop with acceptance checks tied to original bug criteria.",
+  "capability_cluster": "workflow-automation",
+  "maturity": "stable",
+  "owner": "frenxt",
+  "version": "1.0.0",
+  "inputs": [
+    {
+      "name": "issue_context",
+      "type": "string",
+      "required": true,
+      "description": "Ticket, bug report, or failure context to triage."
+    },
+    {
+      "name": "reproduction_criteria",
+      "type": "string",
+      "required": true,
+      "description": "Observable criteria that define a valid reproduction."
+    },
+    {
+      "name": "verification_scope",
+      "type": "string",
+      "required": true,
+      "description": "Checks that must pass before closure."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "reproduction_plan",
+      "type": "report",
+      "description": "Deterministic reproduction steps and expected failing behavior."
+    },
+    {
+      "name": "minimal_fix_diff",
+      "type": "patch",
+      "description": "Smallest code or configuration change addressing root cause."
+    },
+    {
+      "name": "verification_checklist",
+      "type": "command-plan",
+      "description": "Acceptance checks mapped directly to reproduction criteria."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [
+      "git"
+    ],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Define reproduction criteria before writing the fix.",
+    "Implement smallest plausible fix on root-cause path.",
+    "Run explicit verification checks tied to reproduction criteria.",
+    "Document closure evidence and residual risks."
+  ],
+  "verification": {
+    "smoke_test": "Run the cycle for one bug and verify the final output includes acceptance checks mapped to the original reproduction criteria.",
+    "expected_artifacts": [
+      "reproduction_steps",
+      "fix_summary",
+      "verification_acceptance_checks"
+    ]
+  }
+}

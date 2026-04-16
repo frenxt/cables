@@ -1,0 +1,27 @@
+{
+  "slug": "e2e-coverage-audit",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-16",
+  "tier": "core",
+  "quality_score": 90,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Native flow works with existing QA checklist pattern.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "pass",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-16",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Process and output contract map 1:1 in Codex.",
+      "blockers": []
+    }
+  }
+}

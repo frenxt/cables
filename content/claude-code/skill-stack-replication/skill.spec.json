@@ -1,0 +1,72 @@
+{
+  "slug": "skill-stack-replication",
+  "canonical_name": "Replicate FRE|Nxt Stack",
+  "summary": "Replicate the FRE|Nxt Claude and Codex operating stack with skills, plugin manifests, and bootstrap scripts.",
+  "capability_cluster": "developer-productivity",
+  "maturity": "beta",
+  "owner": "frenxt",
+  "version": "1.0.0",
+  "inputs": [
+    {
+      "name": "replication_scope",
+      "type": "enum",
+      "required": true,
+      "description": "Choose full stack replication or category-only rollout."
+    },
+    {
+      "name": "target_category",
+      "type": "enum",
+      "required": false,
+      "description": "Developer workflow systems, reasoning frameworks, or domain playbooks."
+    },
+    {
+      "name": "profile_root",
+      "type": "path",
+      "required": false,
+      "description": "Optional local profile root for custom installation target."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "installed_stack_manifest",
+      "type": "report",
+      "description": "List of installed skills, plugins, and scripts by category."
+    },
+    {
+      "name": "bootstrap_command_plan",
+      "type": "command-plan",
+      "description": "Commands for full and category-only replication paths."
+    },
+    {
+      "name": "post_install_notes",
+      "type": "text",
+      "description": "Assumptions and environment-specific tuning required after bootstrap."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": [
+      "bash"
+    ],
+    "services": [],
+    "plugins": [
+      "Build Web Apps",
+      "GitHub",
+      "Vercel"
+    ]
+  },
+  "workflow_steps": [
+    "Install baseline skills and plugin manifests into project-local stack directories.",
+    "Run full bootstrap or scoped category rollout script.",
+    "Sync selected skills and plugin settings to local profiles.",
+    "Review post-install assumptions and adjust environment-specific values."
+  ],
+  "verification": {
+    "smoke_test": "Execute category-only install for one taxonomy group and verify resulting manifests include both Claude and Codex plugin entries.",
+    "expected_artifacts": [
+      "installed_plugins_manifest",
+      "category_skill_sync_output",
+      "post_install_tuning_notes"
+    ]
+  }
+}

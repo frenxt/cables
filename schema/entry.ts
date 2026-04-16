@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { SkillCompatibility, SkillSpec } from "./skill";
 
 export const DifficultySchema = z.enum(["beginner", "intermediate", "advanced"]);
 
@@ -13,6 +14,9 @@ export const SourceLinkSchema = z.object({
   label: z.string().min(1),
   url: z.string().url(),
 });
+
+const GitHubRepoRegex = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
+const CommitShaRegex = /^[0-9a-f]{40}$/i;
 
 export const FrontmatterSchema = z.object({
   title: z.string().min(1),
@@ -38,6 +42,18 @@ export const FrontmatterSchema = z.object({
   has_war_story: z.boolean().optional(),
   contributors: z.array(z.string()).min(1),
   source_links: z.array(SourceLinkSchema).optional(),
+  publisher: z
+    .string()
+    .regex(/^[a-z0-9-]+$/, "publisher must be kebab-case")
+    .optional(),
+  provenance_repo: z
+    .string()
+    .regex(GitHubRepoRegex, "provenance_repo must be in owner/repo format")
+    .optional(),
+  provenance_ref: z
+    .string()
+    .regex(CommitShaRegex, "provenance_ref must be a full 40-char commit SHA")
+    .optional(),
 });
 
 export type Frontmatter = z.infer<typeof FrontmatterSchema>;
@@ -70,4 +86,6 @@ export interface Entry {
   frontmatter: Frontmatter;
   body: string;
   registry: Registry | null;
+  skillSpec: SkillSpec | null;
+  compatibility: SkillCompatibility | null;
 }
