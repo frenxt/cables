@@ -1,0 +1,98 @@
+---
+title: 'Karpathy''s Software 3.0 (June 2025) — "the hottest new programming language is English"'
+slug: karpathy-05-software-3-0
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: intermediate
+last_verified: '2026-04-17'
+series: karpathy-playbook
+series_title: The Karpathy Playbook
+series_order: 5
+series_total: 6
+tags:
+  - karpathy
+  - software-3-0
+  - llm
+  - prompts
+  - natural-language
+time_required: 7 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Karpathy's tweet sharing the talk — 20 Jun 2025"
+    url: https://x.com/karpathy/status/1935518272667217925
+  - label: "YC AI Startup School: Software Is Changing (Again)"
+    url: https://www.ycombinator.com/library/MW-andrej-karpathy-software-is-changing-again
+  - label: "Full transcript & slides (latent.space)"
+    url: https://www.latent.space/p/s3
+---
+
+# The Karpathy Playbook #5: Software 3.0
+
+*Part 5 of 6 — tracing Karpathy's public thinking with FRE|Nxt Labs production commentary.*
+
+---
+
+## The talk
+
+> "The hottest new programming language is English."
+>
+> "LLMs are a new kind of computer, and you program them *in English*. Hence I think they are well deserving of a major version upgrade in terms of the way we think about software."
+>
+> — [**Andrej Karpathy**, *Software Is Changing (Again)*](https://www.ycombinator.com/library/MW-andrej-karpathy-software-is-changing-again), YC AI Startup School keynote, 18 June 2025 ([tweet](https://x.com/karpathy/status/1935518272667217925))
+
+The formal framing: Software 1.0 was code written by humans. Software 2.0 was neural-network weights shaped by datasets (the 2017 post, entry #1 in this series). Software 3.0 is natural-language prompts that program LLMs at runtime.
+
+---
+
+## What we heard
+
+Software 3.0 is the concept that reframes everything. If a prompt is a program, then *prompt engineering* is not a soft skill — it is programming, with all the disciplines that implies: versioning, testing, reviewing, debugging, regression suites.
+
+Most teams still treat prompts the way junior developers treat SQL strings in 2005 — pasted into code, tweaked by vibes, never reviewed, never tested, lost to `git blame` the moment someone refactors a module. Every problem that plagued pre-ORM SQL plagues modern prompts, for exactly the same reason: the thing being passed is being treated as a string, not as code.
+
+The Software 3.0 frame makes the fix obvious. Prompts deserve everything source code deserves.
+
+---
+
+## What we actually do with this
+
+We treat prompts as first-class source artifacts in every engagement. The checklist:
+
+| Software 1.0 discipline | Applied to Software 3.0 |
+|---|---|
+| Version control | Prompts live in `/prompts`, versioned in Git |
+| Code review | Every prompt change goes through PR review |
+| Unit tests | Golden-set evals run on every prompt change |
+| Regression suites | Production failure cases become fixed eval rows |
+| Logging | Every prompt execution emits a trace (LangSmith) |
+| Modularity | Reusable prompt fragments imported like modules |
+| Cost profiling | Token count is measured the same way binary size is |
+
+None of this is optional. A prompt change with no eval is a binary change with no test.
+
+---
+
+## Applied: InterviewLM's prompt pipeline
+
+We built InterviewLM's prompt layer as source code from day one:
+
+- **Structure**: `/prompts/personas/*.md`, `/prompts/eval/*.md`, `/prompts/system.md`. Every prompt is a file.
+- **Imports**: A lightweight templating layer concatenates fragments at runtime — the rubric prompt imports from a shared glossary file, the interviewer prompt imports from a behavioural-guidelines file. A change to the glossary file propagates to every persona.
+- **Evals**: 40 golden interviews run on every prompt-layer PR. If eval scores drop, the PR does not merge.
+- **Prompt caching as linker optimization**: Static fragments (rubric, glossary) go first in the prompt; dynamic fragments (candidate input) go last. Cache hit rate: 90%+. This is not clever — this is just understanding that the prompt is code and ordering statements for compilation.
+
+---
+
+## The one thing to steal from this
+
+Move your prompts out of your application code today. Create a `/prompts` directory. Put one prompt per file. Version them in Git. That single move — treating prompts as files instead of inline strings — changes every downstream discipline, because now `git diff` and `git blame` and code review and CI all work on them by default.
+
+---
+
+## Next in this series
+
+**#6 — The march of nines (October 2025)**. Karpathy on Dwarkesh: AGI is a decade away, agents are a decade away, and 90%→99.999% reliability is the real production problem. The sobering finale to this arc.
