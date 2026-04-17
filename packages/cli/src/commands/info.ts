@@ -23,6 +23,15 @@ export async function runInfo(
   if (entry.contributors && entry.contributors.length > 0) {
     lines.push(`Contributors:  ${entry.contributors.join(", ")}`);
   }
+  if (entry.publisher) {
+    lines.push(`Publisher:     ${entry.publisher}`);
+  }
+  if (entry.provenance_repo) {
+    lines.push(`Source repo:   ${entry.provenance_repo}`);
+  }
+  if (entry.provenance_ref) {
+    lines.push(`Source ref:    ${entry.provenance_ref}`);
+  }
   lines.push(`Last verified: ${entry.last_verified}`);
   lines.push("");
 

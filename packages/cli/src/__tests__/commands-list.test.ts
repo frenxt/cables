@@ -34,6 +34,12 @@ describe("runList", () => {
     expect(output).not.toContain("sample-tutorial");
   });
 
+  it("filters by publisher", async () => {
+    const output = await runList(resolver, { publisher: "acme-labs" });
+    expect(output).toContain("sample-with-artifact");
+    expect(output).not.toContain("sample-tutorial");
+  });
+
   it("returns empty-state message when no entries match", async () => {
     const output = await runList(resolver, { category: "nonexistent" });
     expect(output.toLowerCase()).toContain("no cables");
