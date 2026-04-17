@@ -7,7 +7,7 @@ type Kind = 'standalone' | 'track-episode' | 'migration' | 'team-playbook';
 function inferKind(slug: string): Kind {
   if (/^day-\d+/.test(slug)) return 'track-episode';
   if (/^f\d+/.test(slug)) return 'team-playbook';
-  if (/migration|claude-to-|codex-to-|cursor-rules-/.test(slug)) return 'migration';
+  if (/migration|claude-to-|codex-to-|cursor-rules-migration/.test(slug)) return 'migration';
   return 'standalone';
 }
 
