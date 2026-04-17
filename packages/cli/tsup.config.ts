@@ -5,6 +5,7 @@ export default defineConfig({
   format: ["esm"],
   target: "node22",
   bundle: true,
+  external: ["gray-matter"],
   clean: true,
   shims: false,
   sourcemap: false,

@@ -30,6 +30,9 @@
       "artifact_type": "claude-md",
       "has_war_story": false,
       "last_verified": "2026-04-10",
+      "publisher": "acme-labs",
+      "provenance_repo": "acme-labs/cables",
+      "provenance_ref": "1111111111111111111111111111111111111111",
       "path": "content/claude-code/sample-with-artifact",
       "contributors": ["@test"]
     }

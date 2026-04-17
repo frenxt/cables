@@ -12,6 +12,7 @@ import { runAdd } from "./commands/add";
 import { runConvertClaudeToCodex } from "./commands/convert-claude-to-codex";
 import { runConvertCodexToClaude } from "./commands/convert-codex-to-claude";
 import type { CommandConversionMode } from "./lib/convert-claude-to-codex";
+import { initPublisherConfig, packPublisherManifest, submitPublisherManifest } from "./lib/publisher";
 import {
   banner,
   bye,
@@ -81,6 +82,7 @@ export async function run(argv: string[]): Promise<void> {
     .option("--category <category>", "Filter by category")
     .option("--difficulty <level>", "Filter by difficulty (beginner|intermediate|advanced)")
     .option("--artifact-type <type>", "Filter by artifact type")
+    .option("--publisher <publisher>", "Filter by publisher id")
     .option("--tag <tag>", "Filter by tag")
     .action(async (opts) => {
       try {
@@ -89,6 +91,7 @@ export async function run(argv: string[]): Promise<void> {
           category: opts.category,
           difficulty: opts.difficulty,
           artifactType: opts.artifactType as ArtifactType | undefined,
+          publisher: opts.publisher,
           tag: opts.tag,
         };
         const output = await runList(resolver, options);
@@ -162,8 +165,8 @@ export async function run(argv: string[]): Promise<void> {
         const spin = isInteractiveTTY()
           ? spinner(`Fetching ${emphasis(slug)} from ${resolver.describe()}`)
           : {
-              succeed: (_msg?: string) => undefined,
-              fail: (_msg: string) => undefined,
+              succeed: () => undefined,
+              fail: () => undefined,
             };
         let result;
         try {
@@ -193,6 +196,130 @@ export async function run(argv: string[]): Promise<void> {
         exit(1);
       }
     });
+
+  cli
+    .command("publisher <action>", "Publisher workflow helpers: init | pack | submit")
+    .option("--publisher <id>", "Publisher id in kebab-case")
+    .option("--repo <repo>", "GitHub repo in owner/repo format; defaults to remote.origin.url")
+    .option("--branch <branch>", "Default branch for init", { default: "main" })
+    .option("--force", "Overwrite an existing .cables/publisher.json")
+    .option("--slug <slug>", "Cable slug to package")
+    .option("--tool <tool>", "Tool track, e.g. claude-code")
+    .option("--output <path>", "Write the generated manifest to a specific file path")
+    .option("--manifest-output <path>", "Write the generated manifest to a specific file path")
+    .option("--pr-body-output <path>", "Write the generated PR body markdown to a specific file path")
+    .option("--registry-repo <repo>", "Curated cables registry repo for reviewer instructions", {
+      default: "frenxt/cables",
+    })
+    .option("--registry-root <path>", "Local checkout of the curated registry repo")
+    .option("--prepare-commit", "Create or reset a branch and commit the manifest in --registry-root")
+    .option("--commit-branch <name>", "Branch name to use with --prepare-commit")
+    .option("--commit-message <message>", "Commit message to use with --prepare-commit")
+    .action(
+      (
+        action: string,
+        opts: {
+          publisher?: string;
+          repo?: string;
+          branch?: string;
+          force?: boolean;
+          slug?: string;
+          tool?: string;
+          output?: string;
+          manifestOutput?: string;
+          prBodyOutput?: string;
+          registryRepo?: string;
+          registryRoot?: string;
+          prepareCommit?: boolean;
+          commitBranch?: string;
+          commitMessage?: string;
+        }
+      ) => {
+        try {
+          if (action === "init") {
+            if (!opts.publisher) {
+              throw new Error('Missing required option "--publisher <id>".');
+            }
+            const result = initPublisherConfig({
+              repoRoot: cwd(),
+              publisherId: opts.publisher,
+              repo: opts.repo,
+              defaultBranch: opts.branch,
+              force: Boolean(opts.force),
+            });
+            success(`Wrote ${result.path}`);
+            console.log(`Publisher:      ${result.config.publisher_id}`);
+            console.log(`GitHub repo:    ${result.config.repo}`);
+            console.log(`Default branch: ${result.config.default_branch}`);
+            return;
+          }
+
+          if (action === "pack") {
+            if (!opts.slug) {
+              throw new Error('Missing required option "--slug <slug>".');
+            }
+            if (!opts.tool) {
+              throw new Error('Missing required option "--tool <tool>".');
+            }
+            const result = packPublisherManifest({
+              repoRoot: cwd(),
+              slug: opts.slug,
+              tool: opts.tool,
+              publisherId: opts.publisher,
+              outputPath: opts.output,
+            });
+            if (result.outputPath) {
+              success(`Wrote ${result.outputPath}`);
+            } else {
+              console.log(result.manifestJson.trimEnd());
+            }
+            return;
+          }
+
+          if (action === "submit") {
+            if (!opts.slug) {
+              throw new Error('Missing required option "--slug <slug>".');
+            }
+            if (!opts.tool) {
+              throw new Error('Missing required option "--tool <tool>".');
+            }
+            const result = submitPublisherManifest({
+              repoRoot: cwd(),
+              slug: opts.slug,
+              tool: opts.tool,
+              publisherId: opts.publisher,
+              manifestOutputPath: opts.manifestOutput,
+              prBodyOutputPath: opts.prBodyOutput,
+              registryRepo: opts.registryRepo,
+              registryRoot: opts.registryRoot,
+              prepareCommit: Boolean(opts.prepareCommit),
+              branchName: opts.commitBranch,
+              commitMessage: opts.commitMessage,
+            });
+            success(`Wrote ${result.manifestPath}`);
+            success(`Wrote ${result.prBodyPath}`);
+            if (result.registryManifestPath) {
+              success(`Wrote ${result.registryManifestPath}`);
+            }
+            console.log(`Registry repo: ${result.registryRepo}`);
+            console.log(`PR target:     ${result.centralManifestPath}`);
+            console.log(`Source commit: ${result.packResult.manifest.source.ref}`);
+            if (result.branchName) {
+              console.log(`Commit branch: ${result.branchName}`);
+            }
+            if (result.commitMessage) {
+              console.log(`Commit msg:    ${result.commitMessage}`);
+            }
+            return;
+          }
+
+          throw new Error(`Unknown publisher action "${action}". Use "init", "pack", or "submit".`);
+        } catch (e) {
+          logError((e as Error).message);
+          exit(1);
+        }
+      }
+    );
 
   cli
     .command("convert <direction>", "Convert between Claude and Codex artifact layouts")

@@ -6,6 +6,7 @@ export interface ListOptions {
   category?: string;
   difficulty?: "beginner" | "intermediate" | "advanced";
   artifactType?: ArtifactType;
+  publisher?: string;
   tag?: string;
 }
 
@@ -24,6 +25,9 @@ export async function runList(
   }
   if (options.artifactType) {
     entries = entries.filter((e) => e.artifact_type === options.artifactType);
+  }
+  if (options.publisher) {
+    entries = entries.filter((e) => e.publisher === options.publisher);
   }
   if (options.tag) {
     entries = entries.filter((e) => e.tags.includes(options.tag!));

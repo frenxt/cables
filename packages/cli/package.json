@@ -28,6 +28,7 @@
     "@clack/prompts": "^0.9.1",
     "cac": "^6.7.14",
     "diff": "^7.0.0",
+    "gray-matter": "^4.0.3",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {

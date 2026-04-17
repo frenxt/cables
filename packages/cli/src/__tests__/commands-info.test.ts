@@ -16,6 +16,8 @@ describe("runInfo", () => {
     expect(output).toContain("claude-md");
     expect(output).toContain("2026-04-10");
     expect(output).toContain("CLAUDE.md");
+    expect(output).toContain("acme-labs");
+    expect(output).toContain("1111111111111111111111111111111111111111");
   });
 
   it("returns metadata for a tutorial-only cable", async () => {
