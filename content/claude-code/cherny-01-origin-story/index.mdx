@@ -1,0 +1,87 @@
+---
+title: 'Boris Cherny: "code is not the bottleneck" (2024–26) — the origin story of Claude Code'
+slug: cherny-01-origin-story
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: beginner
+last_verified: '2026-04-17'
+series: cherny-playbook
+series_title: Boris Cherny's Claude Code Setup
+series_order: 1
+series_total: 4
+tags:
+  - cherny
+  - claude-code
+  - origin
+  - anthropic
+  - productivity
+time_required: 5 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Boris Cherny — one-year reflection (Threads)"
+    url: https://www.threads.com/@boris_cherny/post/DSxC5JZCKFs/
+  - label: "Fortune — Claude Code gives Anthropic its viral moment"
+    url: https://fortune.com/2026/01/24/anthropic-boris-cherny-claude-code-non-coders-software-engineers/
+  - label: "Fortune — 100% of code at Anthropic and OpenAI is now AI-written"
+    url: https://fortune.com/2026/01/29/100-percent-of-code-at-anthropic-and-openai-is-now-ai-written-boris-cherny-roon/
+---
+
+# Boris Cherny's Claude Code Setup #1: Code is not the bottleneck
+
+*A four-part series breaking down the Claude Code creator's actual workflow — parallel agents, CLAUDE.md as postmortem, the "model wants tools" design philosophy — with FRE|Nxt Labs live commentary on how we apply each pattern in production engagements.*
+
+---
+
+## The post
+
+> "When I created Claude Code as a side project back in September 2024, I had no idea it would grow to what it is today. It is humbling to see how Claude Code has become a core dev tool for so many engineers, how enthusiastic the community is, and how people are using it for all sorts of things from coding, to devops, to research, to non-technical use cases. This technology is alien and magical, it makes it so much easier for people to build and create. **Increasingly, code is not the bottleneck.**"
+>
+> — [**Boris Cherny**](https://www.threads.com/@boris_cherny/post/DSxC5JZCKFs/), creator of Claude Code, one-year reflection (early 2026)
+
+By Q1 2026, Anthropic reported Claude Code passing ~$1B annualized revenue six months after public launch, and Cherny himself [disclosed](https://fortune.com/2026/01/29/100-percent-of-code-at-anthropic-and-openai-is-now-ai-written-boris-cherny-roon/) that he hadn't written any code manually in over two months — 100% of his output now goes through Claude Code + Opus 4.5.
+
+---
+
+## What we heard
+
+The line "code is not the bottleneck" is the most consequential framing in AI-assisted development right now. It's also widely misread.
+
+It does *not* mean code doesn't matter. Code still has to work, be maintainable, pass review, run in production. What Cherny is saying is that **writing code is no longer what determines throughput**. The bottleneck has shifted — to specification quality, review capacity, context engineering, and the discipline to know what to ship.
+
+If you run an engineering team in 2026 and your output is still gated by lines-of-code-per-week, you haven't moved to the new regime yet. The teams that have moved are gated by how many well-specified units of work they can dispatch, review, and integrate per day.
+
+---
+
+## What we actually do with this
+
+We audit every engagement at kickoff with a **bottleneck diagnostic**. Three questions:
+
+1. **Where does an idea die today?** — In spec? In review? In merge? In prod? If the dominant failure mode is "takes too long to write" you're still in the old regime. If it's "takes too long to spec clearly enough for anyone — human or AI — to implement correctly," you're entering the new one.
+2. **What fraction of engineering time is spent reviewing vs writing?** — Below 30% review time means your review capacity is your new bottleneck. You need more reviewers, better review tooling, or smaller PRs. (See entry #3 on `/commit-push-pr` and small PRs.)
+3. **What happens if we 3× the number of PRs?** — If the answer is "the reviewers collapse," you need to fix review capacity before adding AI leverage. AI generates; humans gate. If the gate can't scale, the pipeline backs up.
+
+---
+
+## Applied: InterviewLM's bottleneck shift
+
+When we kicked off InterviewLM, the stated problem was "we need to build an interview platform fast." The actual bottleneck turned out to be rubric quality — the spec was ambiguous enough that no implementation (human or AI) would produce a coherent product.
+
+We spent the first week on rubric design before writing a single line. Once the rubric was crisp, the implementation phase — which we estimated at three weeks — took six days using parallel Claude Code sessions. The throughput gain was ~5× on implementation. It would have been 0× if the rubric had stayed fuzzy.
+
+The pattern repeats on every engagement: **the new bottleneck is the quality of what you hand the AI**. Time moves to the front of the pipeline.
+
+---
+
+## The one thing to steal from this
+
+Run Cherny's thought experiment this week: on your current project, what would you do with 10× engineering output? If your answer is "ship what's in the backlog faster," you haven't grasped the new constraint. The right answer is "we'd hit a review/spec/integration ceiling almost immediately — here's how we'd raise it." Find that ceiling now, because AI leverage is about to pin you against it.
+
+---
+
+## Next in this series
+
+**#2 — Five parallel Claudes in iTerm2**. The specific workflow Cherny uses to run 10–15 concurrent agent sessions and how the notification pattern makes concurrency tractable.

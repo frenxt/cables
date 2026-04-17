@@ -1,0 +1,119 @@
+---
+title: 'Boris Cherny: "the model just wants to use tools" (2026) — the design philosophy behind Claude Code'
+slug: cherny-04-model-wants-tools
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: intermediate
+last_verified: '2026-04-17'
+series: cherny-playbook
+series_title: Boris Cherny's Claude Code Setup
+series_order: 4
+series_total: 4
+tags:
+  - cherny
+  - tool-use
+  - agent-design
+  - claude-code
+  - pragmatic-engineer
+time_required: 7 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Building Claude Code with Boris Cherny — Pragmatic Engineer newsletter"
+    url: https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny
+  - label: "Gergely Orosz on X — interview summary"
+    url: https://x.com/GergelyOrosz/status/2029295486574747872
+---
+
+# Boris Cherny's Claude Code Setup #4: The model just wants to use tools
+
+*Final entry in the Cherny Playbook — from origin story to design philosophy.*
+
+---
+
+## The interview
+
+> "The model just wants to use tools. That's what I realized."
+>
+> "Agentic search… it's a fancy word for glob and grep."
+>
+> "Nowadays I ship 20–30 PRs every day, but every PR is just completely different."
+>
+> "It just one shotted it… this was my first field AGI moment at Anthropic."
+>
+> — [**Boris Cherny on the Pragmatic Engineer podcast with Gergely Orosz**](https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny), 2026
+
+---
+
+## What we heard
+
+This interview surfaces the design principle behind Claude Code that most agent frameworks in 2026 still miss. Three things:
+
+**1. "The model wants to use tools."** This is a claim about model psychology, not framework capability. Modern Claude models — when given access to tools — default to action. They'd rather run `ls` than ask what files exist. They'd rather `grep` than hallucinate a symbol. Systems that force the model to reason in a vacuum before acting underutilize this.
+
+**2. "Agentic search is a fancy word for glob and grep."** Cherny is being deliberate here. He's not saying "don't build retrieval systems." He's saying: the best retrieval primitive for code-shaped problems is often already installed on your machine. Vector databases have a place. So does `rg`. Know which one you need.
+
+**3. "20–30 PRs a day, each completely different."** The throughput figure is secondary — the real claim is *variety*. Cherny is doing many small, heterogeneous things per day, not one large thing. That shape of work is what an agent loop supports; it's not what a traditional "do the feature end-to-end" IDE supports.
+
+---
+
+## What we actually do with this
+
+We design every agent system around a **tool-first principle**: give the model tools that do real things in the real environment, not abstractions that wrap or simulate the environment.
+
+Our hierarchy of tool preferences, highest to lowest:
+
+| Preference | Example | Why |
+|---|---|---|
+| **Shell commands** | `rg`, `git`, `curl`, `ls`, `jq` | Battle-tested, fast, ubiquitous |
+| **Direct API calls** | `fetch`, direct DB query | No wrapper abstraction to debug |
+| **Library calls** | `@langchain/*` utilities | Only when the function genuinely needs an SDK |
+| **Custom abstractions** | Hand-rolled wrapper | Last resort; usually a smell |
+
+A common failure mode we see in client engagements: teams build elaborate tool wrappers ("search_codebase", "query_database", "fetch_user") that obscure what's actually happening. The model then has to reason about the wrapper's semantics *and* the underlying operation. Remove the wrapper, expose the primitive, and the agent gets faster and more reliable.
+
+---
+
+## Applied: InterviewLM's tool surface
+
+On InterviewLM, our interviewer persona agents have access to five tools:
+
+1. `get_rubric(role_id)` — reads structured YAML from disk
+2. `get_transcript(session_id)` — reads current session state
+3. `score_response(criterion_id, score, reasoning)` — writes to session state
+4. `next_question(category, difficulty)` — reads candidate question bank
+5. `end_session(summary)` — closes the session
+
+Four out of five are backed by filesystem operations or simple database reads. One writes structured state. No wrappers, no "smart" retrieval, no elaborate context management. Cache hit rate: 90%+. Tool call success rate: 99.2%. Median latency: sub-50ms per tool call.
+
+The discipline is: every tool we add, we ask "is this the primitive or is this a wrapper?" If it's a wrapper, we justify why the model can't just use the primitive directly. Usually we can't justify it, and we don't add the tool.
+
+---
+
+## On "agentic search is glob and grep"
+
+We applied this directly. Our code-understanding agents don't use a vector database. They use `rg` with structured queries. For a 200K-line codebase, `rg` returns in under 500ms and the model can read the results directly. The failure modes of `rg` (it won't find things renamed or semantically equivalent but lexically different) are understood and documented. The failure modes of a vector database for code (false positives on similar-looking-but-wrong code, stale indexes, embedding drift) are not as well understood and harder to debug.
+
+This is the right call for *most* code retrieval. It is not the right call for natural-language document retrieval (that's where vector search shines). Knowing the shape of your data tells you the shape of the retrieval.
+
+---
+
+## The one thing to steal from this
+
+Audit your current agent's tool surface. For each tool, answer: *is this a primitive or a wrapper?* Every wrapper is a place where the model has to learn your custom semantics instead of the operation's natural ones. Replace three wrappers with primitives this week. Measure the change in tool-call success rate and latency. You will almost certainly see both improve.
+
+---
+
+## Series complete — Boris Cherny's Claude Code Setup
+
+Four entries, one workflow, one pattern per entry for production AI work:
+
+1. [Origin story: "code is not the bottleneck"](../cherny-01-origin-story) — the bottleneck diagnostic
+2. [5 parallel Claudes + iTerm2](../cherny-02-parallel-agents) — the 5-lane pattern with git worktrees
+3. [CLAUDE.md as postmortem](../cherny-03-claude-md-postmortem) — living memory with a forcing function
+4. **"The model just wants to use tools"** — tool-first design; prefer primitives over wrappers
+
+Next in the broader *Playbooks* project: **Harrison Chase on Production Agents** — why better models alone won't ship your agent, the LangGraph runtime, and the Deep Agents harness.
