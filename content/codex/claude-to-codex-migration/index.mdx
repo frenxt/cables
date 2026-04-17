@@ -1,21 +1,33 @@
 ---
-title: "Migrate Claude workflows to Codex (and back) with one command"
-slug: "claude-to-codex-migration"
-tool: "codex"
-track: "fundamentals"
-category: "workflow"
-difficulty: "intermediate"
-tags: ["migration", "skills", "commands", "rules", "interop"]
-time_required: "18 min"
+title: Migrate Claude workflows to Codex (and back) with one command
+slug: claude-to-codex-migration
+tool: codex
+track: fundamentals
+category: workflow
+difficulty: intermediate
+tags:
+  - migration
+  - skills
+  - commands
+  - rules
+  - interop
+time_required: 18 min
 has_war_story: true
-last_verified: "2026-04-16"
-contributors: ["@frenxt"]
+last_verified: '2026-04-16'
+contributors:
+  - '@frenxt'
 source_links:
-  - { label: "Claude memory and CLAUDE.md", url: "https://docs.claude.com/en/docs/claude-code/memory" }
-  - { label: "Claude skills", url: "https://docs.claude.com/en/docs/claude-code/skills" }
-  - { label: "Codex skills", url: "https://developers.openai.com/codex/skills" }
-  - { label: "Codex rules", url: "https://developers.openai.com/codex/rules" }
-  - { label: "Codex config basics", url: "https://developers.openai.com/codex/config-basic" }
+  - label: Claude memory and CLAUDE.md
+    url: 'https://docs.claude.com/en/docs/claude-code/memory'
+  - label: Claude skills
+    url: 'https://docs.claude.com/en/docs/claude-code/skills'
+  - label: Codex skills
+    url: 'https://developers.openai.com/codex/skills'
+  - label: Codex rules
+    url: 'https://developers.openai.com/codex/rules'
+  - label: Codex config basics
+    url: 'https://developers.openai.com/codex/config-basic'
+kind: migration
 ---
 
 A migration sprint broke on day one because half the team had `.claude` assets and the other half had `.codex` assets. We were copying by hand and introducing subtle drift in permissions and command packs.
