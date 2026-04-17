@@ -1,0 +1,135 @@
+---
+title: 'Harrison Chase: Ambient Agents (2025–26) — the UX after chat'
+slug: chase-05-ambient-agents
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: intermediate
+last_verified: '2026-04-17'
+series: chase-playbook
+series_title: Harrison Chase on Production Agents
+series_order: 5
+series_total: 5
+tags:
+  - chase
+  - ambient-agents
+  - ux
+  - event-driven
+  - production
+time_required: 7 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Sequoia — Ambient Agents and the Agent Inbox ft. Harrison Chase"
+    url: https://sequoiacap.com/podcast/training-data-harrison-chase-2/
+  - label: "Sequoia Inference blog — Ambient Agents and the New Agent Inbox"
+    url: https://inferencebysequoia.substack.com/p/ambient-agents-and-the-new-agent
+  - label: "Context Engineering Long-Horizon Agents ft. Harrison Chase"
+    url: https://sequoiacap.com/podcast/context-engineering-our-way-to-long-horizon-agents-langchains-harrison-chase/
+---
+
+# Harrison Chase on Production Agents #5: Ambient Agents
+
+*Final entry in the Chase Playbook — from an 800-line weekend project to the UX that replaces chat.*
+
+---
+
+## The concept
+
+> "Ambient agents are AI systems that operate continuously in the background, responding to events rather than direct human prompts. By building agents that listen for and respond to background event streams, founders can enable massively parallel and autonomous workflows, scaling impact far beyond what is possible with chat interfaces."
+>
+> **Critical nuance:** *"Ambient does not mean fully autonomous, and it's still really important that we are able to interact with these ambient agents."*
+>
+> — [**Harrison Chase on Sequoia's *Training Data* podcast**](https://sequoiacap.com/podcast/training-data-harrison-chase-2/), 2025–26
+
+Chase introduces the **"Agent Inbox"** as the primary UX: a feed where humans review, approve, reject, or modify what ambient agents have proposed to do.
+
+---
+
+## What we heard
+
+The 2023–25 version of "AI product" was almost always a chatbox. Ambient agents are the first serious argument that the *next* version won't be.
+
+Three shifts are happening at once:
+
+1. **Trigger shift**: from "user types a prompt" to "event fires in a stream."
+2. **Concurrency shift**: from "one conversation at a time" to "many parallel agent threads running in the background."
+3. **Interaction shift**: from "chat window" to "inbox/approval feed."
+
+The inbox shift is the most important one for product teams to grok. Users don't scale to N chat sessions. They do scale to an inbox — they already use one for email. A well-designed agent inbox means a single person can supervise 20 agents the way a manager supervises 20 reports.
+
+Chase's critical caveat — *ambient ≠ autonomous* — is the load-bearing design decision. Humans still gate consequential actions. The agent proposes; the human approves. Full autonomy is neither desirable nor necessary for most valuable workflows.
+
+---
+
+## What we actually do with this
+
+For new engagements in 2026, we run a **"chat vs ambient"** question at the scoping stage. The signals:
+
+| Signal | Shape of product |
+|---|---|
+| User wants to ask a question | Chat interface |
+| User wants to have the AI do work in the background | Ambient agent |
+| Work has a natural trigger (event, schedule, threshold) | Ambient agent |
+| Work is one-shot and discrete | Chat interface |
+| Multiple pieces of work happen concurrently per user | Ambient agent + inbox UX |
+| Each unit of work needs bounded human approval | Ambient agent + inbox UX |
+| User is paying attention continuously | Chat interface |
+
+The cutoff is roughly: *does the user want a conversation, or do they want outcomes while they're not looking?* Both are valid. They require different products.
+
+---
+
+## Applied: what we're building next on InterviewLM
+
+InterviewLM's 2025 product was chat-shaped: a candidate joins a session and talks to an interviewer agent. That's the right shape for the interviewing job.
+
+The 2026 roadmap has an ambient layer stacked on top: a **hiring manager inbox** where the agent proposes sourcing actions, schedules follow-ups, drafts feedback messages, and flags candidates for review. The manager reviews in batches, not real-time. Each proposed action has one-click approve, modify, or reject.
+
+Architecturally this is a different system: event-driven triggers (new candidate enters pipeline, interview completes, threshold crossed), long-running LangGraph sessions (see [entry #2](../chase-02-langgraph-runtime)) tied to these triggers, and an approval queue persisted in Postgres. The inbox UX is the primary interaction point. The chat interface is still there, but it's no longer the centre of the product.
+
+Estimated ratio of eventual usage: 30% chat sessions, 70% inbox interactions. The inbox is where the leverage is.
+
+---
+
+## Design rules we're applying
+
+From what Chase has publicly described and from our own in-progress work:
+
+1. **Every ambient action is a proposal, not a commit**. The agent writes to a queue; a human (or an auto-approval rule for low-risk actions) commits.
+2. **Every inbox item has a "why"**. Users need to see the agent's reasoning to trust the proposal. Reasoning-trace discipline ([Amodei #4](../amodei-04-urgency-of-interpretability)) becomes user-facing.
+3. **Revisit is first-class**. Users can go back in the agent's decision history and intervene at any prior step. This is where LangGraph's checkpointing pays off.
+4. **Low-risk actions auto-approve; high-risk actions require explicit review**. The PRL framework ([Amodei #1](../amodei-01-responsible-scaling-policy)) maps directly onto per-action approval rules.
+
+None of these are Chase-originals — they're good product design applied to agents. His contribution is naming the pattern early enough that teams can build toward it intentionally.
+
+---
+
+## The one thing to steal from this
+
+On your next AI product decision, ask: *does the user want a conversation, or do they want the outcome while they're not watching?* If the honest answer is the second, you're not building a chatbot. Stop designing one. Sketch the inbox. Figure out which actions auto-approve and which require review. That conversation — not the chat UX — is the product.
+
+---
+
+## Series complete — Harrison Chase on Production Agents
+
+Five entries, one arc from weekend project to post-chat UX, one pattern per entry:
+
+1. [800-line weekend project (Oct 2022)](../chase-01-langchain-origin) — minimal viable abstraction
+2. [LangGraph as runtime (Jun 2024)](../chase-02-langgraph-runtime) — design the state schema first
+3. [Better models alone won't ship agents (2025)](../chase-03-production-gap) — five-layer production checklist
+4. [Deep Agents (Jul 2025)](../chase-04-deep-agents) — coordinator + subagents + filesystem + planning-as-tool
+5. **Ambient Agents (2025–26)** — "chat vs ambient" product cutoff; agent inbox as primary UX
+
+## Playbooks project — where we are
+
+Four series complete covering four AI leaders from four angles on production AI:
+
+- **[The Karpathy Playbook](../karpathy-01-software-2-0)** — the intellectual arc from Software 2.0 to the march of nines
+- **[Inside Anthropic with Dario Amodei](../amodei-01-responsible-scaling-policy)** — safety floor to endgame
+- **[Boris Cherny's Claude Code Setup](../cherny-01-origin-story)** — personal workflow to design philosophy
+- **Harrison Chase on Production Agents** — abstractions to runtimes to product UX
+
+Each series is a self-contained playbook. Read across all four and you have a working model of where production AI is heading in 2026.
