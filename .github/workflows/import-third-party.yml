@@ -13,8 +13,122 @@ on:
 jobs:
   import:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
+      - name: Enforce probation label when required
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const REQUIRED_LABEL = 'allow-probation-import';
+            const labels = (context.payload.pull_request?.labels ?? []).map((label) => label.name);
+            const pull_number = context.payload.pull_request?.number;
+
+            if (!pull_number) {
+              core.info('No pull request context found; skipping probation gating.');
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number,
+              per_page: 100,
+            });
+
+            const changedImportFiles = files
+              .filter((file) => file.status !== 'removed')
+              .map((file) => file.filename)
+              .filter((filename) => filename.startsWith('imports/') && filename.endsWith('.json'));
+            const changedPublisherFiles = files
+              .filter((file) => file.status !== 'removed')
+              .map((file) => file.filename)
+              .filter((filename) => filename.startsWith('publishers/') && filename.endsWith('.json'));
+
+            if (changedImportFiles.length === 0 && changedPublisherFiles.length === 0) {
+              core.info('No import or publisher manifest changes detected; skipping probation gating.');
+              return;
+            }
+
+            function readJson(relativePath) {
+              const absolutePath = path.join(process.env.GITHUB_WORKSPACE, relativePath);
+              if (!fs.existsSync(absolutePath)) return null;
+              return JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
+            }
+
+            function walkJsonFiles(rootDir) {
+              const files = [];
+              const stack = [rootDir];
+              while (stack.length > 0) {
+                const current = stack.pop();
+                if (!fs.existsSync(current)) continue;
+                for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+                  const absolute = path.join(current, entry.name);
+                  if (entry.isDirectory()) {
+                    stack.push(absolute);
+                    continue;
+                  }
+                  if (entry.isFile() && entry.name.endsWith('.json')) {
+                    files.push(absolute);
+                  }
+                }
+              }
+              return files;
+            }
+
+            const publisherById = new Map();
+            for (const absolutePath of walkJsonFiles(path.join(process.env.GITHUB_WORKSPACE, 'publishers'))) {
+              const publisher = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
+              if (publisher?.id) {
+                publisherById.set(publisher.id, publisher);
+              }
+            }
+
+            const impactedPublisherIds = new Set();
+
+            for (const relativePath of changedImportFiles) {
+              const manifest = readJson(relativePath);
+              if (manifest?.publisher_id) {
+                impactedPublisherIds.add(manifest.publisher_id);
+              }
+            }
+
+            for (const relativePath of changedPublisherFiles) {
+              const publisher = readJson(relativePath);
+              if (publisher?.id) {
+                impactedPublisherIds.add(publisher.id);
+              }
+            }
+
+            const probationPublishers = [];
+            for (const publisherId of impactedPublisherIds) {
+              const publisher = publisherById.get(publisherId) ?? null;
+              if (!publisher) continue;
+              if (publisher.status === 'probation' || publisher.tier === 'probation') {
+                probationPublishers.push(publisherId);
+              }
+            }
+
+            if (probationPublishers.length === 0) {
+              core.info('No probation publishers affected by this PR.');
+              return;
+            }
+
+            if (!labels.includes(REQUIRED_LABEL)) {
+              core.setFailed(
+                `Probation publishers in this PR (${probationPublishers.join(', ')}) require the "${REQUIRED_LABEL}" label before imports can run.`
+              );
+              return;
+            }
+
+            core.notice(
+              `Probation publishers detected (${probationPublishers.join(', ')}); required label "${REQUIRED_LABEL}" is present.`
+            );
       - uses: pnpm/action-setup@v4
         with:
           version: 10.30.1
@@ -25,5 +139,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm sync-imports
       - run: pnpm validate
-      - name: Ensure imported snapshots are current
+      - run: pnpm build-index
+      - name: Ensure imported snapshots and index are current
         run: git diff --exit-code -- content

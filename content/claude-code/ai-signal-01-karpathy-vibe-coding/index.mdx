@@ -1,0 +1,82 @@
+---
+title: 'Andrej Karpathy coins "vibe coding" — and what that actually means in production'
+slug: ai-signal-01-karpathy-vibe-coding
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: beginner
+last_verified: '2026-04-17'
+series: ai-signal-series
+series_title: Signal from the Timeline
+series_order: 1
+series_total: 5
+tags:
+  - vibe-coding
+  - karpathy
+  - agentic
+  - production
+time_required: 5 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+---
+
+# Signal from the Timeline #1: Andrej Karpathy on vibe coding
+
+*A recurring series: we find a tweet from an AI leader, add live commentary from our production work, and ship it as a Cables entry. No theory — only things we have actually done.*
+
+---
+
+## The tweet
+
+> "There's a new kind of coding I call 'vibe coding', where you fully give in to the vibes, embrace exponentials, and forget that the code even exists. It's possible because the LLMs (e.g. Cursor Composer w Sonnet) are getting too good. Also I just talk to Composer with SuperWhisper so it's not even coding, I just speak."
+>
+> — [**@karpathy**](https://x.com/karpathy/status/1886192184808149383) (Andrej Karpathy), 2 February 2025
+
+---
+
+## What we heard
+
+Karpathy wasn't advocating sloppiness. He was describing what happens when the friction of writing code drops below the friction of *thinking about code*. At that threshold, you can iterate at the speed of ideas.
+
+The trap is stopping there. "Mostly works" is not a production SLA.
+
+---
+
+## What we actually do with this
+
+We split every AI-assisted build into two explicit phases:
+
+**Phase 1 — vibe phase (intentionally fast)**
+We do exactly what Karpathy describes. We use Claude Code to scaffold, generate, and iterate at idea speed. We don't review individual lines. We run it and look at output.
+
+**Phase 2 — production gate (intentionally slow)**
+Before any output leaves our environment we run:
+- `npm run build` — type errors are load-bearing
+- `npm run lint` — catches the copy-paste artifacts AI loves to leave
+- A smoke test against the real API (not a mock)
+- A cost estimate: tokens-in × token price at expected QPS
+
+The vibe phase might take 20 minutes. The production gate takes 40 minutes. The ratio is the point — we're not abandoning rigour, we're front-loading creativity and back-loading verification.
+
+---
+
+## The concrete result
+
+On the InterviewLM engagement, we used this pattern to prototype eight distinct agent personas in two days. Vibe phase shipped the scaffolding. Production gate caught the three that had prompt injection surface areas. Total time to production-ready: six days.
+
+Without the vibe phase: probably three weeks of careful upfront design.
+Without the production gate: three personas with live security issues.
+
+---
+
+## The one thing to steal from this
+
+Add a `pre-commit` hook that runs your build + lint. It forces you to exit the vibe phase before you ship. Claude Code with Turbopack makes this nearly zero latency — there is no longer a meaningful cost to running a build.
+
+---
+
+## Next in this series
+
+**Signal #2** — Dario Amodei on what Claude should actually be: the "brilliant friend" framing and how we use it to spec AI advisor products.

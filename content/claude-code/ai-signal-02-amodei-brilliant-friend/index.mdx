@@ -1,0 +1,86 @@
+---
+title: "Anthropic's \"brilliant friend\" spec — and how we use it to audit AI advisor products"
+slug: ai-signal-02-amodei-brilliant-friend
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: beginner
+last_verified: '2026-04-17'
+series: ai-signal-series
+series_title: Signal from the Timeline
+series_order: 2
+series_total: 5
+tags:
+  - anthropic
+  - model-spec
+  - product-design
+  - ai-advisor
+time_required: 5 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Anthropic's Claude model spec"
+    url: https://www.anthropic.com/constitution
+---
+
+# Signal from the Timeline #2: Anthropic's "brilliant friend" specification
+
+*A recurring series: we pull a post or document from an AI leader, add live commentary from our production work, and ship it as a Cables entry.*
+
+---
+
+## The source
+
+> "Claude can be like a brilliant friend who also has the knowledge of a doctor, lawyer, and financial advisor, who will speak frankly and from a place of genuine care and treat users like intelligent adults capable of deciding what is good for them."
+>
+> — [**Anthropic model spec (Claude's constitution)**](https://www.anthropic.com/constitution), published publicly by Anthropic
+
+Dario Amodei (CEO, Anthropic) has consistently reinforced this framing in public appearances and in his October 2024 essay *Machines of Loving Grace*. The model spec is where it became a design constraint, not just a philosophy.
+
+---
+
+## What we heard
+
+This is a product spec written as a value statement. It defines the failure mode of nearly every AI product on the market: the assistant that hedges, disclaims, and refuses to give a direct answer.
+
+The "brilliant friend" bar is: *be as useful to this specific person in this specific moment as a deeply knowledgeable person who actually knows them would be.* Notice what that test rules out — the generic answer, the five-bullet framework when someone asked a direct question, the liability disclaimer no one asked for.
+
+---
+
+## What we actually do with this
+
+When we build AI advisor products for clients, we run every sampled response through a **brilliant friend test**:
+
+1. Would a knowledgeable friend say this, or would they say something more specific?
+2. Does the response contain any sentence that only exists to protect the AI from liability?
+3. Does the response assume the user needs hand-holding they didn't ask for?
+
+If the answer to #2 or #3 is yes, we rewrite the system prompt. Concretely, we audit for:
+
+- `"I'm not a licensed professional"` boilerplate in responses where it wasn't asked
+- `"Please consult a human expert"` on clear technical questions
+- Bullet lists that expand a direct answer into a five-point framework
+
+---
+
+## On the FRE|Nxt Labs AI advisor
+
+Our `/advisor` endpoint on this site is a live experiment in this. The system prompt is written to answer the specific AI architecture question the user actually asked — not to explain what RAG is if they already said they're using LangGraph.
+
+We track three signals: % of responses under 150 words (target: 60%+), % of responses containing hedge phrases (target: under 5%), and % of sessions that convert to a discovery call.
+
+The brilliant friend doesn't pad. The brilliant friend answers.
+
+---
+
+## The one thing to steal from this
+
+Run 20 responses from your AI product through this filter: remove every sentence that wouldn't appear in a text message from a knowledgeable friend. What's left should be most of the response. If you lose more than 30% of the content, your system prompt is optimized for legal cover, not for the user.
+
+---
+
+## Next in this series
+
+**Signal #3** — Boris Cherny (creator of Claude Code) reveals his actual workflow: 5-10 parallel Claude instances, Opus with thinking for everything, and a slash command he runs dozens of times per day.

@@ -48,6 +48,8 @@ If `artifact_type` is set, the folder must also contain a `registry.json` and an
 - [ ] `last_verified` is today's date, and I actually verified the claims today
 - [ ] Cable follows all three house voice rules (no second person, leads with a moment, every claim has a source)
 - [ ] If the cable ships an artifact, the `registry.json` `requires` array lists every external dependency honestly (API keys, external services, etc.)
+- [ ] Imported artifacts only write to approved install roots (`CLAUDE.md`, `.claude/skills/`, `.claude/agents/`, `.claude/commands/`, `.claude/stacks/`)
+- [ ] Imported artifacts do not include blocked binary payloads (`.exe`, `.dll`, `.so`, `.dylib`, etc.)
 - [ ] No secrets, API keys, or project-specific identifiers in the artifact files
 - [ ] Licensed MIT (implicit — do not contribute content you can't license this way)
 
@@ -61,12 +63,26 @@ Follow the prompts. The script creates a folder under `content/claude-code/` wit
 
 ## Third-party import flow
 
-Third-party cables are imported via pinned manifests, not by writing directly into `content/**` first:
+GitHub-only for this MVP: third-party cables are imported from GitHub repos via pinned manifests, not by writing directly into `content/**` first.
+
+In the publisher's source repo:
+
+```bash
+npx frenxt-cables publisher init --publisher acme-labs --repo acme-labs/cables
+npx frenxt-cables publisher pack --tool claude-code --slug release-gate
+npx frenxt-cables publisher submit --tool claude-code --slug release-gate
+```
+
+That scaffolds `.cables/publisher.json`, stages the generated manifest, and writes a PR body under `.cables/submissions/<slug>/`.
+
+In `frenxt/cables`:
 
 1. Add/update `publishers/<publisher-id>.json` (once per publisher).
 2. Add/update `imports/<publisher-id>/<slug>.json` with immutable `source.ref` (40-char SHA).
 3. Run `pnpm sync-imports`.
 4. Commit both the manifest change and the generated `content/<tool>/<slug>/` snapshot.
+
+If the affected publisher is on probation (`status: "probation"` or `tier: "probation"`), the import PR must carry the `allow-probation-import` label before the `import-third-party` workflow will proceed.
 
 ## Expected categories
 

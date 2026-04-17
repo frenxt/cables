@@ -55,7 +55,19 @@ pnpm test
 
 ## Third-party publishers
 
-Third-party publishers are onboarded through two repo-level manifests:
+MVP contract: third-party publishing is GitHub-only for now. The importer resolves pinned snapshots from GitHub raw; arbitrary git hosts are not supported yet.
+
+Publisher workflow:
+
+```bash
+npx frenxt-cables publisher init --publisher acme-labs --repo acme-labs/cables
+npx frenxt-cables publisher pack --tool claude-code --slug release-gate
+npx frenxt-cables publisher submit --tool claude-code --slug release-gate
+```
+
+That creates `.cables/publisher.json` in the source repo, emits an import manifest for a validated cable folder, and stages a reviewer-ready PR body under `.cables/submissions/<slug>/`.
+
+Curated registry flow inside `frenxt/cables`:
 
 - `publishers/<publisher-id>.json` for approved publisher metadata and trust status
 - `imports/<publisher-id>/<slug>.json` for the pinned source pointer (`repo + SHA + path`)
