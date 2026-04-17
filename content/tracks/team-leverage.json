@@ -1,0 +1,17 @@
+{
+  "slug": "team-leverage",
+  "title": "Team leverage — F1 to F6",
+  "blurb": "Six patterns for scaling Claude Code across a 3–10 person engineering team without the usual drift.",
+  "tool": "claude-code",
+  "estimatedTime": "4 hours total",
+  "curator": "ragav",
+  "episodes": [
+    "f1-team-rollout-6-person",
+    "f2-subagents-as-leverage",
+    "f3-claude-md-team-contract",
+    "f4-llm-state-visibility",
+    "f4-skills-that-scale",
+    "f5-prompt-cache-vs-dynamic-injection",
+    "f6-sub-agent-middleware-inheritance"
+  ]
+}

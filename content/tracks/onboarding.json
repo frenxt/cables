@@ -1,0 +1,25 @@
+{
+  "slug": "onboarding",
+  "title": "Onboarding — Day 01 to 15",
+  "blurb": "Fifteen field notes that take you from first install to shipping with Claude Code end-to-end.",
+  "tool": "claude-code",
+  "estimatedTime": "6 hours total",
+  "curator": "ragav",
+  "episodes": [
+    "day-01-install",
+    "day-02-claude-md-basics",
+    "day-03-claude-home-directory",
+    "day-04-e2e-coverage-audit",
+    "day-05-settings-permissions",
+    "day-06-git-workflow",
+    "day-07-first-skill-from-scratch",
+    "day-08-browser-qa",
+    "day-09-first-subagent",
+    "day-10-first-slash-command",
+    "day-11-reproduce-fix-verify",
+    "day-12-claude-md-drift",
+    "day-13-claude-md-split-patterns",
+    "day-14-plugins-worth-installing",
+    "day-15-war-story-contributor-guide"
+  ]
+}
