@@ -1,0 +1,136 @@
+---
+title: "Contributing to QA Agent"
+slug: "qa-agent-contribute"
+tool: "qa-agent"
+track: "contributor-guide"
+category: "contributing"
+difficulty: "intermediate"
+time_required: "25 min"
+artifact_type: null
+has_war_story: false
+contributors: ["frenxt"]
+last_verified: "2026-04-17"
+series: "qa-agent-guides"
+series_title: "QA Agent — Complete Guide"
+series_order: 7
+series_total: 7
+tags: ["qa", "contributing", "open-source", "pr"]
+source_links:
+  - { label: "QA Agent on GitHub", url: "https://github.com/frenxt/qa-agent" }
+  - { label: "CONTRIBUTING.md", url: "https://github.com/frenxt/qa-agent/blob/main/CONTRIBUTING.md" }
+---
+
+# Contributing to QA Agent
+
+QA Agent is open source. Contributions that add integrations, improve the report format, or extend the agent's tool set are all welcome.
+
+## What you'll learn
+
+- How to set up a local dev environment for contribution
+- Project conventions and where to put new code
+- What a good PR looks like
+- Where contributors can have the most impact
+
+## Step 1: Fork and clone
+
+```bash
+# Fork on GitHub first, then:
+git clone https://github.com/<your-handle>/qa-agent.git
+cd qa-agent
+git remote add upstream https://github.com/frenxt/qa-agent.git
+```
+
+## Step 2: Set up the dev environment
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+browser-use install
+cp .env.example .env
+# Set QA_LLM_API_KEY in .env
+```
+
+The `[dev]` extra installs linting tools (`ruff`, `mypy`).
+
+## Step 3: Run the existing tests
+
+```bash
+# Unit tests (fast, no browser required)
+pytest unit_tests/ -v
+
+# Smoke tests (requires a running target, uses the configured base_url)
+python cli.py run --suite smoke
+```
+
+All unit tests should pass before you start making changes.
+
+## Code conventions
+
+- **Python 3.11+**, typed with `mypy --strict` (check `pyproject.toml` for config)
+- **Modules are single-responsibility** — one module per integration, one module per pipeline stage
+- **No global state** — pass config and dependencies explicitly through function arguments
+- **Ruff** for formatting and linting: `ruff check . && ruff format .`
+
+## Adding a new integration
+
+The most common contribution type. Example: adding GitHub Issues support.
+
+1. Create `qa_agent/github_reporter.py`:
+
+```python
+from dataclasses import dataclass
+from typing import Any
+from .runner import RunResult
+
+@dataclass
+class GitHubConfig:
+    token: str
+    repo: str  # format: "owner/repo"
+
+def report(run_result: RunResult, config: GitHubConfig) -> list[str]:
+    """Create GitHub issues for each failed test. Returns list of issue URLs."""
+    ...
+```
+
+2. Add config to `config.yaml`:
+
+```yaml
+github:
+  token: ""
+  repo: ""
+  create_issues: false
+```
+
+3. Load and call from `runner.py` after `generate_report()`, following the pattern used for `linear_reporter.py`.
+
+4. Add a unit test in `unit_tests/test_github_reporter.py` that mocks the GitHub API and verifies issue creation for a failed `RunResult`.
+
+## What to include in your PR
+
+A good PR has three things:
+
+1. **The implementation** — focused, minimal, one feature or fix per PR
+2. **A unit test** — in `unit_tests/`, testing the new behaviour directly. For integrations, mock the external API. For parser changes, use a fixture markdown file.
+3. **An updated `CONTRIBUTING.md`** or `README.md` section if you added a new config key or CLI flag
+
+## PR checklist
+
+Before opening:
+
+```bash
+ruff check . && ruff format --check .
+mypy qa_agent/
+pytest unit_tests/ -v
+```
+
+All three should pass with no errors.
+
+## Areas where contributors can have the most impact
+
+- **New reporter integrations** (GitHub Issues, Jira, PagerDuty, Slack)
+- **Report format improvements** — the HTML report is functional; a redesign with better mobile support or dark mode would be valuable
+- **Custom tool extensions** — `custom_tools.py` is thin; drag-and-drop, file upload, and canvas interaction helpers are all missing
+- **Release pipeline** — the CSV-driven release runner works but has no UI; a simple web dashboard for release sign-off is on the roadmap
+
+Open an issue before starting large changes to confirm the approach aligns with the project direction.
