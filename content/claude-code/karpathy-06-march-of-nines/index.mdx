@@ -1,0 +1,115 @@
+---
+title: 'Karpathy''s march of nines (Oct 2025) — why 90%→99.999% is the real AI problem'
+slug: karpathy-06-march-of-nines
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: intermediate
+last_verified: '2026-04-17'
+series: karpathy-playbook
+series_title: The Karpathy Playbook
+series_order: 6
+series_total: 6
+tags:
+  - karpathy
+  - reliability
+  - agents
+  - production
+  - dwarkesh
+time_required: 7 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Dwarkesh Patel — Karpathy interview transcript"
+    url: https://www.dwarkesh.com/p/andrej-karpathy
+  - label: "Dwarkesh Patel's tweet with chapter timestamps"
+    url: https://x.com/dwarkesh_sp/status/1979234976777539987
+  - label: "Simon Willison's notes"
+    url: https://simonwillison.net/2025/Oct/18/agi-is-still-a-decade-away/
+---
+
+# The Karpathy Playbook #6: The march of nines
+
+*Final entry in the Karpathy Playbook — from 2017's Software 2.0 to 2025's reality check.*
+
+---
+
+## The interview
+
+> "Overall, the models are not there. I feel like the industry is making too big of a jump and is trying to pretend like this is amazing, and it's not."
+>
+> "This is the decade of agents — not the year of agents."
+>
+> On reinforcement learning: *"Sucking supervision through a straw."* When you only reward the final outcome, models get credit for wrong turns. That's noise, not learning.
+>
+> — [**Andrej Karpathy on Dwarkesh Patel's podcast**](https://www.dwarkesh.com/p/andrej-karpathy), October 2025
+
+The central concept: the **march of nines**. Getting an AI agent to 90% reliability (one nine) is the easy part. Each subsequent nine — 99%, 99.9%, 99.99% — requires as much work as every nine before it combined. The journey from demo to production is not linear; it is asymptotic.
+
+---
+
+## What we heard
+
+This is the bookend to everything in this series. Entries 1–5 were about what LLMs *can* do: rewrite software, power new products, be programmed in English. Entry 6 is about the thing that separates "works in a demo" from "works for a real customer who is paying for it."
+
+The march of nines is a physics fact of production software. What makes it worse for AI is that every nine costs *more* than the previous one — not less, because LLM failure modes aren't well-distributed. The 10% that fails at 90% reliability contains the pathological cases. Fixing them is precisely the work people avoid because it's not fun.
+
+Karpathy's decade-of-agents framing is the sensible response. The industry is in year one or two of that decade. Companies shipping production AI in 2026 are the ones that took the march of nines seriously in 2024 and 2025.
+
+---
+
+## What we actually do with this
+
+We run a **nines audit** on every system before calling it production-ready. The format:
+
+| Metric | 1 nine (90%) | 2 nines (99%) | 3 nines (99.9%) | 4 nines (99.99%) |
+|---|---|---|---|---|
+| Task completion | ✅ | ✅ | ⚠ | ❌ |
+| Tool-call success | ✅ | ✅ | ✅ | ⚠ |
+| Recovery from tool failure | ✅ | ⚠ | ❌ | ❌ |
+| Graceful degradation | ✅ | ⚠ | ❌ | ❌ |
+| Cost within budget per session | ✅ | ✅ | ✅ | ⚠ |
+
+A demo usually passes the first column. A production candidate passes the first two. Claiming production readiness without honestly auditing the right-hand columns is how agents end up in the graveyard of half-shipped AI products.
+
+The practical work that closes each gap:
+
+- **1→2 nines**: Better prompts, basic evals, fallback paths.
+- **2→3 nines**: Tool-call retries with exponential backoff, observability on every step, circuit breakers.
+- **3→4 nines**: Recovery from every known failure mode (not just catching errors — *recovering* from them), graceful degradation that preserves user value.
+- **4→5 nines**: Chaos engineering, adversarial testing, cost guardrails that hard-cap instead of soft-alert.
+
+Most of our engagements live in the 2→3 nines transition. That is the hardest, least glamorous, most valuable work in production AI — and the work the industry under-invests in because it doesn't make for good demo videos.
+
+---
+
+## Applied: what the nines looked like on InterviewLM
+
+- **1→2 nines**: Fixing the persona prompts that worked in scripted demos but drifted under adversarial candidate behaviour.
+- **2→3 nines**: Adding tool-call retries for the evaluation agent, checkpointing every LangGraph node so a failed transcript could resume from the last successful turn.
+- **3→4 nines**: Building the cost guardrail that hard-caps a runaway session at $3.00 before it can escalate, plus graceful degradation from Opus to Haiku when the primary provider rate-limits.
+
+The InterviewLM system runs at ~3.5 nines in production. The march from where it started (1.5 nines) to 3.5 took roughly 70% of the total engineering effort, even though it looked like we built 90% of the system in the first 30% of the time. That ratio is the march of nines in practice.
+
+---
+
+## The one thing to steal from this
+
+Before you sign off on an AI feature, write the nines audit above. Be honest about which columns you pass. If you only pass one column, you have a demo. If you pass two, you have a pilot. If you pass three, you have a product. Don't call it production until you know which one it is.
+
+---
+
+## Series complete — The Karpathy Playbook
+
+Six entries, one intellectual arc, one pattern per entry for production AI work:
+
+1. [Software 2.0 (2017)](../karpathy-01-software-2-0) — draw the line between deterministic and learned
+2. [LLM OS (2023)](../karpathy-02-llm-os) — architect every agent system with OS vocabulary
+3. [Eureka Labs (2024)](../karpathy-03-eureka-labs) — split the artifact from the teacher
+4. [Vibe coding (Feb 2025)](../karpathy-04-vibe-coding) — vibe phase fast, production gate slow
+5. [Software 3.0 (Jun 2025)](../karpathy-05-software-3-0) — prompts are source code
+6. **March of nines (Oct 2025)** — every nine costs more than the last
+
+Next in the broader *Playbooks* project: **Inside Anthropic with Dario Amodei** — Machines of Loving Grace, Claude's constitution, the end-of-exponential debate, and what we build on top of their model spec.

@@ -1,0 +1,88 @@
+---
+title: 'Karpathy''s Software 2.0 (2017) — the blog post that predicted the decade'
+slug: karpathy-01-software-2-0
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: beginner
+last_verified: '2026-04-17'
+series: karpathy-playbook
+series_title: The Karpathy Playbook
+series_order: 1
+series_total: 6
+tags:
+  - karpathy
+  - software-2-0
+  - neural-networks
+  - paradigm-shift
+time_required: 5 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Karpathy — Software 2.0 (Medium, Nov 2017)"
+    url: https://karpathy.medium.com/software-2-0-a64152b37c35
+---
+
+# The Karpathy Playbook #1: Software 2.0
+
+*A six-part series tracing Andrej Karpathy's public thinking from 2017 to 2025 — one foundational post per entry, each with FRE|Nxt Labs live commentary on how we apply it in production AI work.*
+
+---
+
+## The post
+
+> "Neural networks are not just another classifier, they represent the beginning of a fundamental shift in how we develop software. They are Software 2.0."
+>
+> "The 'classical stack' of Software 1.0 is what we're all familiar with — it is written in languages such as Python, C++, etc. It consists of explicit instructions to the computer written by a programmer."
+>
+> — [**Andrej Karpathy, *Software 2.0*, Medium**](https://karpathy.medium.com/software-2-0-a64152b37c35), 11 November 2017
+
+---
+
+## What we heard
+
+Read this post in 2017 and it sounded like category theory. Read it in 2026 and it sounds like the roadmap that actually got built.
+
+Karpathy's thesis: Software 1.0 is humans writing explicit instructions. Software 2.0 is humans curating datasets; the neural network writes the function itself. The programmer's job shifts from *writing code* to *designing the training signal*.
+
+The part most people missed on first read: Karpathy was already arguing in 2017 that Software 2.0 has its own stack — datasets are the new source code, model weights are the new binaries, gradient descent is the new compiler. Everything we now call "MLOps" is the infrastructure he sketched eight years earlier.
+
+---
+
+## What we actually do with this
+
+We treat the Software 2.0 frame as a scoping tool. When a client asks "should we build this with rules or with an LLM?", we run this split:
+
+| Software 1.0 fits when | Software 2.0 fits when |
+|---|---|
+| The spec is complete | The spec is a pile of examples |
+| Edge cases are enumerable | Edge cases are infinite |
+| You want deterministic output | You want graceful degradation |
+| Every input looks like the last | Inputs are natural-language messy |
+
+Clients frequently ask for 2.0 solutions to 1.0 problems (expensive LLM call where regex would do) or 1.0 solutions to 2.0 problems (100-branch rule tree trying to parse free-form user input). The Software 2.0 frame lets us give a principled "no" to the first and a principled "yes" to the second.
+
+---
+
+## Applied: the InterviewLM split
+
+In the InterviewLM system, we used both paradigms explicitly:
+
+- **Software 1.0**: Session routing, rate limits, billing, auth, transcript storage. Pure deterministic code.
+- **Software 2.0**: Candidate response evaluation, follow-up question generation, persona selection. LLM-native, trained/tuned via prompt + examples.
+
+The boundary was drawn on day one. Every new feature has to be assigned to one side or the other before anyone writes code. This is the single biggest factor in why the architecture stayed coherent across 8 agents and 100+ concurrent sessions — we never tried to make the LLM handle billing logic, and we never tried to make regex understand a candidate's hedged answer.
+
+---
+
+## The one thing to steal from this
+
+Before you start your next AI feature, draw a line on a whiteboard. On the left: what is deterministic (Software 1.0). On the right: what is learned (Software 2.0). Every component of the feature goes on one side or the other. If something feels like it belongs in both, split it.
+
+---
+
+## Next in this series
+
+**#2 — LLM OS (September 2023)**. Karpathy's framing of LLMs not as chatbots but as the kernel of a new operating system. The architecture blueprint we still use today.
