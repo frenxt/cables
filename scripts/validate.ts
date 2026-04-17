@@ -23,6 +23,26 @@ export function validateAll(contentRoot: string): ValidationResult {
       }
     }
   }
+
+  const foldersBySlug = new Map<string, string[]>();
+  for (const entry of entries) {
+    const slug = entry.frontmatter.slug;
+    const folders = foldersBySlug.get(slug) ?? [];
+    folders.push(entry.folder);
+    foldersBySlug.set(slug, folders);
+  }
+
+  for (const [slug, folders] of foldersBySlug.entries()) {
+    if (folders.length < 2) continue;
+    const locations = folders.join(", ");
+    for (const folder of folders) {
+      errors.push({
+        folder,
+        message: `duplicate slug "${slug}" found across multiple entries: ${locations}`,
+      });
+    }
+  }
+
   return { entries, errors };
 }
 

@@ -62,4 +62,18 @@ describe("validateAll", () => {
     );
     expect(result.errors.some((e) => e.message.includes("skill.spec.json is missing"))).toBe(true);
   });
+
+  it("reports duplicate slugs across multiple entries", () => {
+    const contentRoot = makeTempContent(["valid-entry-no-artifact"]);
+    mkdirSync(join(contentRoot, "codex"), { recursive: true });
+    cpSync(
+      join(fixturesRoot, "valid-entry-no-artifact"),
+      join(contentRoot, "codex", "valid-entry-no-artifact"),
+      { recursive: true }
+    );
+    const result = validateAll(contentRoot);
+    expect(result.errors.some((e) => e.message.includes('duplicate slug "valid-entry-no-artifact"'))).toBe(
+      true
+    );
+  });
 });
