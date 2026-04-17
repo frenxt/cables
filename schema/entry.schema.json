@@ -27,6 +27,49 @@
           "type": "string",
           "minLength": 1
         },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "standalone",
+            "track-episode",
+            "migration",
+            "team-playbook"
+          ]
+        },
+        "equivalents": {
+          "type": "object",
+          "properties": {
+            "claude-code": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "codex": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "cursor": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "gemini-cli": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "copilot": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "windsurf": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "qa-agent": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            }
+          },
+          "additionalProperties": false
+        },
         "difficulty": {
           "type": "string",
           "enum": [

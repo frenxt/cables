@@ -27,6 +27,18 @@ export const FrontmatterSchema = z.object({
   tool: z.string().min(1),
   track: z.string().min(1),
   category: z.string().min(1),
+  kind: z.enum(['standalone', 'track-episode', 'migration', 'team-playbook']).optional(),
+  equivalents: z
+    .object({
+      'claude-code': z.string().regex(/^[a-z0-9-]+$/).optional(),
+      codex: z.string().regex(/^[a-z0-9-]+$/).optional(),
+      cursor: z.string().regex(/^[a-z0-9-]+$/).optional(),
+      'gemini-cli': z.string().regex(/^[a-z0-9-]+$/).optional(),
+      copilot: z.string().regex(/^[a-z0-9-]+$/).optional(),
+      windsurf: z.string().regex(/^[a-z0-9-]+$/).optional(),
+      'qa-agent': z.string().regex(/^[a-z0-9-]+$/).optional(),
+    })
+    .optional(),
   difficulty: DifficultySchema,
   last_verified: z
     .string()
