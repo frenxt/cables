@@ -1,16 +1,17 @@
 ---
-title: "Anthropic's \"brilliant friend\" spec — and how we use it to audit AI advisor products"
-slug: ai-signal-02-amodei-brilliant-friend
+title: "Anthropic's \"brilliant friend\" spec — the product voice that defines Claude"
+slug: amodei-02-brilliant-friend
 tool: claude-code
 track: thought-leadership
 category: ai-industry
 difficulty: beginner
 last_verified: '2026-04-17'
-series: ai-signal-series
-series_title: Signal from the Timeline
+series: amodei-playbook
+series_title: Inside Anthropic with Dario Amodei
 series_order: 2
 series_total: 5
 tags:
+  - amodei
   - anthropic
   - model-spec
   - product-design
@@ -21,13 +22,15 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: "Anthropic's Claude model spec"
+  - label: "Anthropic — Claude's Constitution"
     url: https://www.anthropic.com/constitution
+  - label: "Anthropic — Claude's new constitution announcement"
+    url: https://www.anthropic.com/news/claude-new-constitution
 ---
 
-# Signal from the Timeline #2: Anthropic's "brilliant friend" specification
+# Inside Anthropic with Dario Amodei #2: The "brilliant friend" spec
 
-*A recurring series: we pull a post or document from an AI leader, add live commentary from our production work, and ship it as a Cables entry.*
+*Part 2 of 5 — tracing Anthropic's public thinking with FRE|Nxt Labs production commentary.*
 
 ---
 
@@ -35,9 +38,9 @@ source_links:
 
 > "Claude can be like a brilliant friend who also has the knowledge of a doctor, lawyer, and financial advisor, who will speak frankly and from a place of genuine care and treat users like intelligent adults capable of deciding what is good for them."
 >
-> — [**Anthropic model spec (Claude's constitution)**](https://www.anthropic.com/constitution), published publicly by Anthropic
+> — [**Anthropic's model spec (Claude's Constitution)**](https://www.anthropic.com/constitution)
 
-Dario Amodei (CEO, Anthropic) has consistently reinforced this framing in public appearances and in his October 2024 essay *Machines of Loving Grace*. The model spec is where it became a design constraint, not just a philosophy.
+Dario Amodei has consistently reinforced this framing in public appearances and in *Machines of Loving Grace* (entry #3 in this series). The constitution is where it became a design constraint, not just a philosophy.
 
 ---
 
@@ -46,6 +49,8 @@ Dario Amodei (CEO, Anthropic) has consistently reinforced this framing in public
 This is a product spec written as a value statement. It defines the failure mode of nearly every AI product on the market: the assistant that hedges, disclaims, and refuses to give a direct answer.
 
 The "brilliant friend" bar is: *be as useful to this specific person in this specific moment as a deeply knowledgeable person who actually knows them would be.* Notice what that test rules out — the generic answer, the five-bullet framework when someone asked a direct question, the liability disclaimer no one asked for.
+
+If entry #1 (the Responsible Scaling Policy) was the safety floor, this is the product ceiling. The RSP says *don't hurt people*. The constitution says *actually help them*.
 
 ---
 
@@ -83,4 +88,4 @@ Run 20 responses from your AI product through this filter: remove every sentence
 
 ## Next in this series
 
-**Signal #3** — Boris Cherny (creator of Claude Code) reveals his actual workflow: 5-10 parallel Claude instances, Opus with thinking for everything, and a slash command he runs dozens of times per day.
+**#3 — Machines of Loving Grace (Oct 2024)**. Dario's 14,000-word utopian essay: the "compressed 21st century," a "country of geniuses in a datacentre," and why the upside case is specific enough to plan against.
