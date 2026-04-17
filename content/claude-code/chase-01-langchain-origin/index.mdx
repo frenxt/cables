@@ -1,0 +1,91 @@
+---
+title: 'Harrison Chase: "a single 800-line Python package" (Oct 2022) — the LangChain origin story'
+slug: chase-01-langchain-origin
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: beginner
+last_verified: '2026-04-17'
+series: chase-playbook
+series_title: Harrison Chase on Production Agents
+series_order: 1
+series_total: 5
+tags:
+  - chase
+  - langchain
+  - origin
+  - abstractions
+  - open-source
+time_required: 5 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Harrison Chase — Reflections on Three Years of Building LangChain"
+    url: https://blog.langchain.com/three-years-langchain/
+  - label: "LangChain on Wikipedia"
+    url: https://en.wikipedia.org/wiki/LangChain
+  - label: "Latent Space interview — The Point of LangChain"
+    url: https://www.latent.space/p/langchain
+---
+
+# Harrison Chase on Production Agents #1: The 800-line weekend project
+
+*A five-part series tracing Harrison Chase's public thinking on production AI agents — from LangChain as a weekend project to ambient agents — with FRE|Nxt Labs commentary on how we apply each pattern in production engagements.*
+
+---
+
+## The post
+
+> "langchain was launched as a single (800 line long?) python package in fall of 2022 out of my personal github hwchase17. It was a side project. I was inspired by going to meetups and running into a few folks on the bleeding edge, building some experimental stuff with language models."
+>
+> — [**Harrison Chase**, *Reflections on Three Years of Building LangChain*](https://blog.langchain.com/three-years-langchain/)
+
+First commit: 16 October 2022. First tweet: 24 October 2022. LangChain was incorporated in January 2023, a couple of months after ChatGPT's launch brought the first wave of developers to the project.
+
+---
+
+## What we heard
+
+Two things matter from the origin story:
+
+**1. The 800 lines solved one specific problem**: LLMs had no standard way to be composed with tools, prompts, memory, or other LLMs. Every team was rebuilding the same glue code. Chase's early package was the glue, extracted.
+
+**2. The timing was accidental but decisive**: LangChain shipped six weeks before ChatGPT. When the flood of developers arrived needing a way to build with LLMs, LangChain was the only abstraction available that looked like a library instead of a research repo.
+
+The lesson isn't "get lucky with timing." It's: *an 800-line package that does one thing well at the right moment will beat a 50,000-line framework that does many things comprehensively at the wrong moment*. Chase's package was ready because it was small.
+
+---
+
+## What we actually do with this
+
+We treat **minimal viable abstraction (MVA)** as an explicit discipline on every client engagement. Before writing any framework-scale code, we ask:
+
+1. **What is the one thing we're abstracting?** If the answer is "it handles many things," stop — we haven't scoped it tightly enough yet.
+2. **Can this live in a single file?** If not, we need to explain why multiple files are load-bearing right now, not "later when we scale."
+3. **What existing library could we adopt instead?** Nine times out of ten there's a library that does 80% of what we need. We adopt it, write the missing 20%, and move on.
+
+The failure mode we see repeatedly: teams write custom orchestration frameworks for their single agent because "eventually we'll have many agents." The framework takes six weeks. The second agent never materializes. The team now maintains a framework with one user.
+
+---
+
+## Applied: what we did *not* build on InterviewLM
+
+At InterviewLM kickoff we considered writing a custom agent orchestration layer. We had reasons: the interview-specific state was complex, the rubric integration was non-trivial, the evaluation logic had edge cases.
+
+Instead we wrote 150 lines of LangGraph on top of LangChain + some project-specific utilities. The 150 lines were the MVA. Everything else reused existing primitives. Three months into the engagement, the LangGraph-plus-utilities pattern was still doing the job at 100+ concurrent sessions. The "custom framework" path would have cost us the first month of the engagement and delivered nothing the out-of-the-box LangGraph didn't already deliver.
+
+This is the LangChain lesson in reverse: Chase's package succeeded because it was small. The custom framework we didn't write would have failed because it would have been large.
+
+---
+
+## The one thing to steal from this
+
+Next time you're tempted to write a framework, write the 800-line version first. Actually ship it. Use it on one real problem. Then ask whether the thing you want to build next is an extension of this one, or a different thing. Most of the time it's different enough that you're better off with two small things than one large thing.
+
+---
+
+## Next in this series
+
+**#2 — LangGraph: the runtime (June 2024)**. When LangChain-the-library wasn't enough for stateful multi-agent systems, LangChain-the-company shipped a graph-based runtime. Why state machines beat prompts for agent orchestration.

@@ -1,0 +1,106 @@
+---
+title: 'Harrison Chase: LangGraph as the runtime (June 2024) — state machines for agents'
+slug: chase-02-langgraph-runtime
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: intermediate
+last_verified: '2026-04-17'
+series: chase-playbook
+series_title: Harrison Chase on Production Agents
+series_order: 2
+series_total: 5
+tags:
+  - chase
+  - langgraph
+  - state-machines
+  - orchestration
+  - agents
+time_required: 7 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Harrison Chase — LangGraph announcement thread (June 2024)"
+    url: https://x.com/hwchase17/status/1798386148982878477
+  - label: "LangGraph Platform announcement"
+    url: https://blog.langchain.com/langgraph-platform-announce/
+  - label: "LangChain and LangGraph 1.0 announcement"
+    url: https://www.linkedin.com/posts/harrison-chase-961287118_announcing-langchain-and-langgraph-10-activity-7386795886137434114--AC0
+---
+
+# Harrison Chase on Production Agents #2: LangGraph as the runtime
+
+*Part 2 of 5 — tracing Chase's production agent thinking with FRE|Nxt Labs commentary.*
+
+---
+
+## The announcement
+
+> "🚨 New DeepLearning course: AI agents in LangGraph. LangGraph is an extension of LangChain for building agent & multi-agent systems. I believe it's the best way to build agents for a few reasons: 🔀 Controllability 🧠 Memory 🫂 Novel UX paradigms"
+>
+> — [**Harrison Chase (@hwchase17)**](https://x.com/hwchase17/status/1798386148982878477), June 2024
+
+Later framing from a 2025 interview: *"LangGraph is the runtime. LangChain is the abstraction. Deep Agents are the harness."*
+
+---
+
+## What we heard
+
+LangChain (entry #1) solved the composition problem: how do you wire an LLM to tools and prompts? LangGraph solves a different problem: *how do you run the wire*?
+
+The shift is from library to runtime. A library gives you functions to call. A runtime manages state between calls, persists it, resumes it, lets you time-travel through it. That difference is the entire gap between "my agent works in a notebook" and "my agent works at 2 AM on Tuesday for a customer I'll never see."
+
+Three specific things LangGraph provides that a plain LangChain composition doesn't:
+
+1. **State as a first-class object**: the graph has state; every node reads from it and writes back to it. You don't pass context through nested function arguments.
+2. **Checkpointing**: state is persisted at each node automatically. Failed sessions resume from the last successful node.
+3. **Human-in-the-loop as a node type**: pausing for approval is a structural primitive, not a bolted-on callback.
+
+If your agent doesn't need those three things, you don't need LangGraph. If it does, you do.
+
+---
+
+## What we actually do with this
+
+We treat LangGraph as the default runtime for any PRL-3 or higher agent system (see [Amodei #1](../amodei-01-responsible-scaling-policy) for the PRL framework). Our standard LangGraph architecture per engagement:
+
+| Graph component | Used for |
+|---|---|
+| **State schema** | The single source of truth for session state. All node inputs and outputs flow through it. |
+| **Node per agent role** | One LangGraph node per persona/capability. Each node is small, testable, and independently versioned. |
+| **Edges as routing** | Conditional edges encode the state machine. No `if/else` in agent code — all branching lives in edges. |
+| **Interrupts for approval gates** | Every human-in-the-loop checkpoint is a LangGraph interrupt. Resumable from exactly that point. |
+| **Checkpointer backed by Postgres** | Session state survives restarts. Replays are free. |
+
+Rule we enforce: **no stateful agent without a graph**. The moment a system needs memory across turns, it runs on LangGraph. Chat wrappers, retrieval pipelines, and tool-calling loops can live elsewhere. Multi-turn agents with state cannot.
+
+---
+
+## Applied: InterviewLM's graph
+
+InterviewLM is one LangGraph per candidate session. The graph has 12 nodes:
+
+- 1 entry node (session setup)
+- 1 coordinator node (routes between interviewer personas)
+- 5 interviewer persona nodes (technical, behavioural, case study, closing, follow-up)
+- 3 evaluation nodes (score aggregation, rubric matching, recommendation)
+- 1 human-in-the-loop node (optional live interviewer intervention)
+- 1 exit node (session summary + transcript storage)
+
+Every node reads and writes to a shared `SessionState` schema. The checkpointer writes to Postgres after each node. A failed session — for any reason, including LLM provider outage — resumes from the last successful checkpoint. We've had zero data loss on 100+ concurrent sessions over the engagement lifetime.
+
+The design cost: roughly one week of state-schema design upfront. The design payoff: every failure scenario has a deterministic recovery path. We never have to reconstruct "what was the agent doing when it died?" — the state tells us.
+
+---
+
+## The one thing to steal from this
+
+On your next agent system, model the state *before* writing a single node. Draw the state schema on a whiteboard. Every field must be justified: why does this field exist, who writes it, who reads it? If you can't defend a field, it shouldn't be in the schema. The state design is the architecture. Everything else is implementation detail.
+
+---
+
+## Next in this series
+
+**#3 — Better models alone won't ship your agent (2025)**. Chase's central argument in every interview and keynote since 2024: the gap between prototype and production is orchestration, not model capability. What we run before calling an agent production-ready.
