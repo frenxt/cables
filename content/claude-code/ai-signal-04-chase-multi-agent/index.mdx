@@ -1,0 +1,99 @@
+---
+title: 'Harrison Chase: better models alone won''t ship your AI agent — and what actually does'
+slug: ai-signal-04-chase-multi-agent
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: intermediate
+last_verified: '2026-04-17'
+series: ai-signal-series
+series_title: Signal from the Timeline
+series_order: 4
+series_total: 5
+tags:
+  - harrison-chase
+  - langchain
+  - langgraph
+  - multi-agent
+  - production
+time_required: 7 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "VentureBeat: LangChain CEO argues better models alone won't ship agents"
+    url: https://venturebeat.com/orchestration/langchains-ceo-argues-that-better-models-alone-wont-get-your-ai-agent-to
+  - label: "Harrison Chase on Deep Agents — ODSC keynote coverage"
+    url: https://opendatascience.com/harrison-chase-on-deep-agents-the-next-evolution-in-autonomous-ai
+  - label: "LangChain three-year reflection post"
+    url: https://blog.langchain.com/three-years-langchain/
+---
+
+# Signal from the Timeline #4: Harrison Chase on what actually ships multi-agent systems
+
+*A recurring series: we pull a post or talk from an AI leader, add live commentary from our production work, and ship it as a Cables entry.*
+
+---
+
+## The argument
+
+> "Better models alone won't get your AI agent to production."
+>
+> — **Harrison Chase** ([LangChain blog](https://blog.langchain.com/author/harrison/) · [VentureBeat interview](https://venturebeat.com/orchestration/langchains-ceo-argues-that-better-models-alone-wont-get-your-ai-agent-to)), CEO of LangChain, 2025
+
+Chase has been consistent on this point across multiple public appearances. The full argument: the gap between "it works in a notebook" and "it works at scale with real users" is not primarily a model capability gap. It's an orchestration gap — state management, error recovery, human-in-the-loop checkpoints, memory, and observability.
+
+His framing for production agents: planning, memory, subagents, file systems, context/token management, and code execution. The model is one component. The harness is the product.
+
+---
+
+## What we heard
+
+This is the most important thing to understand about the multi-agent market right now. Every team we talk to has prototypes. Almost none have production. The failure mode is identical: they improved the model, the prompt, or the data — but they never built the orchestration layer.
+
+The model is the CPU. You still need the operating system.
+
+---
+
+## What we actually do with this
+
+We have a five-layer checklist we run against every agent architecture before we call it production-ready. It maps directly to the gaps Chase describes:
+
+| Layer | What we check |
+|---|---|
+| State management | Can the agent resume from any checkpoint? Does state serialize cleanly? |
+| Error recovery | What happens on tool failure? Does the agent retry, escalate, or halt? |
+| Human-in-the-loop | Where are the required approval gates? Are they enforced in the graph? |
+| Memory | What context persists across sessions? What gets pruned and when? |
+| Observability | Is every agent step traced? Can we replay a failed session? |
+
+A prototype that passes none of these is a demo. A system that passes all five is a production candidate.
+
+---
+
+## The LangGraph connection
+
+We use LangGraph for every multi-agent engagement. The reason is exactly what Chase describes: LangGraph forces you to think in state machines. Every node is explicit. Every edge is a decision. There is no magic routing that works in a demo and fails in production.
+
+The InterviewLM system was 8 agents, 100+ concurrent sessions, sub-2s p99 latency. None of that was achievable without the orchestration layer. We built the model-swapping logic, the prompt caching, and the evaluation harness on top of LangGraph. The models (Claude Sonnet/Haiku routed by task complexity) were almost interchangeable by the time we finished — the hard work was in the graph.
+
+---
+
+## On "deep agents"
+
+Chase's term for the next generation: agents that come with planning, memory, subagents, and a virtual filesystem built in. His examples include production deployments at LinkedIn, Uber, J.P. Morgan, and BlackRock.
+
+The pattern we see at those scales: a single long-lived agent session that orchestrates many short-lived specialist subagents. The long-lived session holds the plan and the state. The subagents do the work and return results. This is exactly what we built for InterviewLM — the coordinator agent was long-lived, each interviewer persona was a subagent scoped to a single session.
+
+---
+
+## The one thing to steal from this
+
+Before your next demo-to-production scoping conversation, ask: what happens when a tool fails mid-session? If the answer is "the agent errors out and the user has to start over," you have a prototype, not a product. Error recovery is the difference.
+
+---
+
+## Next in this series
+
+**Signal #5** — Andrej Karpathy on LLMs as the kernel of a new operating system: the 2023 framing that predicted everything we're building now.
