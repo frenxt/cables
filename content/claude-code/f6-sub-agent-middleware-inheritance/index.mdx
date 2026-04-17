@@ -1,0 +1,121 @@
+---
+title: "Sub-agents are the same agent, smaller"
+slug: "f6-sub-agent-middleware-inheritance"
+tool: "claude-code"
+track: "founder"
+category: "agent-architecture"
+tags: ["subagents", "langgraph", "middleware", "monorepo", "production-ai"]
+difficulty: "advanced"
+time_required: "22 min"
+artifact_type: null
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-17"
+source_links:
+  - { label: "LangGraph multi-agent patterns", url: "https://langchain-ai.github.io/langgraph/concepts/multi_agent/" }
+---
+
+# Sub-agents are the same agent, smaller
+
+When you add sub-agents to a production LangGraph system, the instinct is to build them as a separate agent type with its own state schema, its own graph structure, and its own infrastructure. That instinct is wrong, and following it creates two codebases to maintain instead of one. The right architecture reuses everything — same `create_agent()`, same `AgentState`, same tool implementations — with three things different: the tool set, the system prompt, and the middleware list.
+
+<WarStory title="We designed a custom sub-agent framework before reading our own code">
+Our initial sub-agent design had a separate `SubAgentState` schema, a separate `create_sub_agent()` builder function, and custom tool wrappers that translated between state schemas. We spent two days on the design doc before a team member pointed out that all five sub-agents — explorer, coder, shell, validator, designer — needed the same sandbox access, the same file operation tools, the same token tracking, and the same error handling that the main agent already had. We had been designing around the existing infrastructure rather than into it. The production implementation is 54 lines of builder code that calls the existing `create_agent()` directly.
+</WarStory>
+
+## What we tried
+
+Our main agent had accumulated significant infrastructure: 25+ middleware covering model selection, prompt caching, tool filtering, content stripping, error handling, workflow tracking, and token billing. It had a 65-field `AgentState` schema validated against a PostgreSQL checkpointer. The agent was built with `create_agent()` from `langchain.agents`.
+
+The first sub-agent design treated this as a problem. Sub-agents don't need most of those 65 state fields. They don't need the full middleware chain. They shouldn't reuse the main agent's thread or checkpoint history. So the initial approach was to build lighter parallel infrastructure: a `SubAgentState` with only the fields sub-agents needed, a `create_sub_agent()` function with a simpler interface, and custom tool wrappers.
+
+The problem was immediately apparent in testing: sub-agents writing files needed the same Modal sandbox access as the main agent, which required the same `volume_attachment_middleware`. They needed `model_selection_middleware` for runtime model routing. They needed `token_tracking_middleware` for billing. They needed `tool_state_updates_middleware` to handle tools that return state updates. Every time we added a capability to the custom sub-agent infrastructure, we were re-implementing something that already existed in the main agent.
+
+## What happened
+
+The correct architecture uses `create_agent()` unchanged, with `AgentState` unchanged, passing a restricted tool list and a focused system prompt:
+
+```python
+def build_sub_agent(config: SubAgentConfig) -> CompiledStateGraph:
+    model = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        project=settings.google_cloud_project,
+        location=settings.google_cloud_location,
+        vertexai=True,
+    )
+
+    return create_agent(
+        model=model,
+        tools=config.tools,            # Restricted: 3-6 tools vs main agent's 35+
+        system_prompt=config.system_prompt,  # Focused: ~100 lines vs 650+
+        middleware=config.middleware,   # Subset: 12 of 25 middleware
+        state_schema=AgentState,       # Same schema as main agent
+        context_schema=AgentContext,   # Same context as main agent
+    )
+```
+
+Thread isolation — the mechanism that prevents sub-agents from polluting the main agent's conversation history — comes from passing a different `thread_id` at invocation time, not from a different state schema. Each sub-agent invocation gets a derived thread ID: `"project-{project_id}--{agent_type}-{uuid4_short}"`. The LangGraph platform manages the checkpoint chain per thread. Sub-agents have their own isolated message history because they run on a different thread, not because they have different state.
+
+The middleware question required deliberate analysis. The main agent's 25 middleware can be divided into three categories:
+
+**Essential for execution** (included in sub-agents): model selection, tool filtering, content stripping, error handling, prompt caching, sandbox attachment, workflow tracking, token tracking, tool state updates. These are infrastructure. Sub-agents need them to execute correctly.
+
+**Main agent orchestration** (excluded): turn guidance, summarization, memory injection, plan state persistence, message persistence, checkpoint backup, job context initialization. These are workflow management specific to the main agent's long-running session. Sub-agents are short-lived; they don't need session continuity.
+
+**UI and persistence** (excluded): message persistence to Supabase, design document injection, integration preferences. These are concerns of the main agent's user-facing session, not a focused sub-agent.
+
+The resulting sub-agent middleware list is 12 of 25: a deliberate, documented subset, not a parallel implementation.
+
+```python
+def build_sub_agent_middleware() -> list:
+    middleware = []
+    middleware.append(content_stripping_middleware)
+    middleware.append(streaming_error_handler_middleware)
+    middleware.append(dynamic_tool_filter_middleware)
+    middleware.append(model_selection_middleware)
+    middleware.append(thinking_block_sanitization_middleware)
+    middleware.append(attachment_format_middleware)
+    middleware.append(tool_pair_validation_middleware)
+    if settings.enable_prompt_caching:
+        middleware.append(anthropic_caching_middleware)
+    middleware.append(volume_attachment_middleware)
+    # After-model
+    middleware.append(workflow_tracking_middleware)
+    middleware.append(token_tracking_middleware)
+    middleware.append(tool_state_updates_middleware)
+    return middleware
+```
+
+Each sub-agent is then a module-level graph that the LangGraph platform can register and invoke by name:
+
+```python
+# src/sub_agents/agents/coder.py
+graph = build_sub_agent(SubAgentConfig(
+    agent_type=SubAgentType.CODER,
+    model_tier=ModelTier.HIGH,  # HIGH → geminiPro, LOW → gemini flash
+    tools=[write_file, read_file, search_files, delete_file],
+    system_prompt=CODER_SYSTEM_PROMPT,
+    max_turns=20,
+    middleware=build_sub_agent_middleware(),
+))
+```
+
+Five sub-agents — explorer, coder, shell, validator, designer — are each defined in ~25 lines. The LangGraph platform registers them via `langgraph.json` alongside the main agent graph.
+
+## What we learned
+
+- **Thread ID is the isolation mechanism, not state schema.** Sub-agents share the same `AgentState` as the main agent. Isolation between conversations comes from distinct `thread_id` values, which the LangGraph platform uses to maintain separate checkpoint chains.
+- **Middleware is a dependency list, not a monolith.** Categorize each middleware as infrastructure (sub-agents need it), orchestration (main agent only), or persistence (main agent only). The result is a documented subset, not a parallel implementation.
+- **Model routing by tier defers the cost/quality tradeoff.** Defining `ModelTier.HIGH` and `ModelTier.LOW` with a `MODEL_TIER_MAP` lets you start with the same model on both tiers and split later when you have production quality and cost data. Don't pre-optimize model selection before you have benchmarks.
+- **Concurrency reveals hidden global state.** When multiple sub-agents run in parallel they share a Python process, which exposed race conditions in global dictionaries and module-level caches that were safe under single-agent execution. The middleware's tool format cache, the turn counter, and the sandbox registry all needed locks. These bugs would never have appeared in single-agent testing.
+- **The `ALLOWED_STATE_UPDATE_FIELDS` allowlist applies to sub-agents too.** Sub-agents use the same `tool_state_updates_middleware`. Any tool that returns a `state_updates` key in its result must have its fields in the allowlist, or updates are silently dropped. This applies to sub-agent tools just as it does to main agent tools. Discovering a missing field from a sub-agent tool's result is harder to debug because the sub-agent thread is separate from the main conversation.
+
+## When this doesn't fit
+
+- **Sub-agents with genuinely different state requirements.** If your sub-agents need state fields that would conflict with the main agent's schema, or if their persistence model is fundamentally different (e.g., they write to a different database), a shared schema becomes a liability.
+- **Large teams where sub-agent ownership diverges.** If separate teams own the main agent and sub-agents with different release cadences, shared infrastructure creates coupling. The convenience of reuse becomes a coordination cost.
+- **Agents where the full middleware chain is lightweight.** If your main agent has 3-4 middleware rather than 25, the shared vs. separate question matters less. This pattern has highest leverage when the existing middleware chain is substantial.
+
+## Result
+
+The five sub-agent graphs — each ~25 lines of definition code — reuse the full tool implementations, sandbox integration, model routing, error handling, billing tracking, and state management infrastructure of the main agent. The LangGraph platform's thread model provides isolation without requiring schema changes. Parallel sub-agent execution introduced race conditions in six locations across the codebase (global caches, sandbox registry, event sequence counter) that required explicit asyncio and threading locks — none of which would have been discovered without parallelism. Those were shipped as Phase 1 requirements before parallel execution was enabled. The architecture now supports up to 5 concurrent sub-agents per session on a shared Modal sandbox with serialized package manager operations and validated non-overlapping file paths.

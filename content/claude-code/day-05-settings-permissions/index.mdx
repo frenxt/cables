@@ -1,0 +1,82 @@
+---
+title: "Permissions and your first settings.json"
+slug: "day-05-settings-permissions"
+tool: "claude-code"
+track: "fundamentals"
+day: 5
+category: "configuration"
+tags: ["settings", "permissions", "allowlist", "tool-approvals"]
+difficulty: "beginner"
+time_required: "10 min"
+artifact_type: null
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-17"
+source_links:
+  - { label: "Claude Code settings reference", url: "https://docs.claude.com/en/docs/claude-code" }
+---
+
+# Day 5: Permissions and your first settings.json
+
+Every tool call Claude Code makes — a bash command, a file write, an MCP server call — pauses by default and waits for your approval. That's the right default. It's also death by a thousand interruptions if you never tune it.
+
+<WarStory title="We approved npm run lint 40 times in one day">
+Early on we were running long refactor sessions and letting Claude Code handle the loop: make change, lint, check types, repeat. Every single `npm run lint` and `git status` required a keypress. By the end of the day one of us had approved the same two commands over forty times. We weren't reviewing anything — we were just pressing Y out of habit. Pressing Y forty times isn't a safety control, it's a ritual that creates the illusion of one.
+</WarStory>
+
+## What we tried
+
+We created a `.claude/settings.json` file in the project root and added an allowlist for the commands we approved every time without thinking.
+
+The file looks like this:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm run typecheck)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)"
+    ]
+  }
+}
+```
+
+We also set up a global version at `~/.claude/settings.json` for commands that made sense across every project:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls*)",
+      "Bash(cat*)",
+      "Bash(pwd)"
+    ]
+  }
+}
+```
+
+The pattern for a rule is `ToolName(command-pattern)`. Wildcards (`*`) match anything after the prefix. That means `Bash(git log*)` allows `git log`, `git log --oneline`, `git log -p` — but not `git push`.
+
+## What happened
+
+The friction disappeared almost immediately for the commands we added. Claude Code moved through lint-typecheck-fix cycles without pausing, which is exactly what you want when you're watching it work through a large change.
+
+The unexpected part: removing the interruptions made it easier to notice the ones that remained. When Claude Code paused to ask, we paid attention — because it wasn't asking constantly anymore. The approval prompts that stayed were actually doing something.
+
+We also discovered there's a project-level settings file and a global one, and they merge. Project-level rules apply to that repo. Global rules apply everywhere. We'd been putting everything in project-level out of habit, when several rules belonged globally.
+
+## What we learned
+
+- Separate read-only commands from write commands. Read-only commands — `git status`, `git diff`, `git log`, `ls`, `cat` — are almost always safe to allow. Write commands require judgment. Add them to the allowlist only when you've decided they're low-risk in your specific project context.
+- `settings.json` lives at `.claude/settings.json` for project-level rules and `~/.claude/settings.json` for global rules. Both files merge. Project rules take precedence where they conflict.
+- Never auto-allow destructive operations. `rm -rf`, `git reset --hard`, `git push --force`, deploy scripts — these should always pause and ask. The cost of a misfire is too high, and you're not approving these dozens of times per day anyway.
+- If you want Claude Code to help you audit your own settings, use the `less-permission-prompts` skill. It reads your recent transcripts, finds the commands you approve most often, and proposes allowlist entries. It's a good bootstrap for a new project.
+- Treat the allowlist as a living file. Add things when you notice you're approving them reflexively. Remove things if the project changes and a command becomes risky in a new context.
+
+## Next
+
+- **Day 6** — Using Claude Code with git.

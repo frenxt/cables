@@ -1,0 +1,76 @@
+---
+title: "Autonomous browser QA with browser-use"
+slug: "day-08-browser-qa"
+tool: "claude-code"
+track: "fundamentals"
+day: 8
+category: "testing"
+tags: ["browser-qa", "e2e", "automation", "browser-use"]
+difficulty: "intermediate"
+time_required: "14 min"
+artifact_type: null
+has_war_story: true
+contributors: ["@frenxt"]
+last_verified: "2026-04-17"
+source_links:
+  - { label: "browser-use docs", url: "https://docs.browser-use.com" }
+  - { label: "Deeper cable: browser-use-qa (25 min)", url: "https://www.frenxt.com/cables/claude-code/browser-use-qa" }
+---
+
+# Day 8: Autonomous browser QA with browser-use
+
+Passing unit tests are not the same as a working product. We learned this the hard way, and it cost a blocked release and a late-night rollback.
+
+<WarStory title="The button was there. It just didn't work.">
+After a CSS refactor that passed all unit tests and API checks, a checkout button became visually present but completely non-interactive — a z-index regression buried it under a transparent overlay. No automated test caught it. The first browser-use run caught it in 90 seconds and told us exactly where to look.
+</WarStory>
+
+## What we tried
+
+`browser-use` is a Python library that gives Claude Code control of a real browser — navigate, click, fill forms, read UI state, report what a human user would experience. We set it up to verify our three highest-risk user journeys after every significant UI change.
+
+First, we needed a Python virtualenv. `browser-use` requires Python 3.11+ and Playwright's browser binaries. We created an isolated environment before touching anything else:
+
+```bash
+python3 -m venv .venv-qa
+source .venv-qa/bin/activate
+pip install browser-use playwright
+playwright install chromium
+```
+
+Then we wrote a minimal instruction file — not a full test suite, just a plain-language description of the journey we wanted verified:
+
+```
+Check out as a returning user:
+1. Go to /shop
+2. Add the first product to cart
+3. Proceed to checkout
+4. Fill in the test card details (4242 4242 4242 4242, any future date, any CVC)
+5. Confirm the order confirmation page loads
+Report any step where the flow breaks or behaves unexpectedly.
+```
+
+We asked Claude Code to run that journey via browser-use against our staging URL. It navigated, clicked, filled fields, and returned a natural language report. No assertion errors, no test framework boilerplate — just "step 3 failed: the checkout button is not responding to clicks."
+
+## What happened
+
+The first surprise was how different the failure output felt. Instead of `AssertionError: expected 200, got 404`, we got a paragraph describing exactly what a confused user would experience. That made triage faster — we didn't have to decode a stack trace, we just read the report.
+
+The second surprise was that browser-use found the z-index issue on the very first run, before we'd finished setting up the rest of the QA workflow. We'd been living with that bug for three days without realizing it.
+
+We also discovered that full-site crawls are a mistake at this stage. The first time we pointed browser-use at "verify the whole app," it ran for 20 minutes, produced a wall of output, and we couldn't prioritize any of it. Narrowing to two or three specific journeys made results immediately actionable.
+
+## What we learned
+
+- Browser-use is for user journey verification, not unit testing — it answers "does the UI work for a human," which Playwright assertions and API tests cannot
+- Start with your two or three highest-risk flows, not a full-site crawl; broad scope produces noise that buries real failures
+- Set up a Python virtualenv before your first run — browser-use needs its own clean environment and Playwright binaries separate from your project dependencies
+- The output is natural language failure notes, not assertion errors; this is a feature, not a limitation — it's easier to triage and share with non-engineers
+
+## Going deeper
+
+This cable is the entry point. The standalone cable [**Autonomous browser QA with browser-use**](/cables/claude-code/browser-use-qa) covers the full setup: skill packaging, screenshot capture on failure, seed data, and running browser-use on a schedule. Read that when you're ready to turn this from a one-off check into a repeatable part of your release process.
+
+## Next
+
+- **Day 9** — Your first subagent.

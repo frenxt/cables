@@ -8,7 +8,7 @@ tags: ["skills", "standardization", "scale"]
 difficulty: "beginner"
 time_required: "11 min"
 artifact_type: null
-has_war_story: false
+has_war_story: true
 contributors: ["@frenxt"]
 last_verified: "2026-04-15"
 source_links:
@@ -18,6 +18,10 @@ source_links:
 # F4: Skills that scale past solo usage
 
 Most skills fail at team scale because they are written for one person's assumptions.
+
+<WarStory title="Skills built for one person got ignored by everyone else">
+We had eleven skills in the shared library. Three of us were using the same two regularly; the other nine were rarely touched. When we asked why, the answer was consistent: the unused skills assumed context that wasn't obvious — a specific file structure, a variable that needed setting before running, an output format that only made sense if you'd written the skill yourself. One engineer said it felt like running someone else's shell alias. The skills weren't bad; they just weren't written for a reader who wasn't the author.
+</WarStory>
 
 ## What we tried
 
@@ -37,3 +41,7 @@ Reuse went up and onboarding time dropped because teammates could run the same s
 - Skills should encode team standards, not personal style.
 - Structured outputs make downstream review faster.
 - Prune aggressively: one high-quality skill is better than five vague ones.
+
+## Result
+
+We went from eleven skills to five. Usage rate on the remaining five went from sporadic to near-daily across the team. The two skills that got used most were the most narrowly scoped: one for generating typed API response handlers, one for writing test stubs from a function signature. The broader ones — a "write a component" skill, a "refactor this module" skill — kept getting ignored. Too much assumed context, too little specified input. The honest lesson is that skills which feel powerful when you write them often feel ambiguous to everyone else. The bar we now use before adding a skill: can a teammate run it cold, with no explanation, and get a result they'd commit?

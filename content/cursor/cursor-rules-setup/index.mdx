@@ -1,0 +1,80 @@
+---
+title: "Set up Cursor Rules for your project"
+slug: "cursor-rules-setup"
+tool: "cursor"
+track: "fundamentals"
+category: "onboarding"
+difficulty: "beginner"
+time_required: "15 min"
+last_verified: "2026-04-17"
+contributors: ["@frenxt"]
+tags: ["cursor-rules", "setup", "configuration", "mdc"]
+---
+
+# Set up Cursor Rules for your project
+
+Cursor without rules is a capable assistant that doesn't know your project. Cursor with well-written rules is an assistant that already knows your stack, conventions, and constraints before you type a word. The setup takes fifteen minutes. The payoff is every session that follows.
+
+## What we tried
+
+We started by dumping everything about our project into a single rules file. Stack details, naming conventions, architectural decisions, testing patterns, preferred libraries. It was thorough. It was also too long — Cursor was technically aware of everything, but the rules were so dense they seemed to dilute each other.
+
+## What happened
+
+We split the rules by concern: one rule for stack and conventions, one for testing, one for commit standards. Shorter, more focused rules applied more reliably than one long one.
+
+## What we learned
+
+**The new rules format (`.cursor/rules/`):**
+
+Cursor moved from a single `.cursorrules` file to a directory of `.mdc` files. The new format is more powerful — rules can be scoped to specific file patterns and toggled on per-session.
+
+```
+your-project/
+└── .cursor/
+    └── rules/
+        ├── project.mdc       ← always-on project context
+        ├── testing.mdc       ← applies to *.test.ts files
+        └── commits.mdc       ← applies when writing commit messages
+```
+
+**MDC file structure:**
+
+```markdown
+---
+description: Project stack and conventions
+globs: []
+alwaysApply: true
+---
+
+# Stack
+
+Next.js 15 App Router, TypeScript strict, Tailwind CSS v4.
+Path alias: @/* → src/*.
+
+# Conventions
+
+- Functional components only
+- `cn()` from src/lib/utils.ts for conditional class names
+- No inline styles
+- No `any` without a comment
+```
+
+**Key frontmatter fields:**
+
+- `alwaysApply: true` — rule loads in every chat and Composer session
+- `globs` — array of file patterns that trigger this rule (e.g. `["**/*.test.ts"]`)
+- `description` — shown in the rules picker; be specific
+
+**Start with one rule:**
+
+Don't create five rules on day one. Create one — the stack and conventions rule, set `alwaysApply: true`. Use it for a week. Add rules only when you catch Cursor making the same mistake twice. That mistake is telling you what rule to write next.
+
+**Verify it's loading:**
+
+In any Cursor chat, type `@rules` to see which rules are active for the current file and session. If your rule isn't listed, check the frontmatter syntax — a YAML error silently prevents loading.
+
+## Next
+
+- **Next cable** — Migrating from `.cursorrules` to the new rules format.
+- **Next cable** — Team Cursor rules: sharing conventions across a multi-developer project.

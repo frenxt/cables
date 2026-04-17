@@ -1,0 +1,81 @@
+---
+title: "Migrate from .cursorrules to Cursor Rules"
+slug: "cursor-rules-migration"
+tool: "cursor"
+track: "fundamentals"
+category: "configuration"
+difficulty: "beginner"
+time_required: "10 min"
+last_verified: "2026-04-17"
+contributors: ["@frenxt"]
+tags: ["cursorrules", "migration", "mdc", "cursor-rules"]
+---
+
+# Migrate from .cursorrules to Cursor Rules
+
+Cursor deprecated the `.cursorrules` file in favor of `.cursor/rules/` in late 2024. The old format still works, but it doesn't support scoping, per-session toggling, or file-pattern matching. If you're still on `.cursorrules`, the migration takes under ten minutes and you come out with more control than you had before.
+
+## What we tried
+
+We had a `.cursorrules` file that had grown to two hundred lines over six months. It covered stack conventions, testing patterns, commit messages, and a long list of anti-patterns to avoid. The migration forced us to actually read it again. Half of it was outdated. A third of it was things Cursor would have done correctly anyway.
+
+## What happened
+
+We deleted the outdated sections, split the rest into three focused rule files, and ended up with something shorter and more effective than what we started with. The migration was also a cleanup.
+
+## What we learned
+
+**Step 1 — Read your existing file:**
+
+Before migrating, read every line of your `.cursorrules`. Remove anything that:
+- Describes your stack in a way Cursor can infer from your files (e.g., "use TypeScript" in a TypeScript project)
+- Is outdated and no longer reflects how you work
+- You added once and never noticed making a difference
+
+What's left is worth migrating.
+
+**Step 2 — Create the rules directory:**
+
+```bash
+mkdir -p .cursor/rules
+```
+
+**Step 3 — Split by concern:**
+
+Don't migrate everything into one `.mdc` file — you'll end up with the same problem you had before. Split by concern. A common starting split:
+
+| File | Contains | `alwaysApply` | `globs` |
+|------|----------|---------------|---------|
+| `project.mdc` | Stack, file placement, naming | `true` | `[]` |
+| `testing.mdc` | Test patterns, coverage expectations | `false` | `["**/*.test.*", "**/*.spec.*"]` |
+| `commits.mdc` | Commit message format | `false` | `[]` |
+
+**Step 4 — MDC format:**
+
+```markdown
+---
+description: Stack and naming conventions
+globs: []
+alwaysApply: true
+---
+
+Your project conventions here.
+```
+
+**Step 5 — Verify, then delete the old file:**
+
+Open a Cursor chat, type `@rules`, confirm your new rules are listed. Run a few sessions. When you're confident the new rules are working, delete `.cursorrules`:
+
+```bash
+rm .cursorrules
+git rm .cursorrules
+```
+
+Commit the deletion separately from the new rules so the migration is clean in git history.
+
+**What `.cursorrules` can't do that `.mdc` can:**
+
+- Scope rules to file patterns — testing rules apply only to test files
+- Toggle rules per-session from the rules picker
+- Multiple focused rule files instead of one growing file
+- Rule descriptions visible in the UI

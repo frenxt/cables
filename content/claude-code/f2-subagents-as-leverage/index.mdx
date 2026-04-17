@@ -20,7 +20,7 @@ source_links:
 Subagents improved throughput only after we redesigned task boundaries.
 
 <WarStory title="Parallelism without ownership created rework">
-At first, we delegated broad tasks to multiple subagents and spent more time merging than building. Clear file ownership changed that.
+We had three subagents working on a feature simultaneously. One wrote to a shared utility file, another rewrote the same function differently, and the third assumed a function signature that hadn't been finalized. The merge took longer than building the feature from scratch would have. The problem wasn't parallelism — it was that we'd assigned overlapping ownership.
 </WarStory>
 
 ## What we tried
@@ -36,3 +36,7 @@ Cycle time dropped and review quality improved because each delegated output had
 - Delegate bounded work, not ambiguous work.
 - Assign one owner for final integration.
 - Measure leverage by lead time and rework rate, not output volume.
+
+## Result
+
+Lead time on feature branches dropped from an average of three days to under one day for bounded tasks. The change wasn't purely about subagents — it was about task design. We now scope every task before delegating: clear input, clear output shape, clear file boundary. That habit changed how we wrote tickets too. The rework rate went from roughly one in three delegated tasks requiring major revision to about one in eight.

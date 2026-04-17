@@ -20,7 +20,7 @@ source_links:
 Treating `CLAUDE.md` as personal notes undermines team consistency.
 
 <WarStory title="Local edits broke shared expectations">
-One engineer updated project rules locally, another followed the old flow, and CI caught policy mismatches late.
+One engineer had quietly updated their local CLAUDE.md to skip a linting step they found noisy. Another engineer, onboarding that week, followed the committed version and got confused when the first engineer's PRs came through without the expected lint output. A third opened a PR that CI rejected for a policy that only existed in one person's local file. We found out during standup, not during review. Three people, three different effective contracts, one shared repo.
 </WarStory>
 
 ## What we tried
@@ -36,3 +36,7 @@ Decision quality improved because guidance stayed synchronized with real deliver
 - `CLAUDE.md` should be reviewed, versioned, and owned.
 - Keep policy explicit: what to do, what not to do, and why.
 - A living contract is more valuable than a long static handbook.
+
+## Result
+
+Once we moved CLAUDE.md into the PR review cycle, the volume of "how do we handle X" Slack messages dropped — not to zero, but from several per week to roughly one or two per sprint. PR approvals got faster because reviewers could point to a line in the contract instead of re-litigating style decisions in comments. The maintenance burden is real though: the file has to be updated when decisions change, and that discipline is easy to skip under deadline pressure. We've had the file fall two or three sprints behind reality before someone flagged it. The contract only works if the team treats updating it as part of finishing a decision, not as documentation to write later.

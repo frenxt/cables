@@ -1,0 +1,90 @@
+---
+title: "Your first GEMINI.md"
+slug: "gemini-cli-gemini-md-basics"
+tool: "gemini-cli"
+track: "fundamentals"
+category: "configuration"
+difficulty: "beginner"
+time_required: "15 min"
+last_verified: "2026-04-17"
+contributors: ["@frenxt"]
+tags: ["gemini-md", "configuration", "context", "gemini-cli"]
+---
+
+# Your first GEMINI.md
+
+Every session without a `GEMINI.md` starts from zero. You re-explain your stack. You re-explain your conventions. You catch mistakes that your context would have prevented. A well-written `GEMINI.md` makes those problems disappear.
+
+## What we tried
+
+We started with a long, detailed `GEMINI.md` that tried to document everything about the project. It was four hundred words. Gemini CLI read it, but the early parts of each session felt sluggish — as if it was spending tokens reconciling too much context before it could move.
+
+We cut it to the essentials. Session quality improved.
+
+## What happened
+
+The right length for a project `GEMINI.md` is the minimum that prevents the most common mistakes and re-explanations. For most projects, that's under 150 words. If you're writing more than that, ask whether it belongs in a comment in the code instead.
+
+## What we learned
+
+**Where it lives:**
+
+```
+your-project/
+└── GEMINI.md        ← project-level, checked into git
+~/.gemini/GEMINI.md  ← user-level, applies to all projects
+```
+
+Gemini CLI loads both. The project-level file takes precedence on conflicts. Put project conventions in the project file; put personal preferences (response style, verbosity) in the user-level file.
+
+**What to put in it:**
+
+```markdown
+# Project context
+
+Next.js 15 App Router + TypeScript (strict). Path alias: @/* → src/*.
+Tailwind CSS v4. No test framework configured.
+
+# Conventions
+
+- Use `cn()` from src/lib/utils.ts for conditional class names
+- Components go in src/components/, never in src/app/
+- No comments unless the WHY is non-obvious
+- Commit messages: imperative, under 72 chars, no bullet lists
+
+# Do not
+
+- Suggest class components (we use hooks only)
+- Add `console.log` debug statements without removing them
+- Create new files when editing an existing one solves the problem
+```
+
+**Key sections that pay off:**
+
+1. **Stack summary** — one line: language, framework, major libraries. Prevents wrong API suggestions.
+2. **Conventions** — the three to five rules that, if violated, create rework. Not everything; just the expensive ones.
+3. **Do not** — explicit prohibitions work better than implicit conventions for common AI anti-patterns.
+
+**What to leave out:**
+
+- Architecture overview (Gemini CLI reads the files; it will figure it out)
+- Complete dependency list (it reads `package.json`)
+- Instructions it would follow anyway (e.g., "use TypeScript" in a `.ts` project)
+
+**Tool permissions:**
+
+Gemini CLI asks permission before running shell commands by default. If you trust your project environment and want faster sessions, add to `~/.gemini/settings.json`:
+
+```json
+{
+  "coreTools": {
+    "shell": { "autoApprove": true }
+  }
+}
+```
+
+Do this per-project, not globally, until you understand what commands it tends to run.
+
+## Next
+
+- **Next cable** — Team GEMINI.md: shared conventions for multi-developer projects.
