@@ -1,0 +1,108 @@
+---
+title: "Organizing Suites & Personas"
+slug: "qa-agent-suites-personas"
+tool: "qa-agent"
+track: "user-guide"
+category: "test-organization"
+difficulty: "intermediate"
+time_required: "25 min"
+artifact_type: null
+has_war_story: true
+contributors: ["frenxt"]
+last_verified: "2026-04-17"
+series: "qa-agent-guides"
+series_title: "QA Agent — Complete Guide"
+series_order: 5
+series_total: 7
+tags: ["qa", "suites", "personas", "authentication", "organization"]
+source_links:
+  - { label: "QA Agent on GitHub", url: "https://github.com/frenxt/qa-agent" }
+---
+
+# Organizing Suites & Personas
+
+A flat folder of 30 test cases becomes unmanageable fast. Suites and personas are how you keep it structured.
+
+## What you'll learn
+
+- How to structure test suites for a real product
+- How personas handle authenticated flows without login steps in every spec
+- How to use tags for targeted runs
+
+<WarStory title="How TheBlueOne ended up with 9 suites">
+We started with one suite called `smoke`. After three weeks it had 40 tests and `run --suite smoke` took 22 minutes. We split by product area — `auth`, `billing`, `dashboard`, `onboarding`, `checkout`, `admin`, `api-surface`, `mobile-pwa`, `smoke`. Each suite now runs in under 8 minutes. The `smoke` suite kept only the 12 tests that block a deploy. Everything else runs nightly or on-demand before a release.
+</WarStory>
+
+## Suite structure
+
+A suite is a directory under `tests/`. The directory name is the suite name:
+
+```
+tests/
+  smoke/          # 10-15 critical-path tests, runs on every deploy
+  auth/           # sign-in, sign-up, password reset, session expiry
+  billing/        # subscription upgrade, downgrade, payment failure
+  dashboard/      # core feature flows for logged-in users
+  onboarding/     # new-user first-session flows
+```
+
+### Design principles
+
+**`smoke`** should run in under 5 minutes. Include only tests that would block a deploy if they fail.
+
+**Feature suites** (auth, billing, etc.) should be cohesive: a developer owns the feature and can own the suite. When a feature changes, one person knows which suite needs updating.
+
+**Don't duplicate** tests across suites. If a checkout test needs a logged-in user, it belongs in `checkout` with `persona: free-user`, not duplicated in both `auth` and `checkout`.
+
+## Personas
+
+A persona represents a user state — their authentication level and saved credentials. The three built-in personas:
+
+| persona | auth state | credential file |
+|---------|-----------|-----------------|
+| `unauthenticated` | no session | none |
+| `free-user` | signed in as a free account | `personas/free-user.json` |
+| `pro-user` | signed in as a paid account | `personas/pro-user.json` |
+
+### Setting up a persona
+
+Run the auth command once per persona to capture a session:
+
+```bash
+python cli.py auth --persona free-user --email testuser@example.com --password secret123
+```
+
+This opens a browser, signs in with the given credentials, and saves the session cookies to `personas/free-user.json`. QA Agent loads this file at the start of every test that uses the `free-user` persona, so the agent starts the test already logged in.
+
+Regenerate persona files whenever sessions expire (typically every 30 days or after a password change).
+
+### Using personas in test cases
+
+Set `persona` in the test metadata:
+
+```markdown
+- **persona**: free-user
+```
+
+The agent starts the browser with the saved session. Steps can assume the user is already authenticated — no need to write "Navigate to /login, enter credentials, click sign in" in every test.
+
+## Tags for targeted runs
+
+Tags let you run a subset of tests across suites:
+
+```bash
+python cli.py run --tag critical       # run all critical-priority tests
+python cli.py run --tag billing        # run all billing-tagged tests
+python cli.py run --tag smoke,critical # run tests tagged smoke OR critical
+```
+
+Tag conventions that work well in practice:
+
+- `smoke` — safe to include in CI
+- `critical` — must pass before any production deploy
+- `release` — full coverage run before a release
+- `<feature-name>` — scoped to one product area for targeted runs after a feature change
+
+## What's next
+
+[Cable 6: How QA Agent Works (Architecture) →](/cables/qa-agent/qa-agent-architecture)

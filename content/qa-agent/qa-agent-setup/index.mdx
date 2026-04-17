@@ -1,0 +1,122 @@
+---
+title: "Setting Up QA Agent"
+slug: "qa-agent-setup"
+tool: "qa-agent"
+track: "user-guide"
+category: "setup"
+difficulty: "beginner"
+time_required: "15 min"
+artifact_type: null
+has_war_story: false
+contributors: ["frenxt"]
+last_verified: "2026-04-17"
+series: "qa-agent-guides"
+series_title: "QA Agent — Complete Guide"
+series_order: 2
+series_total: 7
+tags: ["qa", "setup", "python", "installation"]
+source_links:
+  - { label: "QA Agent on GitHub", url: "https://github.com/frenxt/qa-agent" }
+  - { label: "browser-use docs", url: "https://docs.browser-use.com" }
+---
+
+# Setting Up QA Agent
+
+From zero to running your first automated browser test in 15 minutes.
+
+## What you'll learn
+
+- How to clone and install QA Agent
+- Which environment variables are required
+- How to run the smoke test to confirm everything works
+
+## Prerequisites
+
+- Python 3.11 or newer (`python3 --version`)
+- Git
+- An API key for at least one supported model provider (see Step 3)
+
+## Step 1: Clone the repository
+
+```bash
+git clone https://github.com/frenxt/qa-agent.git
+cd qa-agent
+```
+
+## Step 2: Create a virtual environment
+
+Always use a venv to keep QA Agent's dependencies isolated from your system Python:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate   # on Windows: .venv\Scripts\activate
+pip install -e .
+```
+
+## Step 3: Install the browser
+
+QA Agent uses Chromium via `browser-use`. Install it once:
+
+```bash
+browser-use install
+```
+
+This downloads Chromium to a cache directory managed by Playwright. It takes a minute on a fresh machine.
+
+## Step 4: Set your API key
+
+Copy the example env file:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set one of the following. QA Agent checks them in this order:
+
+```bash
+QA_LLM_API_KEY=sk-...          # recommended: OpenRouter key (access to all models)
+# OPENROUTER_API_KEY=sk-or-... # alternative: explicit OpenRouter key
+# OPENAI_API_KEY=sk-...        # fallback: direct OpenAI key
+```
+
+The default model is `google/gemini-3.1-flash-lite-preview` via OpenRouter. This is the model used across 480+ production spec runs — it balances speed and accuracy well for UI testing.
+
+## Step 5: Configure your base URL
+
+Open `config.yaml` and set `base_url` to the URL of the product you want to test:
+
+```yaml
+base_url: http://localhost:3000   # your local dev server
+```
+
+For a first run against a live site, you can point it at any public URL.
+
+## Step 6: Run the smoke test
+
+```bash
+python cli.py run --suite smoke
+```
+
+This runs the bundled smoke suite against your `base_url`. You should see output like:
+
+```
+Running suite: smoke
+[1/2] Homepage loads ... PASS (12.3s)
+[2/2] 404 page renders ... PASS (8.1s)
+
+Report saved: reports/2026-04-17-smoke-01/index.html
+```
+
+Open the HTML report to see the full run with screenshots.
+
+## Troubleshooting
+
+**`browser-use: command not found`** — run `pip install -e .` again inside your venv, then `browser-use install`.
+
+**`API key not set` error** — confirm `.env` exists in the project root and has at least one of the three keys from Step 4.
+
+**`base_url` connection refused** — start your local dev server first, then run QA Agent.
+
+## What's next
+
+[Cable 3: Writing Your First Test Case →](/cables/qa-agent/qa-agent-first-test)

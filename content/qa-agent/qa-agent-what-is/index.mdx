@@ -1,0 +1,84 @@
+---
+title: "What is QA Agent?"
+slug: "qa-agent-what-is"
+tool: "qa-agent"
+track: "user-guide"
+category: "onboarding"
+difficulty: "beginner"
+time_required: "5 min"
+artifact_type: null
+has_war_story: false
+contributors: ["frenxt"]
+last_verified: "2026-04-17"
+series: "qa-agent-guides"
+series_title: "QA Agent — Complete Guide"
+series_order: 1
+series_total: 7
+tags: ["qa", "browser-testing", "automation", "overview"]
+source_links:
+  - { label: "QA Agent on GitHub", url: "https://github.com/frenxt/qa-agent" }
+---
+
+# What is QA Agent?
+
+Code changes land fast. Your QA process shouldn't be the bottleneck.
+
+## What you'll learn
+
+- What QA Agent does and why markdown test specs beat code-based tests
+- How it fits into a real product workflow
+- When to reach for it versus Playwright or Cypress
+
+## The core idea
+
+QA Agent is an autonomous browser testing runner. You write test cases in plain markdown. QA Agent reads them, opens a real browser, executes the steps using an AI model (Gemini 3.1 Flash Lite by default), captures screenshots and screen recordings, and produces an HTML report with pass/fail results and visual evidence.
+
+The key design choice: test specs are written in product language, not code. A spec looks like this:
+
+```markdown
+# Checkout flow completes successfully
+
+- **persona**: free-user
+- **priority**: high
+- **tags**: checkout, critical
+
+## Steps
+
+1. Navigate to /cart
+2. Add the first product to the cart
+3. Click "Proceed to checkout"
+4. Verify the order summary is visible
+
+## Expected
+
+- Cart shows correct item count
+- Order summary displays correct totals
+- No console errors during the flow
+```
+
+This means a non-engineer can read and review a test case. More importantly, the spec survives a UI refactor — if a button's label changes from "Proceed to checkout" to "Review order", you update one line of markdown, not a selector chain spread across multiple test files.
+
+## How it runs
+
+QA Agent uses `browser-use` under the hood, which drives a real Chromium instance. The AI model interprets each step in the spec and translates it into browser actions — clicks, navigation, form fills, assertions. At the end of every run it generates:
+
+- An **HTML report** with per-test pass/fail, timing, and failure notes
+- **Screenshots** at each step
+- **GIFs and videos** of the full browser session
+- **Structured failure notes** with the exact step, reason, and a screenshot path
+
+## When to use QA Agent
+
+Use it when:
+- You want to verify user-facing flows before a release without writing and maintaining Playwright suites
+- Your team wants QA coverage that non-engineers can read and expand
+- You need visual evidence of failures, not just a red/green result
+
+Use Playwright or Cypress instead when:
+- You need sub-second CI performance (QA Agent runs at human browser speed)
+- You need to test deeply technical internal APIs or WebSocket behaviour
+- You already have a mature, maintained selector-based suite
+
+## What's next
+
+[Cable 2: Setting Up QA Agent →](/cables/qa-agent/qa-agent-setup)

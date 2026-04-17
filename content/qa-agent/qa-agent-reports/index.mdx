@@ -1,0 +1,120 @@
+---
+title: "Running Tests & Reading Reports"
+slug: "qa-agent-reports"
+tool: "qa-agent"
+track: "user-guide"
+category: "running-tests"
+difficulty: "intermediate"
+time_required: "20 min"
+artifact_type: null
+has_war_story: true
+contributors: ["frenxt"]
+last_verified: "2026-04-17"
+series: "qa-agent-guides"
+series_title: "QA Agent — Complete Guide"
+series_order: 4
+series_total: 7
+tags: ["qa", "reports", "html-report", "cli"]
+source_links:
+  - { label: "QA Agent on GitHub", url: "https://github.com/frenxt/qa-agent" }
+---
+
+# Running Tests & Reading Reports
+
+A green result is only useful if you trust it. A red result is only useful if you can debug it fast.
+
+## What you'll learn
+
+- The full set of `run` command options
+- What the HTML report contains and how to read it
+- How to share reports with your team
+
+<WarStory title="107 tests, 33 failures, one release decision in under an hour">
+Before a major release on TheBlueOne, we ran all 338 specs across 9 suites. The full run took 47 minutes and surfaced 33 failures. Without visual evidence we would have spent a day triaging from logs alone. The HTML report had screenshots and GIFs for every failure — the team resolved 28 of them as known regressions to defer, flagged 5 as blockers, and shipped the release same day. The visual evidence is what made that conversation fast.
+</WarStory>
+
+## The `run` command
+
+### Run a full suite
+
+```bash
+python cli.py run --suite smoke
+```
+
+Runs every `.md` file inside `tests/smoke/`. Suites run in parallel — the default is 3 concurrent browser sessions (configurable in `config.yaml` under `parallel`).
+
+### Run a single file
+
+```bash
+python cli.py run --file tests/smoke/homepage-loads.md
+```
+
+Useful when writing or debugging a new test case.
+
+### Run by tag
+
+```bash
+python cli.py run --tag critical
+```
+
+Runs all test cases across all suites that have the matching tag in their metadata.
+
+### Run in headed mode
+
+```bash
+python cli.py run --suite smoke --headed
+```
+
+Opens a visible browser window. Use this when developing test cases or investigating failures.
+
+### View the latest report
+
+```bash
+python cli.py report --latest
+```
+
+Opens the most recently generated HTML report in your default browser.
+
+## Reading the HTML report
+
+The report has three sections:
+
+### Summary bar
+
+Shows total tests, pass count, fail count, skip count, total duration, and the timestamp. This is what you screenshot for a release sign-off.
+
+### Per-test timeline
+
+Each test gets its own card with:
+- **Status badge** — PASS (green), FAIL (red), or SKIP (grey)
+- **Duration** — how long the test took
+- **Step log** — each step the agent executed, in order, with its interpretation
+- **Screenshots** — one per step, shown inline
+- **Failure note** (on FAIL) — structured text: which step failed, the agent's reasoning, and the screenshot path
+
+A typical failure note:
+
+```
+Step failed: "Click 'Proceed to checkout'"
+Reason: Element matched selector but returned pointer-events: none
+Screenshot: reports/2026-04-17-checkout-01/step-4.png
+Reproduction: Load /cart with free-user persona, add item, proceed to checkout
+```
+
+### GIF / video evidence
+
+At the bottom of each test card is a GIF of the full browser session. Share this directly in a Slack thread or Linear issue — no need for anyone to reproduce the failure locally to understand what happened.
+
+## Sharing reports
+
+Reports are static HTML files in the `reports/` directory. Options for sharing:
+
+**For team review:** Commit the report directory to a `qa-reports` branch and share the GitHub URL, or upload the folder to any static host.
+
+**For release pipelines:** Use the built-in Supabase uploader (`python cli.py report --upload`) if you have `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` set in `.env`. This uploads the report and returns a public URL.
+
+**For Linear integration:** Set `linear.create_issues: true` in `config.yaml`. QA Agent will automatically open a Linear issue for each failing test, attaching the failure note and GIF.
+
+## What's next
+
+[Cable 5: Organizing Suites & Personas →](/cables/qa-agent/qa-agent-suites-personas)

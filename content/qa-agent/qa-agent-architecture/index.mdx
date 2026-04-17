@@ -1,0 +1,131 @@
+---
+title: "How QA Agent Works (Architecture)"
+slug: "qa-agent-architecture"
+tool: "qa-agent"
+track: "contributor-guide"
+category: "architecture"
+difficulty: "intermediate"
+time_required: "20 min"
+artifact_type: null
+has_war_story: true
+contributors: ["frenxt"]
+last_verified: "2026-04-17"
+series: "qa-agent-guides"
+series_title: "QA Agent — Complete Guide"
+series_order: 6
+series_total: 7
+tags: ["qa", "architecture", "internals", "browser-use"]
+source_links:
+  - { label: "QA Agent on GitHub", url: "https://github.com/frenxt/qa-agent" }
+  - { label: "browser-use docs", url: "https://docs.browser-use.com" }
+---
+
+# How QA Agent Works (Architecture)
+
+Before contributing, understand what runs when you type `python cli.py run --suite smoke`.
+
+## What you'll learn
+
+- The execution pipeline from CLI command to HTML report
+- What each module in `qa_agent/` does
+- How the agent makes pass/fail decisions
+- Which integration points are extension-friendly
+
+<WarStory title="Why we chose markdown specs over Python test files">
+Early prototypes used Python test functions. After two sprints the test suite had diverged from what the product team expected — the functions had accumulated implementation detail that only engineers could read. Switching to markdown specs closed that gap. The product manager started reading test cases during sprint reviews. When a spec was wrong, they caught it. That feedback loop was worth the tradeoff in IDE tooling.
+</WarStory>
+
+## Execution pipeline
+
+```
+CLI command
+    │
+    ▼
+cli.py (entry point)
+    │  parses --suite / --file / --tag flags
+    │
+    ▼
+runner.py (RunnerService)
+    │  resolves test files, manages parallelism (asyncio + semaphore)
+    │
+    ▼
+parser.py (parse_test_case)
+    │  reads markdown, extracts title, persona, priority, tags, steps, expected
+    │
+    ▼
+agent_factory.py (build_agent)
+    │  creates browser-use Agent with the configured LLM
+    │  loads persona session cookies if persona != unauthenticated
+    │
+    ▼
+browser-use Agent (executes steps)
+    │  each step → LLM call → browser action
+    │  screenshots captured at every step
+    │
+    ▼
+hooks.py (on_step_end, on_done)
+    │  captures screenshots, GIFs, video via Playwright
+    │
+    ▼
+reporter.py (generate_report)
+    │  builds HTML report from run results
+    │
+    ▼
+linear_reporter.py / supabase_uploader.py (optional)
+    │  creates Linear issues for failures, uploads report
+    │
+    ▼
+HTML report on disk
+```
+
+## Module responsibilities
+
+| File | Responsibility |
+|------|---------------|
+| `cli.py` | Argument parsing, command dispatch (`run`, `auth`, `report`, `release`) |
+| `runner.py` | Parallel test execution, result aggregation |
+| `parser.py` | Markdown test case parsing → structured `TestCase` dataclass |
+| `agent_factory.py` | Constructs browser-use `Agent` with LLM config and persona session |
+| `hooks.py` | Step-level callbacks: screenshots, GIF/video recording |
+| `reporter.py` | HTML report generation from `RunResult` objects |
+| `auth.py` | Interactive persona session capture and persistence |
+| `linear_reporter.py` | Linear issue creation for failing tests |
+| `sentry_reporter.py` | Sentry event correlation (links test failures to error events) |
+| `supabase_uploader.py` | Report upload to Supabase Storage |
+| `release_runner.py` | CSV-driven release pipeline: reads a test manifest, runs specified suites, generates a consolidated report |
+| `csv_parser.py` | Parses release CSV format into runnable test batches |
+| `custom_tools.py` | Custom browser-use tools (extended actions available to the agent) |
+
+## How pass/fail works
+
+QA Agent does not use assertions in the traditional sense. Instead:
+
+1. The agent executes every step in the `## Steps` section
+2. At the end of the run, the agent evaluates the `## Expected` section against what it observed
+3. If all expected outcomes are satisfied, the test passes. If any are not, the test fails with a structured failure note explaining which expectation was not met and why
+
+This means the AI model is both the executor and the judge. For most UI flows this works well. For precise numeric or time-based assertions ("price must be exactly $29.00"), be explicit in the Expected section to reduce ambiguity.
+
+## LLM configuration
+
+The model is set in `config.yaml`:
+
+```yaml
+llm:
+  model: google/gemini-3.1-flash-lite-preview
+  base_url: https://openrouter.ai/api/v1
+```
+
+`agent_factory.py` constructs the `ChatOpenAI`-compatible client from these values. To swap models, change `model` in `config.yaml`. Any OpenRouter-compatible model ID works.
+
+## Integration points
+
+The cleanest places to extend QA Agent:
+
+- **New integrations** (Jira, GitHub Issues, Slack) — add a module alongside `linear_reporter.py`, implement a `report(run_result)` function, and call it from `runner.py` after the run completes
+- **Custom agent tools** — add browser actions to `custom_tools.py` (e.g., drag-and-drop, file upload helpers)
+- **Custom report formats** — replace or extend `reporter.py` for JSON output, CSV summaries, or custom HTML templates
+
+## What's next
+
+[Cable 7: Contributing to QA Agent →](/cables/qa-agent/qa-agent-contribute)

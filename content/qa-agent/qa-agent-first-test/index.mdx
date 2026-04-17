@@ -1,0 +1,123 @@
+---
+title: "Writing Your First Test Case"
+slug: "qa-agent-first-test"
+tool: "qa-agent"
+track: "user-guide"
+category: "test-authoring"
+difficulty: "beginner"
+time_required: "20 min"
+artifact_type: null
+has_war_story: false
+contributors: ["frenxt"]
+last_verified: "2026-04-17"
+series: "qa-agent-guides"
+series_title: "QA Agent — Complete Guide"
+series_order: 3
+series_total: 7
+tags: ["qa", "test-writing", "markdown", "specs"]
+source_links:
+  - { label: "QA Agent on GitHub", url: "https://github.com/frenxt/qa-agent" }
+---
+
+# Writing Your First Test Case
+
+A good test case reads like a conversation between a QA engineer and a developer — not like code.
+
+## What you'll learn
+
+- The anatomy of a QA Agent test case file
+- How to write steps that survive UI changes
+- How to run a single test and read its output
+
+## The test case format
+
+Every test case is a markdown file inside a suite folder. Create your first one:
+
+```bash
+mkdir -p tests/my-suite
+touch tests/my-suite/homepage-loads.md
+```
+
+A test case has three required sections:
+
+```markdown
+# Homepage loads correctly
+
+- **persona**: unauthenticated
+- **priority**: high
+- **tags**: smoke, homepage
+
+## Steps
+
+1. Navigate to /
+2. Verify the main heading is visible
+3. Verify no console errors appear
+
+## Expected
+
+- Page renders without a blank screen
+- Primary CTA button is visible and clickable
+```
+
+### Title
+
+The first line (`# Title`) is both the test name shown in reports and what the AI uses to understand the test's intent. Be specific: "Homepage loads correctly" is better than "Test 1".
+
+### Metadata
+
+- **persona** — the user context for this test. Options: `unauthenticated`, `free-user`, `pro-user`. QA Agent loads the corresponding credentials from `personas/`. Start with `unauthenticated` for public flows.
+- **priority** — `critical`, `high`, `medium`, or `low`. Used to filter runs and prioritise triage.
+- **tags** — comma-separated. Used to run targeted subsets (`python cli.py run --tag smoke`).
+
+### Steps
+
+Write steps in plain imperative language. The AI model interprets them:
+
+- **Good:** `Click "Sign in"` — references visible UI text
+- **Good:** `Verify the dashboard heading shows "Welcome back"`
+- **Avoid:** `Click button[data-testid="login-btn"]` — selectors break on refactors and the AI doesn't need them
+- **Avoid:** `Wait 2 seconds` — the agent handles timing automatically
+
+### Expected
+
+List what success looks like. These become the pass/fail criteria the agent checks at the end of the run.
+
+## Writing steps that survive refactors
+
+The biggest advantage of prose steps is resilience. When a button's label changes from "Get started" to "Start free trial", update one line. When a nav item moves, update the step description — you don't hunt for selectors.
+
+Practical rules:
+1. Reference what the user *sees*, not what's in the DOM
+2. Describe intent: "Complete the sign-in flow" rather than "Click the submit button on line 3 of the form"
+3. Keep each step to one action
+
+## Run your test
+
+```bash
+python cli.py run --file tests/my-suite/homepage-loads.md --headed
+```
+
+`--headed` opens a visible browser window so you can watch what the agent does on the first run. Once you're confident the steps are interpreted correctly, drop `--headed` for faster headless runs.
+
+Output:
+
+```
+Running: tests/my-suite/homepage-loads.md
+[homepage-loads] PASS (15.2s)
+
+Report saved: reports/2026-04-17-my-suite-01/index.html
+```
+
+Open the HTML report. You'll see a timeline of browser actions with screenshots at each step.
+
+## Common first-run issues
+
+**The agent gets stuck on a cookie banner** — add a step: `Dismiss any cookie consent banner if present`. The AI handles conditional UI well.
+
+**A step fails because an element loads slowly** — add `Wait for the page to fully load` as the first step after navigation. The agent will wait for the visible state before proceeding.
+
+**The test passes but the report shows a step differently than expected** — read the agent's reasoning in the report. Rewrite the step to be more explicit if the interpretation was wrong.
+
+## What's next
+
+[Cable 4: Running Tests & Reading Reports →](/cables/qa-agent/qa-agent-reports)
