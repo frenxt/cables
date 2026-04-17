@@ -20,7 +20,7 @@ source_links:
 The hardest part of team rollout was not tooling, it was consistency.
 
 <WarStory title="Six workflows, one repo, zero shared defaults">
-In week one, everyone used a different prompt style and branch workflow. Output quality varied by person, not by task type.
+Three engineers were using Claude Code daily; three were using it occasionally. The three daily users had each built their own prompt habits — different ways to ask for tests, different branch naming, different approaches to commit messages. On code review, the diff quality told you who wrote it before you checked the author. That's the opposite of what shared tooling should do.
 </WarStory>
 
 ## What we tried
@@ -40,3 +40,7 @@ Adoption stabilized quickly because expectations were explicit. New teammates on
 - Team rollout is a process design problem first.
 - Shared conventions beat individual prompt craftsmanship.
 - Weekly review loops prevent silent drift.
+
+## Result
+
+Week-one output variance dropped noticeably — the clearest signal was PR review time, which shortened because reviewers could predict code shape before reading the diff. New hires referenced the CLAUDE.md instead of asking questions we'd answered before. The weekly review loop ran well for about six weeks, then drifted when the person running it changed roles. We rebuilt it as a thirty-minute async ritual, which held.

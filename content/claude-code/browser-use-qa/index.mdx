@@ -7,7 +7,7 @@ day: null
 category: "testing"
 tags: ["browser-qa", "e2e", "automation"]
 difficulty: "intermediate"
-time_required: "25 min"
+time_required: "28 min"
 artifact_type: "skill"
 has_war_story: true
 contributors: ["@frenxt"]
@@ -26,21 +26,53 @@ Backend checks were green while a checkout button became non-interactive after a
 
 ## What we tried
 
-We installed a browser QA skill and ran it against the top three user flows:
+We set up browser-use inside a Python virtualenv to keep it isolated from the project's Node dependencies:
 
-- sign-in
-- checkout
-- settings update
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install browser-use
+playwright install chromium
+```
+
+Then we invoked the browser QA skill from Claude Code, passing it three user journey descriptions — not URLs. The skill takes natural-language flow descriptions as input, not a sitemap. Each description read like a short user story: "Sign in with test account, verify dashboard loads, sign out." We ran in headed mode first (`BROWSER_USE_HEADLESS=false`) so we could watch what the agent was actually doing and catch obvious prompt issues early. Once the flows were stable we switched to headless for CI.
+
+Authentication was the trickiest part. We pre-seeded session cookies by logging in manually, exporting cookies to `tests/fixtures/auth.json`, and loading them at the start of each run. This meant the agent skipped the login wall and could focus on the flow itself without consuming tokens re-authenticating on every run.
+
+We ran it against three flows: sign-in, checkout, and settings update.
 
 ## What happened
 
-The skill produced reproducible failure notes with clear reproduction paths instead of vague "it broke" reports.
+Each run produced a structured failure note when something went wrong. A typical note looked like this:
+
+```
+Flow: checkout
+Step failed: "Click 'Proceed to payment'"
+Reason: Element matched but returned pointer-events: none
+Screenshot: runs/2026-04-15/checkout-step-4.png
+Reproduction: Load /cart with seed fixture, add item, proceed to checkout
+```
+
+That format made triage fast — we knew the exact step, the CSS property causing it, and had a screenshot to share.
+
+False positives did appear. The most common cause was timing: the agent would attempt to click a button before a loading spinner resolved. We saw this on the checkout confirmation screen which delayed ~800 ms under test conditions. Retrying the step once eliminated most of them. We also saw a false positive on a modal that the agent expected to close but was instead replaced by a second confirmation dialog — the agent interpreted this as failure rather than a two-step flow.
+
+Across three flows, a full run took roughly 4–6 minutes in headed mode and 2–3 minutes headless. Results were consistent run-to-run as long as the seed dataset and auth state were stable. With a flaky network or a cold server the variance was wider.
 
 ## What we learned
 
-- Start with high-value user journeys, not full-site crawls.
-- Capture screenshots only on failure to keep reports readable.
-- Keep one stable seed dataset for deterministic QA runs.
+- Start with high-value user journeys, not full-site crawls. browser-use is slow relative to a unit test — save it for the flows where a real user would feel the breakage.
+- Capture screenshots only on failure. Logging every step produces hundreds of images and slows the run. Failure-only screenshots stay actionable.
+- Keep one stable seed dataset. Non-deterministic test data (fresh UUIDs, random inventory) is the fastest way to introduce flakiness. One fixture file per flow, committed to the repo.
+- Run browser-use on staging before deploy, not on every commit. AI-driven sessions cost more (time and tokens) than a Playwright assertion. Use them for pre-deploy checks or scheduled overnight runs, not as a commit gate.
+- Handle auth state explicitly. Letting the agent log in fresh each run wastes tokens and introduces a second point of failure. Pre-seeded cookies or a test-account session token are both fine — just make the auth step declarative rather than implicit.
+- Understand where browser-use ends and Playwright begins. browser-use is AI-driven and takes natural-language flow descriptions — it handles ambiguity well but is slower and less precise. Playwright is code-driven with explicit selectors and assertions — faster, cheaper, and deterministic. Use browser-use to discover what to test; write Playwright tests to lock in what you've found.
+
+## When this doesn't fit
+
+- **Unit-testable logic**: browser-use adds overhead for logic you can verify with a function call. Use it only for flows requiring real UI interaction.
+- **High-frequency CI runs**: AI-driven browser sessions are slower and more expensive than Playwright assertions. Use browser-use for scheduled or pre-deploy checks, not every commit.
+- **Performance testing**: browser-use measures functional correctness, not load time or Core Web Vitals. Use Lighthouse or k6 for those.
+- **Deeply nested interaction sequences**: flows with more than 8–10 steps tend to accumulate errors. Break complex journeys into smaller checkpoints.
 
 ## Next
 

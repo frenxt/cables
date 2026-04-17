@@ -1,0 +1,72 @@
+---
+title: "Install Gemini CLI and run your first prompt"
+slug: "gemini-cli-setup"
+tool: "gemini-cli"
+track: "fundamentals"
+category: "onboarding"
+difficulty: "beginner"
+time_required: "10 min"
+last_verified: "2026-04-17"
+contributors: ["@frenxt"]
+tags: ["setup", "install", "gemini-cli", "google"]
+---
+
+# Install Gemini CLI and run your first prompt
+
+The first time we ran Gemini CLI we expected it to behave like a browser-based chat. It doesn't. It's a terminal agent that reads your project, runs commands, and edits files — the same category as Claude Code, not the same category as gemini.google.com.
+
+## What we tried
+
+We installed it, opened a project directory, and typed a question. It answered. Then we typed an instruction to edit a file. It edited it, explained what it did, and waited for the next instruction. That's the loop.
+
+## What happened
+
+The thing that surprised us was how much context it picked up without being told. It reads the directory structure, infers the stack from config files, and adjusts its answers accordingly. A bare question like "how should I add auth?" landed differently in a Next.js project than in a Flask project — without us specifying anything.
+
+## What we learned
+
+**Install:**
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+Requires Node.js 18+. Verify with:
+
+```bash
+gemini --version
+```
+
+**Authenticate:**
+
+```bash
+gemini auth
+```
+
+Opens a browser OAuth flow. One-time setup per machine. Uses your Google account — no separate API key needed for personal use. For team or CI use, set `GEMINI_API_KEY` instead.
+
+**Run it:**
+
+```bash
+cd your-project
+gemini
+```
+
+Always start from your project root. Gemini CLI reads files relative to where you launch it. Starting from `~` gives it no useful context.
+
+**First useful action:**
+
+Type `/help` to see all slash commands. The ones worth knowing immediately:
+
+- `/tools` — list what it can do (read files, run shell, search web)
+- `/memory` — show what it's retaining across turns
+- `/stats` — token usage for the current session
+- `@filename` — attach a specific file to your next prompt
+
+**GEMINI.md:**
+
+The single highest-leverage thing you can do on day one is create a `GEMINI.md` in your project root. Gemini CLI reads it automatically on every session start. Without it, you re-explain your stack, conventions, and constraints on every session. Day 2 covers what to put in it.
+
+## Next
+
+- **Next cable** — Your first GEMINI.md: what to put in it and why.

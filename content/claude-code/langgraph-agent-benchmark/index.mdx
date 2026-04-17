@@ -7,9 +7,9 @@ day: null
 category: "performance"
 tags: ["langgraph", "benchmarking", "evaluation"]
 difficulty: "advanced"
-time_required: "30 min"
+time_required: "35 min"
 artifact_type: "skill"
-has_war_story: false
+has_war_story: true
 contributors: ["@frenxt"]
 last_verified: "2026-04-15"
 source_links:
@@ -18,7 +18,15 @@ source_links:
 
 # Benchmark a LangGraph agent
 
-You cannot optimize what you do not measure. For agent systems, that means evaluating both quality and execution cost.
+You cannot optimize what you do not measure. For agent systems, that means evaluating both quality and execution cost — and doing it per task class, not in aggregate.
+
+<WarStory title="We shipped the cheaper model and lost 30% of our quality evals">
+We benchmarked two models on aggregate metrics — average latency and average token cost. The cheaper model won both. We shipped it.
+
+Within a week, users were reporting that complex refactoring tasks produced incomplete outputs. The issue was that our average included many simple tasks where both models performed equally well. On complex tasks alone — multi-file refactors, debugging from an error message, adding test coverage to unfamiliar code — the cheaper model failed 30% of the time.
+
+We hadn't benchmarked by task class. Our aggregate numbers looked fine because simple tasks outnumbered complex ones four-to-one in our test set. The four-to-one ratio reflected our test set composition, not our users' actual workload distribution. We had optimized for the wrong thing.
+</WarStory>
 
 ## What we tried
 
@@ -29,15 +37,90 @@ We built a benchmark harness with fixed workloads and scored:
 - success rate per task class
 - tool-call failure rate
 
+**What a fixed workload looks like:**
+
+A fixed workload is a versioned set of task prompts with expected outputs, stored in-repo under `benchmarks/datasets/`. Each entry has three fields:
+
+```json
+{
+  "task_id": "refactor-extract-function-001",
+  "task_class": "multi_file_refactor",
+  "prompt": "Extract the validate_user function from auth.py into a new validators.py module and update all call sites.",
+  "acceptance_criteria": [
+    "validators.py exists and contains validate_user",
+    "auth.py no longer defines validate_user",
+    "all original call sites updated"
+  ]
+}
+```
+
+The acceptance criteria are what you score against. We tried exact-match output comparison first — it was too brittle. A correct refactor can produce valid output in multiple forms. We moved to LLM-as-judge.
+
+**The LLM-as-judge pattern:**
+
+For each completed task, we pass the agent's output and the acceptance criteria to a separate Claude call:
+
+```python
+def score_output(task, agent_output):
+    judge_prompt = f"""
+You are evaluating whether an agent's output meets acceptance criteria.
+
+Task: {task['prompt']}
+Acceptance criteria:
+{chr(10).join(f"- {c}" for c in task['acceptance_criteria'])}
+
+Agent output:
+{agent_output}
+
+For each criterion, respond with PASS or FAIL and a one-sentence reason.
+Then give an overall PASS or FAIL.
+"""
+    response = claude.complete(judge_prompt)
+    return parse_judge_response(response)
+```
+
+This is slower and costs tokens, but it handles the variance in correct outputs that exact-match can't. We use a separate, stable model version for judging so our judge doesn't change between benchmark runs.
+
+**The harness structure:**
+
+```
+benchmarks/
+  datasets/
+    simple_edit_v1.jsonl
+    multi_file_refactor_v1.jsonl
+    debug_from_error_v1.jsonl
+    add_test_coverage_v1.jsonl
+  run_benchmark.py       # runs all tasks, records traces, scores outputs
+  results/
+    2026-04-15-sonnet-4-5.json
+    2026-04-15-sonnet-4-6.json
+```
+
+`run_benchmark.py` runs each task, captures the LangSmith trace ID, scores the output via the judge, and writes a result record. We re-run benchmarks after model version changes, after major prompt changes, and before any model swap decision — not on every PR.
+
 ## What happened
 
 A slower variant outperformed on quality for high-stakes tasks, while a cheaper variant won on low-risk tasks. One default model was not enough.
 
+What we also found: tool-call failure rate was the most predictive single metric for user-reported quality issues. A model could score well on output quality for the tasks it completed, but if it was silently failing tool calls on 8% of complex tasks and returning a partial result anyway, users noticed. Aggregate success rate masked this because most tasks don't involve the failing tool call pattern.
+
 ## What we learned
 
-- Benchmark by task class, not global averages.
-- Record trace-level failures to explain score drops.
-- Keep benchmark datasets versioned in-repo.
+- **Benchmark by task class, not global averages.** We define four task classes for our agent: "simple file edit", "multi-file refactor", "debug from error message", and "add test coverage". Each class has different model performance characteristics. A model that wins on simple edits may lose badly on multi-file refactors. A single score hides this.
+
+- **p50 vs p95 latency tells you different things.** p50 tells you what users typically experience — the median case. p95 tells you the slow tail — what the unlucky 5% experience on any given request. For interactive agents, p95 matters more than p50 because a slow tail on a coding task feels like the agent hung. We alert on p95 > 45 seconds for our most complex task class. p50 is informative but rarely drives decisions on its own.
+
+- **Record trace-level failures to explain score drops.** A score drop without a trace is just a number. A score drop with a trace that shows the agent calling a tool twice with identical inputs is a diagnosis. We log the LangSmith trace URL alongside every FAIL result so we can investigate without re-running.
+
+- **Keep benchmark datasets versioned in-repo.** Dataset drift is a silent killer of benchmark validity. If you add easier tasks to your dataset between runs, scores go up for no real reason. We version datasets by appending `_v1`, `_v2` to filenames and never modify existing versions — only add new ones.
+
+- **How often to re-run.** We re-run after: any model version change (including patch versions), any prompt change that affects more than one task class, and before any model selection decision. We do not re-run on every PR — it takes 25 minutes and costs about $2 per run. We treat it like an integration test, not a unit test.
+
+## When this doesn't fit
+
+- **Early-stage agents**: if you're still iterating rapidly on your agent's architecture, benchmarking too early locks you into the wrong questions. Wait until your agent handles at least 3 task types reliably before benchmarking. A benchmark built around an architecture you're about to change is wasted work.
+- **One-off CLI tools**: if your agent runs once or twice, systematic benchmarking adds overhead without value. Manual review is enough.
+- **When you don't have a scoring rubric**: a benchmark without defined success criteria produces noise, not signal. If you can't state what "correct" looks like for a task type, don't benchmark it yet — define correct first. The hardest part of benchmarking an agent is not writing the harness, it's writing the acceptance criteria.
 
 ## Next
 

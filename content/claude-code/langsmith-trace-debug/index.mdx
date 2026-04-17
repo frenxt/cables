@@ -7,7 +7,7 @@ day: null
 category: "workflow"
 tags: ["langsmith", "debugging", "trace-analysis"]
 difficulty: "intermediate"
-time_required: "22 min"
+time_required: "25 min"
 artifact_type: "skill"
 has_war_story: true
 contributors: ["@frenxt"]
@@ -22,26 +22,85 @@ When an agent fails, raw logs usually tell us *what* happened, not *why* it happ
 
 <WarStory title="The bug was in a branch we never looked at">
 We spent hours tuning prompts before noticing the tool-call branch was never executed after a guard condition changed. The trace made it obvious in two minutes.
+
+We had added a new routing condition to filter certain request types to a faster path. The condition looked correct in isolation. But in the trace we could see that after the condition evaluated, the agent was returning an empty tool call list instead of proceeding — silently, with no error. We had been reading stack traces and prompt outputs the whole time. The trace showed us the decision point in three clicks.
 </WarStory>
 
 ## What we tried
 
+To instrument a LangGraph agent for LangSmith, set these environment variables before running your agent:
+
+```bash
+export LANGCHAIN_TRACING_V2=true
+export LANGCHAIN_API_KEY=your_key_here
+export LANGCHAIN_PROJECT=your_project_name
+```
+
+That's it for basic tracing. Every LangGraph run will now appear in your LangSmith project dashboard automatically.
+
+For better filtering later, attach metadata to your runs at the call site:
+
+```python
+result = agent.invoke(
+    input,
+    config={
+        "metadata": {
+            "user_id": user_id,
+            "experiment_tag": "v2.3-routing-fix",
+            "task_class": "multi_file_refactor",
+        }
+    }
+)
+```
+
 We used a trace-review skill that forces a consistent walkthrough:
 
-- identify the failing run and expected behavior
+- identify the failing run and its expected behavior
 - isolate the first diverging step
-- inspect tool inputs/outputs at that step
+- inspect tool inputs and outputs at that step
 - classify root cause (prompt, tool contract, retrieval, guardrail, routing)
 
 ## What happened
 
-Once we standardized that sequence, debugging stopped feeling like archaeology. We could move from symptom to concrete fix proposal quickly.
+Once we standardized that walkthrough sequence, debugging stopped feeling like archaeology. But we also learned where the process breaks down.
+
+**Where Claude Code gets it wrong when reading a trace:**
+
+- It tends to focus on the error message at the end of the trace rather than the state that caused it. The error is often a symptom. The cause is usually two or three steps earlier, where the agent received unexpected tool output or made a bad routing decision based on ambiguous context.
+- It misses silent retries. LangGraph can retry tool calls internally without surfacing them as explicit nodes. If a tool call fails and retries silently, the trace shows the eventual result but not the intermediate failure. You have to look at `total_tokens` unexpectedly high for a simple task — that's often the signal that retries happened.
+- It over-weights the first node. The natural reading order is top-to-bottom, but the most expensive or most anomalous node is almost never the first one. We now start every trace review at the highest-latency or highest-token node, not the entry point.
+
+**Concrete walkthrough order we now use:**
+
+1. Open the trace. Check `total_tokens` and `total_latency` at the run level — are they in the expected range for this task type?
+2. Find the highest-cost or highest-latency node. Start there, not at the top.
+3. Look at the inputs to that node. Is the state what you'd expect at that point in the workflow?
+4. Compare against a known-good trace for the same task type. The diff usually shows the divergence immediately.
+5. Paste the JSON of the diverging node into Claude Code context and ask: "This is a LangGraph node input/output. The agent was supposed to do X. What does this state tell you about why it didn't?"
+
+**What a good trace looks like versus a bad one at a glance:**
+
+A good trace: token counts increase steadily across nodes, tool calls have tight input/output pairs, no node has dramatically higher latency than its neighbours, and the final state matches the task's expected output structure.
+
+A bad trace: one node consumes 60%+ of total tokens (prompt bloat or retrieval dumping too much context), a tool call node has an output that's an error object but the agent continues anyway, or the same tool is called twice with identical inputs (the agent is stuck in a loop — look for `tool_name` repeating with `tool_input` identical across two consecutive calls).
 
 ## What we learned
 
-- Always compare a failing trace against a known-good trace.
-- Treat routing decisions as first-class failure points.
-- Save root-cause notes in the repo so future regressions are faster to triage.
+- **Always compare a failing trace against a known-good trace.** The diff is almost always more informative than reading either trace in isolation. We keep a folder of reference traces for our three most common task types and paste them side-by-side when debugging.
+
+- **Treat routing decisions as first-class failure points.** Routing nodes are often written once and forgotten. They rarely have test coverage. A routing condition that evaluates to the wrong branch produces a confident-looking trace that proceeds entirely on the wrong path — no errors, wrong outcome.
+
+- **Look for the loop signal.** An agent stuck in a loop shows repeated tool calls with identical inputs. In LangSmith, this appears as two consecutive nodes of the same type where the `tool_input` field is character-for-character identical. The agent is not making progress — it's waiting for a different output from the same call. The fix is almost always in the tool's output schema or the prompt's interpretation of empty/error results.
+
+- **Save root-cause notes in the repo.** We maintain a `debug-notes/` folder with a one-paragraph write-up for each non-obvious bug we've traced. When a similar symptom appears six months later, the note surfaces in Claude Code context search. This has saved us from re-investigating the same routing bug three times.
+
+- **Attach metadata before you need it.** The `experiment_tag` and `task_class` fields feel optional until you're trying to filter 10,000 traces to find the 12 that match a specific workflow variant. Set them from day one.
+
+## When this doesn't fit
+
+- **Single-turn, stateless calls**: LangSmith traces shine for multi-step agent workflows with tool calls and state transitions. For a simple chat completion, just read the API response directly.
+- **Production traces without sampling**: if you're tracing 100% of production traffic, pasting traces into Claude Code context becomes expensive and noisy. Use LangSmith's filter and search to find a representative failing trace first. Tracing everything is fine for storage — the issue is the analysis step, not the collection step.
+- **When the bug is in the tool, not the agent**: traces show what the agent decided. If your tool implementation is wrong, the trace shows correct decisions with wrong outputs — fix the tool, not the prompt. The signal is that the agent's tool call inputs look correct but the outputs don't match what you'd expect from a working tool.
 
 ## Next
 

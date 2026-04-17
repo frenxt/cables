@@ -1,0 +1,74 @@
+---
+title: "Team Cursor Rules: shared conventions for multi-developer projects"
+slug: "cursor-team-rules"
+tool: "cursor"
+track: "fundamentals"
+category: "team-setup"
+difficulty: "intermediate"
+time_required: "20 min"
+last_verified: "2026-04-17"
+contributors: ["@frenxt"]
+tags: ["team", "cursor-rules", "conventions", "onboarding", "mdc"]
+has_war_story: true
+---
+
+# Team Cursor Rules: shared conventions for multi-developer projects
+
+The problem with AI-assisted teams is not that the tools are inconsistent — it's that each developer's tool has a different idea of what "correct" looks like. One person's Cursor knows your naming conventions. Another's doesn't. The code they produce diverges, and you debug it in review.
+
+<WarStory title="Four developers, four different component patterns">
+We had a monorepo where four engineers were using Cursor daily. After three sprints, we noticed something in code review: the same component problem was being solved four different ways. Not wrong ways — just different ones. One person used compound components. One used render props. Two used prop drilling in different shapes. The cause wasn't skill variance; it was context variance. Each developer's Cursor knew what they individually preferred, not what the team had agreed on. We'd never written it down in a place the tool could read.
+</WarStory>
+
+## What we tried
+
+We checked the `.cursor/rules/` directory into the repo. That was the entire fix. Once the project-level rules were in version control, every developer's Cursor read the same conventions. New hires got them automatically on clone.
+
+## What happened
+
+Code review got shorter. Not because we reviewed less carefully, but because the common pattern mismatches — the ones that generated three-comment threads — stopped appearing. The tool was catching them before commit.
+
+## What we learned
+
+**Check `.cursor/rules/` into git:**
+
+This is the most important step. If your rules directory is in `.gitignore`, each developer is running their own version of the project. Remove it from `.gitignore` and commit it:
+
+```bash
+git add .cursor/rules/
+git commit -m "chore: add shared Cursor rules"
+```
+
+**The two-layer model:**
+
+```
+repo/.cursor/rules/    ← checked into git — team contract
+~/.cursor/rules/       ← local only — personal preferences
+```
+
+Cursor merges both. Project rules apply to everyone; personal rules stay local. The split lets you enforce team conventions without dictating personal working style.
+
+**What belongs in the project rules:**
+
+- Code patterns the team has explicitly agreed on (component structure, state management approach)
+- File placement conventions (`components/` vs `features/` vs `modules/`)
+- Import ordering or aliasing rules your linter enforces
+- Anti-patterns that have caused bugs or rework in your project
+
+**What belongs in personal rules:**
+
+- Response style preferences (verbosity, explanation depth)
+- Preferred tools or workflows specific to your machine
+- Personal formatting preferences that don't affect the shared codebase
+
+**Keep the team rules short:**
+
+A shared rules file that nobody reads is worse than no shared rules file. Keep `project.mdc` under 100 words. Put architecture decisions that need explanation in `CONTRIBUTING.md` and `ADR` docs — that's where prose belongs. Rules are constraints, not documentation.
+
+**Onboarding:**
+
+Add a line to your onboarding checklist: "Open `.cursor/rules/` and read the project rules." A new developer who reads them before their first session produces consistent code immediately. Without this step, they produce reasonable code that doesn't match the project.
+
+**Keeping rules current:**
+
+Rules drift when they're not owned. Assign a rule review to the same sprint retro where you discuss code quality. Ask: what did Cursor produce that required rework? If there's a pattern, add a rule. If a rule isn't preventing anything anymore, cut it. A rule that no longer reflects how you work is a source of confusion, not consistency.
