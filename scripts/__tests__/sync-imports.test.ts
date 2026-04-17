@@ -207,4 +207,180 @@ Skill notes.
       })
     ).rejects.toThrow(/suspended/i);
   });
+
+  it("rejects imports that write outside approved install roots", async () => {
+    const repoRoot = makeTempRepoRoot();
+
+    writeJson(join(repoRoot, "publishers", "acme-labs.json"), {
+      id: "acme-labs",
+      name: "Acme Labs",
+      repo: "acme-labs/cables",
+      default_branch: "main",
+      status: "active",
+      tier: "reviewed",
+      contacts: { github: "@acme" },
+    });
+    writeJson(join(repoRoot, "imports", "acme-labs", "bad-target.json"), {
+      publisher_id: "acme-labs",
+      slug: "bad-target",
+      tool: "claude-code",
+      source: {
+        repo: "acme-labs/cables",
+        ref: "4444444444444444444444444444444444444444",
+        path: "content/claude-code/bad-target",
+      },
+    });
+
+    const base =
+      "https://raw.githubusercontent.com/acme-labs/cables/4444444444444444444444444444444444444444/content/claude-code/bad-target";
+    await expect(
+      syncImports({
+        repoRoot,
+        fetchText: makeMockFetch({
+          [`${base}/index.mdx`]: `---
+title: "Bad target"
+slug: "bad-target"
+tool: "claude-code"
+track: "fundamentals"
+category: "workflow"
+difficulty: "beginner"
+last_verified: "2026-04-17"
+contributors: ["@acme"]
+artifact_type: "subagent"
+---
+
+# Bad target
+`,
+          [`${base}/registry.json`]: `{
+  "slug": "bad-target",
+  "artifact_type": "subagent",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    { "source": "artifact/reviewer.md", "target": ".ssh/config", "action": "copy", "on_conflict": "prompt" }
+  ]
+}
+`,
+        }),
+      })
+    ).rejects.toThrow(/approved install roots/i);
+  });
+
+  it("rejects blocked artifact file extensions", async () => {
+    const repoRoot = makeTempRepoRoot();
+
+    writeJson(join(repoRoot, "publishers", "acme-labs.json"), {
+      id: "acme-labs",
+      name: "Acme Labs",
+      repo: "acme-labs/cables",
+      default_branch: "main",
+      status: "active",
+      tier: "reviewed",
+      contacts: { github: "@acme" },
+    });
+    writeJson(join(repoRoot, "imports", "acme-labs", "blocked-ext.json"), {
+      publisher_id: "acme-labs",
+      slug: "blocked-ext",
+      tool: "claude-code",
+      source: {
+        repo: "acme-labs/cables",
+        ref: "5555555555555555555555555555555555555555",
+        path: "content/claude-code/blocked-ext",
+      },
+    });
+
+    const base =
+      "https://raw.githubusercontent.com/acme-labs/cables/5555555555555555555555555555555555555555/content/claude-code/blocked-ext";
+    await expect(
+      syncImports({
+        repoRoot,
+        fetchText: makeMockFetch({
+          [`${base}/index.mdx`]: `---
+title: "Blocked extension"
+slug: "blocked-ext"
+tool: "claude-code"
+track: "fundamentals"
+category: "workflow"
+difficulty: "beginner"
+last_verified: "2026-04-17"
+contributors: ["@acme"]
+artifact_type: "subagent"
+---
+
+# Blocked extension
+`,
+          [`${base}/registry.json`]: `{
+  "slug": "blocked-ext",
+  "artifact_type": "subagent",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    { "source": "artifact/payload.exe", "target": ".claude/agents/payload.exe", "action": "copy", "on_conflict": "prompt" }
+  ]
+}
+`,
+        }),
+      })
+    ).rejects.toThrow(/blocked extension/i);
+  });
+
+  it("rejects imports whose payload exceeds the max size", async () => {
+    const repoRoot = makeTempRepoRoot();
+
+    writeJson(join(repoRoot, "publishers", "acme-labs.json"), {
+      id: "acme-labs",
+      name: "Acme Labs",
+      repo: "acme-labs/cables",
+      default_branch: "main",
+      status: "active",
+      tier: "reviewed",
+      contacts: { github: "@acme" },
+    });
+    writeJson(join(repoRoot, "imports", "acme-labs", "too-large.json"), {
+      publisher_id: "acme-labs",
+      slug: "too-large",
+      tool: "claude-code",
+      source: {
+        repo: "acme-labs/cables",
+        ref: "6666666666666666666666666666666666666666",
+        path: "content/claude-code/too-large",
+      },
+    });
+
+    const base =
+      "https://raw.githubusercontent.com/acme-labs/cables/6666666666666666666666666666666666666666/content/claude-code/too-large";
+    const hugeBody = "A".repeat(600_000);
+    await expect(
+      syncImports({
+        repoRoot,
+        fetchText: makeMockFetch({
+          [`${base}/index.mdx`]: `---
+title: "Too large"
+slug: "too-large"
+tool: "claude-code"
+track: "fundamentals"
+category: "workflow"
+difficulty: "beginner"
+last_verified: "2026-04-17"
+contributors: ["@acme"]
+artifact_type: "subagent"
+---
+
+# Too large
+`,
+          [`${base}/registry.json`]: `{
+  "slug": "too-large",
+  "artifact_type": "subagent",
+  "version": "1.0.0",
+  "requires": [],
+  "files": [
+    { "source": "artifact/huge.md", "target": ".claude/agents/huge.md", "action": "copy", "on_conflict": "prompt" }
+  ]
+}
+`,
+          [`${base}/artifact/huge.md`]: hugeBody,
+        }),
+      })
+    ).rejects.toThrow(/payload is .* max is/i);
+  });
 });

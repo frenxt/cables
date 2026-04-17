@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve, sep } from "node:path";
+import { dirname, join, posix, resolve, sep } from "node:path";
 import matter from "gray-matter";
 import { FrontmatterSchema, RegistrySchema } from "../../schema/entry";
 import {
@@ -21,6 +21,37 @@ export interface SyncImportsResult {
   filesWritten: number;
   destinations: string[];
 }
+
+export const IMPORT_HARDENING_LIMITS = {
+  maxArtifactFiles: 48,
+  maxTotalBytes: 512 * 1024,
+} as const;
+
+const BLOCKED_SOURCE_EXTENSIONS = new Set([
+  ".exe",
+  ".dll",
+  ".so",
+  ".dylib",
+  ".node",
+  ".class",
+  ".jar",
+  ".apk",
+  ".ipa",
+  ".msi",
+  ".deb",
+  ".rpm",
+  ".bin",
+  ".pyc",
+  ".wasm",
+]);
+
+const ALLOWED_INSTALL_TARGETS = [
+  "CLAUDE.md",
+  ".claude/skills/",
+  ".claude/agents/",
+  ".claude/commands/",
+  ".claude/stacks/",
+] as const;
 
 function isSubpath(parent: string, child: string): boolean {
   const p = resolve(parent);
@@ -126,6 +157,46 @@ function rawBaseUrl(manifest: ImportManifest): string {
   return `https://raw.githubusercontent.com/${manifest.source.repo}/${manifest.source.ref}/${manifest.source.path}`;
 }
 
+function normalizeRelativePath(value: string, label: string, slug: string): string {
+  const normalized = posix.normalize(value.replace(/\\/g, "/"));
+  if (normalized.length === 0 || normalized === "." || normalized === "..") {
+    throw new Error(`import ${slug}: ${label} "${value}" is not a valid relative path`);
+  }
+  if (posix.isAbsolute(normalized) || normalized.startsWith("../")) {
+    throw new Error(`import ${slug}: ${label} "${value}" cannot escape the cable root`);
+  }
+  return normalized;
+}
+
+function validateImportFileMapping(manifest: ImportManifest, file: { source: string; target: string }): string {
+  const source = normalizeRelativePath(file.source, "registry source", manifest.slug);
+  const target = normalizeRelativePath(file.target, "registry target", manifest.slug);
+
+  if (!source.startsWith("artifact/")) {
+    throw new Error(
+      `import ${manifest.slug}: registry source "${file.source}" must stay under artifact/`
+    );
+  }
+
+  const ext = posix.extname(source).toLowerCase();
+  if (BLOCKED_SOURCE_EXTENSIONS.has(ext)) {
+    throw new Error(
+      `import ${manifest.slug}: registry source "${file.source}" uses blocked extension "${ext}"`
+    );
+  }
+
+  const allowedTarget = ALLOWED_INSTALL_TARGETS.some((prefix) =>
+    prefix.endsWith("/") ? target.startsWith(prefix) : target === prefix
+  );
+  if (!allowedTarget) {
+    throw new Error(
+      `import ${manifest.slug}: registry target "${file.target}" is outside approved install roots`
+    );
+  }
+
+  return source;
+}
+
 function ensureExpectedImportContract(manifest: ImportManifest, publisher: Publisher): void {
   if (publisher.status === "suspended") {
     throw new Error(`publisher "${publisher.id}" is suspended`);
@@ -151,8 +222,10 @@ async function gatherRemoteFiles(
   ensureExpectedImportContract(manifest, publisher);
   const baseUrl = rawBaseUrl(manifest);
   const files = new Map<string, string>();
+  let totalBytes = 0;
 
   const indexRaw = await fetchText(`${baseUrl}/index.mdx`);
+  totalBytes += Buffer.byteLength(indexRaw, "utf8");
   const parsedMdx = matter(indexRaw);
   const frontmatterParse = FrontmatterSchema.safeParse(parsedMdx.data);
   if (!frontmatterParse.success) {
@@ -201,19 +274,35 @@ async function gatherRemoteFiles(
       );
     }
     const registry = registryParse.data;
+    if (registry.files.length > IMPORT_HARDENING_LIMITS.maxArtifactFiles) {
+      throw new Error(
+        `import ${manifest.slug}: registry.json declares ${registry.files.length} files; max is ${IMPORT_HARDENING_LIMITS.maxArtifactFiles}`
+      );
+    }
+    totalBytes += Buffer.byteLength(registryRaw, "utf8");
     files.set("registry.json", registryRaw.endsWith("\n") ? registryRaw : `${registryRaw}\n`);
 
     for (const file of registry.files) {
-      const sourceRaw = await fetchText(`${baseUrl}/${file.source}`);
-      files.set(file.source, sourceRaw);
+      const normalizedSource = validateImportFileMapping(manifest, file);
+      const sourceRaw = await fetchText(`${baseUrl}/${normalizedSource}`);
+      totalBytes += Buffer.byteLength(sourceRaw, "utf8");
+      files.set(normalizedSource, sourceRaw);
     }
 
     if (frontmatter.artifact_type === "skill") {
       const skillSpec = await fetchText(`${baseUrl}/skill.spec.json`);
       const compatibility = await fetchText(`${baseUrl}/compatibility.json`);
+      totalBytes += Buffer.byteLength(skillSpec, "utf8");
+      totalBytes += Buffer.byteLength(compatibility, "utf8");
       files.set("skill.spec.json", skillSpec.endsWith("\n") ? skillSpec : `${skillSpec}\n`);
       files.set("compatibility.json", compatibility.endsWith("\n") ? compatibility : `${compatibility}\n`);
     }
+  }
+
+  if (totalBytes > IMPORT_HARDENING_LIMITS.maxTotalBytes) {
+    throw new Error(
+      `import ${manifest.slug}: imported payload is ${totalBytes} bytes; max is ${IMPORT_HARDENING_LIMITS.maxTotalBytes}`
+    );
   }
 
   return files;
