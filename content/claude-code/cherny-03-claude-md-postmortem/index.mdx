@@ -1,0 +1,113 @@
+---
+title: 'Boris Cherny: CLAUDE.md as a living postmortem (Jan 2026) — turning Claude into team memory'
+slug: cherny-03-claude-md-postmortem
+tool: claude-code
+track: thought-leadership
+category: ai-industry
+difficulty: intermediate
+last_verified: '2026-04-17'
+series: cherny-playbook
+series_title: Boris Cherny's Claude Code Setup
+series_order: 3
+series_total: 4
+tags:
+  - cherny
+  - claude-md
+  - team-practice
+  - postmortem
+  - memory
+time_required: 6 min
+contributors:
+  - '@frenxt'
+publisher: frenxt-labs
+provenance_repo: frenxt/cables
+source_links:
+  - label: "Boris Cherny — post 4/ on CLAUDE.md (Threads, Jan 2026)"
+    url: https://www.threads.com/@boris_cherny/post/DTBVoHZkrXC/
+  - label: "Full Cherny thread reader"
+    url: https://twitter-thread.com/t/2007179832300581177
+---
+
+# Boris Cherny's Claude Code Setup #3: CLAUDE.md as postmortem
+
+*Part 3 of 4 — breaking down the Claude Code creator's actual workflow with FRE|Nxt Labs production commentary.*
+
+---
+
+## The post
+
+> "Our team shares a single CLAUDE.md for the Claude Code repo. We check it into git, and the whole team contributes multiple times a week. **Anytime we see Claude do something incorrectly we add it to the CLAUDE.md, so Claude knows not to do it next time.** Other teams maintain their own CLAUDE.md's. It is each team's job to keep theirs up to date."
+>
+> — [**Boris Cherny**](https://www.threads.com/@boris_cherny/post/DTBVoHZkrXC/), post 4/ in his workflow thread, January 2026
+
+---
+
+## What we heard
+
+Most teams treat `CLAUDE.md` as configuration — write it once at project kickoff and forget it. Cherny's team treats it as a **living postmortem log**. Every time Claude misunderstands the codebase, the team adds a bullet. The file gets updated multiple times a week.
+
+This converts two different artifacts into one:
+- A **team knowledge base** (we've learned not to do X in this codebase)
+- A **machine context file** (next Claude session knows not to do X)
+
+The same artifact serves humans on the team reading it in review and machines reading it at inference time. That's the design insight. A document that works for both audiences is more valuable than two that only work for one.
+
+---
+
+## What we actually do with this
+
+We adopted Cherny's practice with one addition — we structure the file so the drift between "what the model keeps getting wrong" and "what the team learned" is visible. Our standard sections:
+
+```markdown
+# CLAUDE.md
+
+## Project context
+[Static: stack, domain, conventions. Rarely changes.]
+
+## Known constraints
+[Things Claude repeatedly misunderstands about this codebase.]
+
+## Team conventions
+[How we write code here — style, patterns, review culture.]
+
+## Recent gotchas (last 30 days)
+[Rolling window of recent failure modes. Items older than 30 days get
+promoted to Known Constraints or deleted.]
+```
+
+**The discipline**: every time a Claude session produces incorrect code that gets caught in review, the reviewer adds a bullet to "Recent gotchas" in the same PR. Takes 30 seconds. The file becomes a forcing function — you cannot merge a "Claude got it wrong" fix without updating the memory file.
+
+---
+
+## Applied: InterviewLM's CLAUDE.md evolution
+
+The InterviewLM CLAUDE.md grew over the engagement:
+
+- **Week 1**: 40 lines. Project context + team conventions only.
+- **Week 3**: 180 lines. Added "Known constraints" (Claude kept wrapping async generators in try/catch incorrectly, kept regenerating golden-set rubrics when it shouldn't, kept using a deprecated provider adapter).
+- **Week 6**: 220 lines. Several "Recent gotchas" items promoted to "Known constraints". Misunderstanding rate on new sessions dropped from ~15% of PRs to under 5%.
+
+The diff between week 1 and week 6 is the team's mental model of the codebase, made explicit. Every new engineer onboarding reads the file and absorbs in 10 minutes what took the team six weeks to learn.
+
+---
+
+## A common failure mode
+
+Teams that try this and stop after two weeks almost always fail for the same reason: nobody owns the file. The practice requires a forcing function. Two options that work:
+
+1. **PR template requires a CLAUDE.md checkbox**: "Did this PR surface a new Claude gotcha? If yes, add a bullet." Forces a 10-second decision on every merge.
+2. **Weekly file owner**: one engineer per week is responsible for the file. Their job is to promote gotchas, consolidate duplicates, and delete stale items.
+
+We use #1 for external client work, #2 for the FRE|Nxt Labs internal repos. Both work. Doing neither doesn't.
+
+---
+
+## The one thing to steal from this
+
+Open your current project's CLAUDE.md right now. Add a `## Recent gotchas` section with today's date. Every time Claude misunderstands something this week, add a one-line bullet there. Review the file next Friday — promote anything that's happened twice to "Known constraints." That single move turns a stale config file into a living team memory. It will save you more time than any other Claude Code setting change.
+
+---
+
+## Next in this series
+
+**#4 — "The model just wants to use tools"**. From Cherny's Pragmatic Engineer interview: the design philosophy behind Claude Code, and what it tells us about how to architect agent systems.
