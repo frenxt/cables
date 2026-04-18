@@ -1,0 +1,10 @@
+{
+  "slug": "publish-your-stack",
+  "artifact_type": "skill",
+  "version": "0.1.0",
+  "requires": [],
+  "files": [
+    { "source": "artifact/SKILL.md", "target": ".claude/skills/publish-your-stack/SKILL.md", "action": "copy", "on_conflict": "prompt" }
+  ],
+  "post_install_notes": "Skill installed. In Claude Code, say 'publish my stack' to start the automated flow."
+}

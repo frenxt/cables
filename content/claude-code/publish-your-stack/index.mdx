@@ -1,0 +1,72 @@
+---
+title: Publish your stack to Cables (automated)
+slug: publish-your-stack
+tool: claude-code
+track: fundamentals
+day: null
+category: workflow
+tags:
+  - stack
+  - publishing
+  - community
+  - automation
+difficulty: beginner
+time_required: 10 min
+artifact_type: skill
+has_war_story: false
+contributors:
+  - '@frenxt'
+last_verified: '2026-04-18'
+source_links:
+  - label: Contributor guide
+    url: 'https://www.frenxt.com/research/publish-your-stack-contributor-guide'
+  - label: Stack spec
+    url: 'https://github.com/frenxt/cables/blob/main/docs/community-stack-v1.md'
+kind: standalone
+---
+
+# Publish your stack to Cables — automated
+
+A skill that walks Claude Code through publishing your Claude stack to the Cables community in one conversation. No manual repo setup, no hand-written `stack.json`, no fiddling with PRs.
+
+## One command to install
+
+```bash
+npx -y frenxt-cables add publish-your-stack
+```
+
+## Then in Claude Code
+
+Just say:
+
+> "publish my stack"
+
+The skill activates and walks through:
+
+1. **Detect** your current plugins + skills (reads `claude plugins list`, `~/.claude/skills/`)
+2. **Collect** metadata — slug, title, purpose, which subset to ship
+3. **Create or use** a public GitHub repo for your stack content
+4. **Generate** a valid `.cables/stack.json` from your setup
+5. **Bundle** the skills you want to share (with a privacy check before each one)
+6. **Validate** locally with `frenxt stack-publish`
+7. **Tag** a reproducible release (`v0.1.0`)
+8. **Open** the submission PR against `frenxt/cables` on your behalf — with the reviewed SHA pinned
+
+You confirm before anything publishes externally. Local validation is mandatory — the skill won't skip it.
+
+## What it won't do
+
+- **Won't push sensitive skills.** Skips any skill containing credentials, internal paths, or obvious company references, and asks before bundling the rest.
+- **Won't skip validation.** If the validator rejects (stale date, undeclared marketplace, typo-squat), the skill stops and helps you fix the root cause — never suggests `--force`.
+- **Won't use floating refs.** Every install resolves to a tagged version. No `main` pins.
+
+## Works well with
+
+- `stack-fullstack`, `stack-ai-agent`, `stack-ux` — if you start from one of these and customize, the skill picks up your additions and helps you ship your variant
+- `skill-stack-replication` — for publishing a full-stack baseline as your own flavor
+
+## Why use the skill instead of the CLI path
+
+The [manual CLI path](https://www.frenxt.com/research/publish-your-stack-contributor-guide) is fine if you like doing Git work yourself. The skill collapses 8 steps into a conversation and handles the common mistakes — missing `last_verified` date, undeclared marketplaces, forgetting to tag — before they become PR-review bounces.
+
+Both paths hit the same review pipeline on merge. Same security bar, same outcomes.
