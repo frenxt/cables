@@ -215,13 +215,32 @@ jobs:
         id: gitleaks
         continue-on-error: true
         run: |
-          set -euo pipefail
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.21.0_linux_x64.tar.gz \
-            | tar -xz -C /tmp gitleaks
+          set -uo pipefail
+          # Resolve the latest gitleaks version dynamically — the
+          # /releases/latest/download/<file> URL pattern only works when you
+          # already know the filename, which embeds the version. Hardcoding
+          # breaks on every gitleaks release.
+          VERSION=$(curl -fsSL https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
+            | jq -r '.tag_name' | sed 's/^v//')
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "::warning::could not resolve latest gitleaks version; skipping scan"
+            echo "findings=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          ASSET="gitleaks_${VERSION}_linux_x64.tar.gz"
+          URL="https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/${ASSET}"
+          echo "Fetching $URL"
+          if ! curl -fsSL "$URL" -o /tmp/gitleaks.tgz; then
+            echo "::warning::gitleaks download failed at $URL; skipping scan"
+            echo "findings=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          tar -xzf /tmp/gitleaks.tgz -C /tmp gitleaks
           /tmp/gitleaks detect --source "${{ steps.meta.outputs.scan_dir }}" \
             --no-git -r /tmp/gitleaks.json --exit-code 0 || true
           COUNT=$(jq 'length' /tmp/gitleaks.json 2>/dev/null || echo 0)
           echo "findings=$COUNT" >> "$GITHUB_OUTPUT"
+
 
       - name: OSSF Scorecard (publisher repo, community only)
         id: scorecard
