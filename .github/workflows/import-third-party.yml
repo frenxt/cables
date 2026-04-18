@@ -17,7 +17,7 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Enforce probation label when required
         uses: actions/github-script@v7
         with:
@@ -129,10 +129,10 @@ jobs:
             core.notice(
               `Probation publishers detected (${probationPublishers.join(', ')}); required label "${REQUIRED_LABEL}" is present.`
             );
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 10.30.1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: pnpm

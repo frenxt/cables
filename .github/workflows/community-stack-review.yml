@@ -32,7 +32,7 @@ jobs:
       targets: ${{ steps.build.outputs.targets }}
       has_targets: ${{ steps.build.outputs.has_targets }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -78,15 +78,15 @@ jobs:
       matrix:
         target: ${{ fromJSON(needs.detect.outputs.targets) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: 10.30.1
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
           cache: pnpm
