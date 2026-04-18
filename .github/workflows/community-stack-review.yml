@@ -1,0 +1,338 @@
+name: Stack Review
+
+on:
+  pull_request:
+    paths:
+      - "community-stacks/**"
+      - "content/**/registry.json"
+      - "content/**/artifact/**"
+      - "docs/community-stack-v1.md"
+      - ".github/workflows/community-stack-review.yml"
+      - ".github/stack-review/**"
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  issues: write
+
+concurrency:
+  group: stack-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # Build one matrix entry per changed stack, tagged by kind:
+  #   kind=community     → community-stacks/<slug>.json submissions (third-party)
+  #   kind=first-party   → content/**/registry.json that contains a top-level `stack` block
+  detect:
+    name: Detect changed stacks
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.build.outputs.targets }}
+      has_targets: ${{ steps.build.outputs.has_targets }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: build
+        run: |
+          set -euo pipefail
+          BASE="origin/${{ github.base_ref }}"
+          mapfile -t CHANGED_COMMUNITY < <(git diff --name-only --diff-filter=AM "$BASE...HEAD" -- "community-stacks/*.json" || true)
+          mapfile -t CHANGED_FIRSTPARTY < <(git diff --name-only --diff-filter=AM "$BASE...HEAD" -- "content/**/registry.json" || true)
+
+          TARGETS='[]'
+
+          for f in "${CHANGED_COMMUNITY[@]:-}"; do
+            [ -z "$f" ] && continue
+            TARGETS=$(echo "$TARGETS" | jq --arg f "$f" '. + [{"kind":"community","file":$f}]')
+          done
+
+          for f in "${CHANGED_FIRSTPARTY[@]:-}"; do
+            [ -z "$f" ] && continue
+            if jq -e '.stack' "$f" >/dev/null 2>&1; then
+              TARGETS=$(echo "$TARGETS" | jq --arg f "$f" '. + [{"kind":"first-party","file":$f}]')
+            fi
+          done
+
+          COUNT=$(echo "$TARGETS" | jq 'length')
+          echo "Targets found: $COUNT"
+          echo "$TARGETS" | jq .
+          if [ "$COUNT" -eq 0 ]; then
+            echo "has_targets=false" >> "$GITHUB_OUTPUT"
+            echo 'targets=[]' >> "$GITHUB_OUTPUT"
+          else
+            echo "has_targets=true" >> "$GITHUB_OUTPUT"
+            echo "targets=$(echo "$TARGETS" | jq -c .)" >> "$GITHUB_OUTPUT"
+          fi
+
+  review:
+    name: Review ${{ matrix.target.kind }} · ${{ matrix.target.file }}
+    needs: detect
+    if: needs.detect.outputs.has_targets == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.detect.outputs.targets) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm --filter frenxt-cables build
+
+      # ──────────────────────────────────────────────────────────────
+      # Normalize: both kinds produce a stack.json at /tmp/fetched/stack.json
+      # ──────────────────────────────────────────────────────────────
+
+      - name: Resolve stack manifest (community)
+        if: matrix.target.kind == 'community'
+        id: meta_c
+        run: |
+          set -euo pipefail
+          FILE="${{ matrix.target.file }}"
+          SLUG=$(jq -r '.slug // empty' "$FILE")
+          REPO=$(jq -r '.repo // empty' "$FILE")
+          REF=$(jq -r '.ref // "main"' "$FILE")
+          SUBMITTER=$(jq -r '.submitted_by // empty' "$FILE")
+          if [ -z "$SLUG" ] || [ -z "$REPO" ]; then
+            echo "::error file=$FILE::community submission must define slug + repo"; exit 1
+          fi
+          mkdir -p /tmp/fetched /tmp/publisher-repo
+          URL="https://raw.githubusercontent.com/$REPO/$REF/.cables/stack.json"
+          echo "Fetching $URL"
+          curl -fsSL "$URL" -o /tmp/fetched/stack.json
+          git clone --depth 1 --branch "$REF" "https://github.com/$REPO.git" /tmp/publisher-repo 2>/dev/null \
+            || git clone --depth 1 "https://github.com/$REPO.git" /tmp/publisher-repo
+          echo "slug=$SLUG"        >> "$GITHUB_OUTPUT"
+          echo "repo=$REPO"        >> "$GITHUB_OUTPUT"
+          echo "ref=$REF"          >> "$GITHUB_OUTPUT"
+          echo "submitter=$SUBMITTER" >> "$GITHUB_OUTPUT"
+          echo "scan_dir=/tmp/publisher-repo" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve stack manifest (first-party)
+        if: matrix.target.kind == 'first-party'
+        id: meta_fp
+        run: |
+          set -euo pipefail
+          FILE="${{ matrix.target.file }}"
+          SLUG=$(jq -r '.slug // empty' "$FILE")
+          if [ -z "$SLUG" ]; then
+            echo "::error file=$FILE::registry.json missing slug"; exit 1
+          fi
+          # Build a normalized community-stack-shaped manifest from the registry.json
+          mkdir -p /tmp/fetched
+          TODAY=$(date -u +%Y-%m-%d)
+          CABLE_DIR=$(dirname "$FILE")
+          jq -n \
+            --arg slug   "$SLUG" \
+            --arg title  "$(jq -r '.slug' "$FILE")" \
+            --arg desc   "$(jq -r '.post_install_notes // "First-party stack"' "$FILE")" \
+            --argjson ver 1 \
+            --arg version "$(jq -r '.version' "$FILE")" \
+            --arg today  "$TODAY" \
+            --argjson stack "$(jq '.stack' "$FILE")" \
+            '{
+              schema_version: 1,
+              slug: $slug,
+              title: $slug,
+              description: $desc,
+              purpose: "other",
+              author: { github: "frenxt" },
+              version: $version,
+              last_verified: $today,
+              marketplaces: ($stack.marketplaces // []),
+              claude_plugins: ($stack.claude_plugins // []),
+              codex_plugins:  ($stack.codex_plugins  // []),
+              skills: []
+            }' > /tmp/fetched/stack.json
+          echo "slug=$SLUG"            >> "$GITHUB_OUTPUT"
+          echo "scan_dir=$CABLE_DIR"   >> "$GITHUB_OUTPUT"
+
+      - name: Merge outputs
+        id: meta
+        run: |
+          set -euo pipefail
+          KIND="${{ matrix.target.kind }}"
+          if [ "$KIND" = "community" ]; then
+            echo "slug=${{ steps.meta_c.outputs.slug }}"           >> "$GITHUB_OUTPUT"
+            echo "repo=${{ steps.meta_c.outputs.repo }}"           >> "$GITHUB_OUTPUT"
+            echo "ref=${{ steps.meta_c.outputs.ref }}"             >> "$GITHUB_OUTPUT"
+            echo "submitter=${{ steps.meta_c.outputs.submitter }}" >> "$GITHUB_OUTPUT"
+            echo "scan_dir=${{ steps.meta_c.outputs.scan_dir }}"   >> "$GITHUB_OUTPUT"
+          else
+            echo "slug=${{ steps.meta_fp.outputs.slug }}"          >> "$GITHUB_OUTPUT"
+            echo "repo=${{ github.repository }}"                   >> "$GITHUB_OUTPUT"
+            echo "ref=${{ github.event.pull_request.head.sha }}"   >> "$GITHUB_OUTPUT"
+            echo "submitter=frenxt"                                >> "$GITHUB_OUTPUT"
+            echo "scan_dir=${{ steps.meta_fp.outputs.scan_dir }}"  >> "$GITHUB_OUTPUT"
+          fi
+
+      # ──────────────────────────────────────────────────────────────
+      # Checks (run for both kinds; Scorecard only for community)
+      # ──────────────────────────────────────────────────────────────
+
+      - name: frenxt stack-publish validator
+        id: validator
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          node packages/cli/dist/index.js stack-publish /tmp/fetched/stack.json --json \
+            > /tmp/validator.json || true
+          cat /tmp/validator.json
+          DECISION=$(jq -r '.decision // "rejected"' /tmp/validator.json)
+          echo "decision=$DECISION" >> "$GITHUB_OUTPUT"
+
+      - name: Semgrep custom rules
+        id: semgrep
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet semgrep
+          semgrep --config .github/stack-review/semgrep-stack-rules.yml \
+            --json -o /tmp/semgrep.json \
+            "${{ steps.meta.outputs.scan_dir }}" || true
+          FINDINGS=$(jq '.results | length' /tmp/semgrep.json)
+          echo "findings=$FINDINGS" >> "$GITHUB_OUTPUT"
+
+      - name: Gitleaks (secret scan on scanned content)
+        id: gitleaks
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.21.0_linux_x64.tar.gz \
+            | tar -xz -C /tmp gitleaks
+          /tmp/gitleaks detect --source "${{ steps.meta.outputs.scan_dir }}" \
+            --no-git -r /tmp/gitleaks.json --exit-code 0 || true
+          COUNT=$(jq 'length' /tmp/gitleaks.json 2>/dev/null || echo 0)
+          echo "findings=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: OSSF Scorecard (publisher repo, community only)
+        id: scorecard
+        if: matrix.target.kind == 'community'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          curl -sSL "https://api.securityscorecards.dev/projects/github.com/${{ steps.meta.outputs.repo }}" \
+            -o /tmp/scorecard.json || true
+          if [ -s /tmp/scorecard.json ] && jq -e '.score' /tmp/scorecard.json >/dev/null 2>&1; then
+            SCORE=$(jq -r '.score' /tmp/scorecard.json)
+            echo "score=$SCORE" >> "$GITHUB_OUTPUT"
+          else
+            echo "score=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Identity check (community only)
+        id: identity
+        if: matrix.target.kind == 'community'
+        run: |
+          set -euo pipefail
+          OWNER=$(echo "${{ steps.meta.outputs.repo }}" | cut -d/ -f1)
+          SUBMITTER="${{ steps.meta.outputs.submitter }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          if [ "$SUBMITTER" = "$OWNER" ] && [ "$PR_AUTHOR" = "$SUBMITTER" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ──────────────────────────────────────────────────────────────
+      # Review comment
+      # ──────────────────────────────────────────────────────────────
+
+      - name: Compose review comment
+        run: |
+          set -euo pipefail
+          KIND="${{ matrix.target.kind }}"
+          SLUG="${{ steps.meta.outputs.slug }}"
+          DECISION="${{ steps.validator.outputs.decision }}"
+          SEMGREP_N="${{ steps.semgrep.outputs.findings }}"
+          GITLEAKS_N="${{ steps.gitleaks.outputs.findings }}"
+          SCORE="${{ steps.scorecard.outputs.score }}"
+          IDENT="${{ steps.identity.outputs.ok }}"
+
+          {
+            if [ "$KIND" = "community" ]; then
+              echo "### 🔍 Community stack review — \`$SLUG\`"
+              echo ""
+              echo "**Publisher:** [\`${{ steps.meta.outputs.repo }}\`](https://github.com/${{ steps.meta.outputs.repo }}) @ \`${{ steps.meta.outputs.ref }}\`"
+            else
+              echo "### 🔍 First-party stack review — \`$SLUG\`"
+              echo ""
+              echo "**In-repo cable** (same bar as community submissions)"
+            fi
+            echo ""
+            echo "| Check | Verdict |"
+            echo "|---|---|"
+            case "$DECISION" in
+              approved)     echo "| frenxt validator | ✅ approved |" ;;
+              needs-review) echo "| frenxt validator | ⚠️ needs human review |" ;;
+              rejected)     echo "| frenxt validator | ❌ rejected |" ;;
+              *)            echo "| frenxt validator | ❓ unknown |" ;;
+            esac
+            echo "| Semgrep custom rules | ${SEMGREP_N:-0} finding(s) |"
+            echo "| Gitleaks | ${GITLEAKS_N:-0} finding(s) |"
+            if [ "$KIND" = "community" ]; then
+              if [ -n "$SCORE" ]; then
+                echo "| OSSF Scorecard (publisher repo) | **$SCORE/10** |"
+              else
+                echo "| OSSF Scorecard (publisher repo) | — not indexed |"
+              fi
+              if [ "$IDENT" = "true" ]; then
+                echo "| Identity (PR author = repo owner = submitted_by) | ✅ |"
+              else
+                echo "| Identity | ⚠️ mismatch |"
+              fi
+            else
+              echo "| OSSF Scorecard | — (first-party, skipped) |"
+              echo "| Identity | — (first-party) |"
+            fi
+            echo "| GitHub Copilot review | see inline comments |"
+            echo ""
+            echo "<details><summary>Validator JSON</summary>"
+            echo ""
+            echo '```json'
+            cat /tmp/validator.json
+            echo ""
+            echo '```'
+            echo ""
+            echo "</details>"
+          } > /tmp/comment.md
+          cat /tmp/comment.md
+
+      - name: Post review comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: "stack-review-${{ steps.meta.outputs.slug }}"
+          path: /tmp/comment.md
+
+      - name: Request Copilot review
+        run: |
+          set -euo pipefail
+          gh pr edit "${{ github.event.pull_request.number }}" \
+            --add-reviewer "copilot-pull-request-reviewer" 2>/dev/null \
+            || echo "Note: enable Copilot review in Settings → Code security → Copilot code review → Auto-request"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Gate merge on rejection
+        if: steps.validator.outputs.decision == 'rejected'
+        run: |
+          echo "::error::Validator rejected the submission. See PR comment."
+          exit 1
