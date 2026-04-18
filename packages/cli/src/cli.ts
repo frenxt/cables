@@ -9,6 +9,8 @@ import { runList, type ListOptions } from "./commands/list";
 import { runSearch } from "./commands/search";
 import { runInfo } from "./commands/info";
 import { runAdd } from "./commands/add";
+import { runStack } from "./commands/stack";
+import { runPublishStack } from "./commands/publish-stack";
 import { runConvertClaudeToCodex } from "./commands/convert-claude-to-codex";
 import { runConvertCodexToClaude } from "./commands/convert-codex-to-claude";
 import type { CommandConversionMode } from "./lib/convert-claude-to-codex";
@@ -22,6 +24,7 @@ import {
   promptConflict,
   spinner,
 } from "./lib/output";
+import { maybePrintPostInstallNudge } from "./lib/nudge";
 import { select, isCancel, cancel } from "@clack/prompts";
 import type { ArtifactType } from "./lib/types";
 import type { ConflictResolution } from "./lib/installer";
@@ -190,7 +193,75 @@ export async function run(argv: string[]): Promise<void> {
         }
         for (const f of result.writtenFiles) success(`Wrote ${f}`);
         for (const f of result.skippedFiles) console.log(`Skipped ${f}`);
+        if (!opts.dryRun && result.writtenFiles.length > 0) {
+          maybePrintPostInstallNudge({ dryRun: !!opts.dryRun });
+        }
         bye(opts.dryRun ? "Dry run complete — no files were written." : "Done.");
+      } catch (e) {
+        logError((e as Error).message);
+        exit(1);
+      }
+    });
+
+  cli
+    .command(
+      "stack <slug>",
+      "Install a stack cable (files + marketplaces + plugins + skills sync)"
+    )
+    .option("--force", "Overwrite existing files without prompting")
+    .option("--dry-run", "Print planned writes without touching disk or running plugin commands")
+    .option("--skip-plugins", "Only install files and marketplaces; skip plugin install")
+    .option("--skip-skills", "Skip skills sync to ~/.claude*/skills/")
+    .option("--skip-marketplaces", "Skip marketplace setup (assume already configured)")
+    .action(async (slug: string, opts) => {
+      try {
+        const interactive = isInteractiveTTY();
+        if (interactive) banner();
+        const projectRoot = cwd();
+        if (!detectClaudeCodeProject(projectRoot) && !opts.force) {
+          throw new Error(
+            "This doesn't look like a Claude Code project (no .claude/ or CLAUDE.md). Re-run with --force."
+          );
+        }
+        const resolver = createResolver();
+        const result = await runStack(resolver, slug, {
+          projectRoot,
+          force: !!opts.force,
+          dryRun: !!opts.dryRun,
+          skipPlugins: !!opts.skipPlugins,
+          skipSkills: !!opts.skipSkills,
+          skipMarketplaces: !!opts.skipMarketplaces,
+          onConflict: async (path, existing, incoming): Promise<ConflictResolution> =>
+            isInteractiveTTY()
+              ? promptConflict(path, existing, incoming)
+              : Promise.reject(
+                  new Error(
+                    `Conflict detected at ${path}. Re-run with --force or in an interactive terminal.`
+                  )
+                ),
+        });
+        for (const f of result.install.writtenFiles) success(`Wrote ${f}`);
+        for (const f of result.install.skippedFiles) console.log(`Skipped ${f}`);
+        if (!opts.dryRun && result.install.writtenFiles.length > 0) {
+          maybePrintPostInstallNudge({ dryRun: !!opts.dryRun });
+        }
+        bye(opts.dryRun ? "Dry run complete." : "Stack ready.");
+      } catch (e) {
+        logError((e as Error).message);
+        exit(1);
+      }
+    });
+
+  cli
+    .command(
+      "stack-publish <path-or-url>",
+      "Pre-flight validate a community stack.json (local path or GitHub repo)"
+    )
+    .option("--json", "Emit the result as JSON instead of a human-readable report")
+    .action(async (pathOrUrl: string, opts) => {
+      try {
+        const result = await runPublishStack(pathOrUrl, { json: !!opts.json });
+        if (result.decision === "rejected") exit(1);
       } catch (e) {
         logError((e as Error).message);
         exit(1);

@@ -1,0 +1,27 @@
+{
+  "slug": "stack-ai-agent",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-18",
+  "tier": "extended",
+  "quality_score": 85,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-18",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Claude-first stack; 4 plugins plus 3 agent-debugging skills.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "partial",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-18",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Skills are Claude-only; Codex users can install the plugins manually.",
+      "blockers": ["No Codex equivalent for LangSmith trace skills."]
+    }
+  }
+}

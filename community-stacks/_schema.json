@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://frenxt.com/schema/community-stack-submission-v1.json",
+  "title": "Community Stack Submission",
+  "description": "Tiny pointer file that registers a third-party stack on frenxt.com. The actual stack content lives in the publisher's own GitHub repo at .cables/stack.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "slug", "repo", "ref", "submitted_by"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Unique kebab-case identifier. First-come first-served."
+    },
+    "repo": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?/[a-zA-Z0-9._-]+$",
+      "description": "GitHub repo in owner/repo format, public only."
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Branch, tag, or commit SHA pinning the stack content."
+    },
+    "submitted_by": {
+      "type": "string",
+      "description": "GitHub username; must equal repo owner and PR author."
+    }
+  }
+}

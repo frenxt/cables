@@ -1,0 +1,61 @@
+name: I want to be a publisher
+description: Apply to run your own cable feed that flows into the main registry.
+title: "publisher: <your handle>"
+labels: ["publisher-intake", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Third-party publishing is live. You run your own cables in your own GitHub repo; approved feeds flow into the main registry via pinned snapshots (`imports/<publisher-id>/<slug>.json`).
+
+        The publisher flow is documented in README.md under "Third-party publishers." This issue is how you tell us you'd like your feed considered for inclusion.
+  - type: input
+    id: handle
+    attributes:
+      label: Publisher name / handle
+      placeholder: "acme-labs"
+    validations:
+      required: true
+  - type: input
+    id: github_repo
+    attributes:
+      label: GitHub repo hosting your cables
+      placeholder: "github.com/acme-labs/cables"
+    validations:
+      required: true
+  - type: textarea
+    id: public_work
+    attributes:
+      label: Your public work that fits the cables voice
+      description: |
+        Link 2–3 blog posts, talks, or projects where your voice + audience feels at home on the cables shelf.
+      placeholder: |
+        - https://example.com/my-talk
+        - https://example.com/my-post
+    validations:
+      required: true
+  - type: textarea
+    id: first_cables
+    attributes:
+      label: The first 3–6 cables you'd write
+      description: Titles + the concrete moment each one leads with.
+      placeholder: |
+        1. [title] — [moment]
+        2. [title] — [moment]
+        3. [title] — [moment]
+    validations:
+      required: true
+  - type: textarea
+    id: timing
+    attributes:
+      label: Anything we should know about scope or timing?
+      description: Optional. Comfortable cadence, constraints, or preferences for attribution.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Terms check
+      options:
+        - label: I've read CONTRIBUTING.md and understand the house voice rules
+          required: true
+        - label: I understand my cables will be MIT-licensed
+          required: true

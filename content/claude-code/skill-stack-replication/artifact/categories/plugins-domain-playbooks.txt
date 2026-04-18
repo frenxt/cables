@@ -1,5 +1,4 @@
 marketing-skills@marketingskills
 sentry@claude-plugins-official
-ppt-creator@daymade-skills
 github@claude-plugins-official
 security-guidance@claude-plugins-official

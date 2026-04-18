@@ -1,0 +1,27 @@
+{
+  "slug": "stack-ux",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-18",
+  "tier": "extended",
+  "quality_score": 85,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-18",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Claude-first stack for UX/frontend work.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "partial",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-18",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Claude skills are not directly portable to Codex.",
+      "blockers": []
+    }
+  }
+}

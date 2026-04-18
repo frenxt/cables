@@ -1,0 +1,31 @@
+{
+  "slug": "stack-ux",
+  "canonical_name": "UX design stack",
+  "summary": "Install the plugins and skills needed for frontend UX design work and browser-QA.",
+  "capability_cluster": "developer-productivity",
+  "maturity": "beta",
+  "owner": "frenxt",
+  "version": "0.1.0",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "installed_stack_manifest",
+      "type": "report",
+      "description": "List of plugins installed and skills synced."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": ["claude"],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Install the 3 Claude plugins defined in the stack.",
+    "Sync e2e-review, qa, and voice-test skills into every ~/.claude* profile."
+  ],
+  "verification": {
+    "smoke_test": "Run `claude plugins list` and verify frontend-design, vercel, and superpowers are installed.",
+    "expected_artifacts": ["claude_plugins_installed", "ux_skills_synced"]
+  }
+}

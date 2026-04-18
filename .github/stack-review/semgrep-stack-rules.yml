@@ -1,0 +1,122 @@
+rules:
+  # ────────── shell-execution smuggling ──────────
+  - id: stack-curl-pipe-shell
+    pattern-either:
+      - pattern-regex: "curl\\b[^\\n]*\\|\\s*bash"
+      - pattern-regex: "curl\\b[^\\n]*\\|\\s*sh\\b"
+      - pattern-regex: "wget\\b[^\\n]*\\|\\s*bash"
+      - pattern-regex: "wget\\b[^\\n]*\\|\\s*sh\\b"
+    message: "`curl | bash` / `wget | sh` — remote code execution pattern"
+    languages: [generic]
+    severity: ERROR
+    paths:
+      include:
+        - "**/*.md"
+        - "**/*.json"
+        - "**/*.yaml"
+        - "**/*.yml"
+        - "**/*.mdx"
+
+  - id: stack-eval-call
+    pattern-regex: "\\beval\\s*\\("
+    message: "`eval()` call — arbitrary code execution"
+    languages: [generic]
+    severity: ERROR
+    paths:
+      include: ["**/*.md", "**/*.mdx", "**/*.json", "**/*.js", "**/*.ts"]
+
+  - id: stack-rm-rf-home
+    pattern-either:
+      - pattern-regex: "rm\\s+-rf\\s+(\\$HOME|~/|/home/|/Users/)"
+      - pattern-regex: "rm\\s+-rf\\s+/\\s"
+      - pattern-regex: "rm\\s+-rf\\s+\\*"
+    message: "destructive `rm -rf` targeting user directories"
+    languages: [generic]
+    severity: ERROR
+    paths:
+      include: ["**/*.md", "**/*.mdx", "**/*.sh"]
+
+  # ────────── credential access / exfiltration ──────────
+  - id: stack-credential-path-read
+    pattern-either:
+      - pattern-regex: "\\.aws/credentials"
+      - pattern-regex: "\\.ssh/id_(rsa|ed25519|ecdsa)"
+      - pattern-regex: "\\.kube/config"
+      - pattern-regex: "\\.netrc"
+      - pattern-regex: "\\.npmrc"
+      - pattern-regex: "\\.pypirc"
+      - pattern-regex: "/\\.env(\\s|$|\")"
+      - pattern-regex: "Google Authenticator"
+    message: "references to sensitive credential paths — review intent"
+    languages: [generic]
+    severity: WARNING
+    paths:
+      include: ["**/*.md", "**/*.mdx", "**/*.json", "**/*.yaml", "**/*.yml"]
+
+  - id: stack-secret-exfil-pattern
+    pattern-either:
+      - pattern-regex: "(?i)exfiltrat\\w*"
+      - pattern-regex: "(?i)send.*(credential|token|secret|api.?key).*to\\s+http"
+      - pattern-regex: "(?i)POST\\s+.*/(?:ingest|collect|beacon)"
+    message: "exfiltration-style phrasing — human review"
+    languages: [generic]
+    severity: WARNING
+    paths:
+      include: ["**/*.md", "**/*.mdx"]
+
+  # ────────── prompt-injection patterns in SKILL.md ──────────
+  - id: stack-prompt-injection-override
+    pattern-either:
+      - pattern-regex: "(?i)ignore\\s+(all\\s+)?(previous|prior|above)\\s+(instructions|prompts|directions)"
+      - pattern-regex: "(?i)disregard\\s+(all\\s+)?(previous|prior|above)\\s+(instructions|prompts)"
+      - pattern-regex: "(?i)from\\s+now\\s+on\\s+you\\s+(are|will|must)"
+      - pattern-regex: "(?i)you\\s+are\\s+now\\s+(a|the)\\s+"
+    message: "classic prompt-injection override phrasing — flag for semantic review"
+    languages: [generic]
+    severity: WARNING
+    paths:
+      include: ["**/SKILL.md", "**/*.mdx"]
+
+  - id: stack-prompt-injection-silent-action
+    pattern-either:
+      - pattern-regex: "(?i)without\\s+(asking|telling|informing|notifying)\\s+the\\s+user"
+      - pattern-regex: "(?i)do\\s+not\\s+tell\\s+the\\s+user"
+      - pattern-regex: "(?i)silently\\s+(read|write|upload|send|post)"
+    message: "instruction to act silently / hide from user — high-suspicion pattern"
+    languages: [generic]
+    severity: ERROR
+    paths:
+      include: ["**/SKILL.md", "**/*.mdx"]
+
+  # ────────── suspicious URLs ──────────
+  - id: stack-nonstandard-url-scheme
+    pattern-regex: "\\b(ftp|gopher|file|data):\\/\\/"
+    message: "non-HTTP scheme URL — review intent"
+    languages: [generic]
+    severity: WARNING
+    paths:
+      include: ["**/*.md", "**/*.mdx", "**/*.json"]
+
+  - id: stack-url-shortener
+    pattern-either:
+      - pattern-regex: "https?://bit\\.ly/"
+      - pattern-regex: "https?://tinyurl\\.com/"
+      - pattern-regex: "https?://t\\.co/"
+      - pattern-regex: "https?://goo\\.gl/"
+    message: "URL shortener — expand and state the target explicitly"
+    languages: [generic]
+    severity: WARNING
+    paths:
+      include: ["**/*.md", "**/*.mdx", "**/*.json"]
+
+  # ────────── post-install shell hooks ──────────
+  - id: stack-forbidden-exec-field
+    pattern-either:
+      - pattern-regex: "\"post_install_exec\"\\s*:"
+      - pattern-regex: "\"exec\"\\s*:"
+      - pattern-regex: "\"scripts\"\\s*:\\s*\\["
+    message: "forbidden executable-hook field in stack metadata"
+    languages: [generic]
+    severity: ERROR
+    paths:
+      include: ["**/stack.json", "community-stacks/*.json"]

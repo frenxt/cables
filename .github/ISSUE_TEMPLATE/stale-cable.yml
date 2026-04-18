@@ -1,0 +1,37 @@
+name: Report a stale cable
+description: Flag a cable whose claims are out of date or whose sources have moved.
+title: "stale: <cable slug>"
+labels: ["stale", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We auto-open issues on cables over 90 days old via cron. This template is for community-spotted staleness — usually better signal than the time-based check.
+  - type: input
+    id: slug
+    attributes:
+      label: Cable slug
+      description: The folder name under content/<tool>/<slug>/
+      placeholder: "prompt-caching-fix"
+    validations:
+      required: true
+  - type: textarea
+    id: whats_changed
+    attributes:
+      label: What's changed since last_verified?
+      description: Be specific — link official sources where possible.
+      placeholder: "Anthropic changed the cache_control placement rules on [date]. The old example in the cable no longer applies."
+    validations:
+      required: true
+  - type: input
+    id: new_source
+    attributes:
+      label: Link to the new official source (if known)
+      placeholder: "https://docs.anthropic.com/..."
+  - type: checkboxes
+    id: verified_today
+    attributes:
+      label: Verification
+      options:
+        - label: I've checked this cable's claims against the current tool state today
+          required: true
