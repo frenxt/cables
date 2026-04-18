@@ -4,10 +4,30 @@
   "version": "0.1.0",
   "requires": [],
   "files": [
-    { "source": "artifact/SKILL.md", "target": ".claude/skills/stack-ai-agent/SKILL.md", "action": "copy", "on_conflict": "prompt" },
-    { "source": "artifact/skills/analyse-langsmith-trace/SKILL.md", "target": ".claude/skills/analyse-langsmith-trace/SKILL.md", "action": "copy", "on_conflict": "prompt" },
-    { "source": "artifact/skills/debug-prompt-caching/SKILL.md", "target": ".claude/skills/debug-prompt-caching/SKILL.md", "action": "copy", "on_conflict": "prompt" },
-    { "source": "artifact/skills/benchmark/SKILL.md", "target": ".claude/skills/benchmark/SKILL.md", "action": "copy", "on_conflict": "prompt" }
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/stack-ai-agent/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    },
+    {
+      "source": "artifact/skills/analyse-langsmith-trace/SKILL.md",
+      "target": ".claude/skills/analyse-langsmith-trace/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    },
+    {
+      "source": "artifact/skills/debug-prompt-caching/SKILL.md",
+      "target": ".claude/skills/debug-prompt-caching/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    },
+    {
+      "source": "artifact/skills/benchmark/SKILL.md",
+      "target": ".claude/skills/benchmark/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
   ],
   "stack": {
     "marketplaces": [],
@@ -17,7 +37,6 @@
       "vercel@claude-plugins-official",
       "sentry@claude-plugins-official"
     ],
-    "codex_plugins": [],
     "sync_skills_from": ".claude/skills"
   },
   "post_install_notes": "AI agent dev stack installed. Pair with `stack-fullstack` if the agent is part of a full product surface."
