@@ -237,7 +237,13 @@ function syncSkillsToProfiles(sourceDir: string, result: StackResult): void {
     return;
   }
 
+  // Only accept skill directory names matching the same kebab-case regex we
+  // enforce in community-stack.ts. This prevents path traversal via names like
+  // "../.ssh" — readdirSync returns raw filesystem entries with no
+  // sanitization, so we must validate before joining into target paths.
+  const SAFE_SLUG = /^[a-z0-9][a-z0-9-]*$/;
   const skillSlugs = readdirSync(sourceDir).filter((name) => {
+    if (!SAFE_SLUG.test(name)) return false;
     try {
       return statSync(join(sourceDir, name)).isDirectory();
     } catch {

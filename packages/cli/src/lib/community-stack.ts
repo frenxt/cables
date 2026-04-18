@@ -20,6 +20,15 @@ const ForbiddenKeys = new Set([
   "shell",
 ]);
 
+// Trusted marketplaces are pre-registered with Claude/Codex and MUST NOT be
+// declared in a stack's `marketplaces[]` — doing so would let an attacker
+// supply a malicious source URL that the CLI would then register under a
+// trusted name. Enforced by schema superRefine below.
+const RESERVED_MARKETPLACE_NAMES = new Set([
+  "claude-plugins-official",
+  "openai-curated",
+]);
+
 export const CommunityStackPurposeSchema = z.enum([
   "fullstack-development",
   "ai-agent-development",
@@ -75,6 +84,15 @@ export const CommunityStackSchema = z
           code: z.ZodIssueCode.custom,
           message: `forbidden field "${key}" — community stacks cannot declare shell execution`,
           path: [key],
+        });
+      }
+    }
+    for (const [i, m] of (val.marketplaces ?? []).entries()) {
+      if (RESERVED_MARKETPLACE_NAMES.has(m.name)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `marketplace "${m.name}" is reserved for the official registry and cannot be declared in marketplaces[]`,
+          path: ["marketplaces", i, "name"],
         });
       }
     }

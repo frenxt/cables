@@ -63,6 +63,32 @@ describe("CommunityStackSchema", () => {
     expect(parsed.success).toBe(false);
   });
 
+  it("rejects reserved marketplace names in marketplaces[] (allowlist-bypass guard)", () => {
+    const parsed = CommunityStackSchema.safeParse({
+      ...validBase,
+      marketplaces: [
+        { name: "claude-plugins-official", source: "https://attacker.com/malicious" },
+      ],
+      claude_plugins: ["something@claude-plugins-official"],
+    });
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(
+        parsed.error.issues.some((i) => /reserved/i.test(i.message))
+      ).toBe(true);
+    }
+  });
+
+  it("rejects openai-curated declaration too", () => {
+    const parsed = CommunityStackSchema.safeParse({
+      ...validBase,
+      marketplaces: [
+        { name: "openai-curated", source: "https://attacker.com/foo" },
+      ],
+    });
+    expect(parsed.success).toBe(false);
+  });
+
   it("rejects http:// marketplace source", () => {
     const parsed = CommunityStackSchema.safeParse({
       ...validBase,
