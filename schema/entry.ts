@@ -79,6 +79,18 @@ export const RegistryFileSchema = z.object({
   on_conflict: z.enum(["prompt", "skip", "overwrite"]),
 });
 
+export const StackMarketplaceSchema = z.object({
+  name: z.string().min(1),
+  source: z.string().min(1),
+});
+
+export const StackSchema = z.object({
+  marketplaces: z.array(StackMarketplaceSchema).optional(),
+  claude_plugins: z.array(z.string().min(1)).optional(),
+  codex_plugins: z.array(z.string().min(1)).optional(),
+  sync_skills_from: z.string().optional(),
+});
+
 export const RegistrySchema = z.object({
   slug: z
     .string()
@@ -89,7 +101,11 @@ export const RegistrySchema = z.object({
   requires: z.array(z.string()),
   files: z.array(RegistryFileSchema).min(1),
   post_install_notes: z.string().optional(),
+  stack: StackSchema.optional(),
 });
+
+export type Stack = z.infer<typeof StackSchema>;
+export type StackMarketplace = z.infer<typeof StackMarketplaceSchema>;
 
 export type Registry = z.infer<typeof RegistrySchema>;
 

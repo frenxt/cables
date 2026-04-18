@@ -1,0 +1,23 @@
+{
+  "slug": "stack-ux",
+  "artifact_type": "skill",
+  "version": "0.1.0",
+  "requires": [],
+  "files": [
+    { "source": "artifact/SKILL.md", "target": ".claude/skills/stack-ux/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/e2e-review/SKILL.md", "target": ".claude/skills/e2e-review/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/qa/SKILL.md", "target": ".claude/skills/qa/SKILL.md", "action": "copy", "on_conflict": "prompt" },
+    { "source": "artifact/skills/voice-test/SKILL.md", "target": ".claude/skills/voice-test/SKILL.md", "action": "copy", "on_conflict": "prompt" }
+  ],
+  "stack": {
+    "marketplaces": [],
+    "claude_plugins": [
+      "frontend-design@claude-plugins-official",
+      "vercel@claude-plugins-official",
+      "superpowers@claude-plugins-official"
+    ],
+    "codex_plugins": [],
+    "sync_skills_from": ".claude/skills"
+  },
+  "post_install_notes": "UX design stack installed. Layer `stack-fullstack` on top once you're past UI exploration."
+}

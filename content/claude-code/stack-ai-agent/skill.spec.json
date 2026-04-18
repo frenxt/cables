@@ -1,0 +1,31 @@
+{
+  "slug": "stack-ai-agent",
+  "canonical_name": "AI agent dev stack",
+  "summary": "Install the plugins and skills needed for LangGraph/LangSmith/prompt-caching agent development.",
+  "capability_cluster": "debugging-observability",
+  "maturity": "beta",
+  "owner": "frenxt",
+  "version": "0.1.0",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "installed_stack_manifest",
+      "type": "report",
+      "description": "List of plugins installed and skills synced."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": ["claude"],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Install the 4 Claude plugins defined in the stack.",
+    "Sync analyse-langsmith-trace, debug-prompt-caching, and benchmark skills into every ~/.claude* profile."
+  ],
+  "verification": {
+    "smoke_test": "Run `claude plugins list` and verify superpowers, vercel, and sentry are installed.",
+    "expected_artifacts": ["claude_plugins_installed", "agent_skills_synced"]
+  }
+}

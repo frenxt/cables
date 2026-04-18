@@ -1,0 +1,82 @@
+name: Suggest a cable
+description: Propose a new cable. Filling this in is ~80% of writing the cable itself.
+title: "cable: <short title>"
+labels: ["good-first-cable", "content"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a cable. Cables are dated, sourced, first-person field notes from real projects. Fill in what you can — you don't need all the answers to open this issue.
+
+        If you'd rather submit a draft directly, clone the repo and run `pnpm new-cable`.
+  - type: input
+    id: title
+    attributes:
+      label: Cable title
+      description: Short. Something like "prompt caching fix" or "claude-md drift".
+      placeholder: "prompt caching fix"
+    validations:
+      required: true
+  - type: textarea
+    id: moment
+    attributes:
+      label: The moment
+      description: |
+        The failure, surprise, or discovery that motivates this cable. Cables lead with a concrete moment, not a definition.
+      placeholder: "Our prompt cache hit rate dropped to 3% last Tuesday — we'd changed one line in the system prompt."
+    validations:
+      required: true
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Which tool is this about?
+      options:
+        - claude-code
+        - codex
+        - cursor
+        - gemini-cli
+        - cross-tool
+    validations:
+      required: true
+  - type: dropdown
+    id: artifact_type
+    attributes:
+      label: What would a reader install from this cable?
+      description: If nothing (tutorial-only), choose "none".
+      options:
+        - claude-md
+        - skill
+        - subagent
+        - slash-command
+        - none
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources you'd cite
+      description: |
+        Every behavioral claim about a tool needs a source — docs, a commit, or a dated blog post. List what you'd link.
+      placeholder: |
+        - https://docs.anthropic.com/.../prompt-caching
+        - commit link or dated blog post
+  - type: dropdown
+    id: draft_status
+    attributes:
+      label: Do you have a draft?
+      options:
+        - "No — just an idea"
+        - "Partial — outline or notes"
+        - "Yes — ready to open a PR"
+    validations:
+      required: true
+  - type: checkboxes
+    id: voice
+    attributes:
+      label: House voice checklist
+      description: Cables are first-person plural, past-tense. Review CONTRIBUTING.md for details.
+      options:
+        - label: I've read CONTRIBUTING.md
+          required: false
+        - label: I can cite a source for every behavioral claim
+          required: false

@@ -1,0 +1,55 @@
+---
+title: AI agent dev stack (LangGraph + LangSmith)
+slug: stack-ai-agent
+tool: claude-code
+track: fundamentals
+day: null
+category: workflow
+tags:
+  - stack
+  - ai-agents
+  - langgraph
+  - langsmith
+difficulty: intermediate
+time_required: 5 min
+artifact_type: skill
+has_war_story: false
+contributors:
+  - '@frenxt'
+last_verified: '2026-04-18'
+source_links:
+  - label: Claude Code docs
+    url: 'https://docs.claude.com/en/docs/claude-code'
+kind: standalone
+---
+
+# AI agent dev stack (LangGraph + LangSmith)
+
+For building, debugging, and evaluating multi-step LLM agents. The skills that catch the problems traces-first: cache misses, regression in eval scores, trace forensics.
+
+## One line
+
+```bash
+npx -y frenxt-cables stack stack-ai-agent --force
+```
+
+## What it installs
+
+**Claude plugins (4):**
+- `superpowers` — systematic debugging, TDD, verification discipline
+- `claude-md-management` — keep the agent project's CLAUDE.md current
+- `vercel` — AI SDK, AI Gateway routing, Workflow DevKit for durable runs, Sandbox for untrusted code
+- `sentry` — AI agent monitoring (LLM call tracing, token cost, latency)
+
+**Skills:**
+- `analyse-langsmith-trace` — paste a LangSmith URL, get a structured triage
+- `debug-prompt-caching` — forensics on cache misses and cost spikes
+- `benchmark` — run LangGraph benchmarks, read traces manually
+
+## When to use this
+
+New agent project where traces and evals will be your day-two tools. Works alongside `stack-fullstack` if the agent is part of a larger product.
+
+## When not
+
+Pure UI work → `stack-ux`. Full product surface → layer `stack-fullstack` on top.

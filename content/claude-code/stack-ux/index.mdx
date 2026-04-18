@@ -1,0 +1,54 @@
+---
+title: UX design stack (frontend design + browser QA)
+slug: stack-ux
+tool: claude-code
+track: fundamentals
+day: null
+category: workflow
+tags:
+  - stack
+  - ux
+  - design
+  - browser-qa
+difficulty: beginner
+time_required: 5 min
+artifact_type: skill
+has_war_story: false
+contributors:
+  - '@frenxt'
+last_verified: '2026-04-18'
+source_links:
+  - label: Claude Code docs
+    url: 'https://docs.claude.com/en/docs/claude-code'
+kind: standalone
+---
+
+# UX design stack
+
+For designing, shipping, and validating product UI — distinctive components without the AI-generic aesthetic, plus browser-QA to catch regressions before users do.
+
+## One line
+
+```bash
+npx -y frenxt-cables stack stack-ux --force
+```
+
+## What it installs
+
+**Claude plugins (3):**
+- `frontend-design` — distinctive, production-grade interface code
+- `vercel` (shadcn, Turbopack, Next.js App Router) — component library + build tooling
+- `superpowers` — brainstorming discipline for UX exploration
+
+**Skills:**
+- `e2e-review` — visual-correctness audit after UI changes (Playwright/Cypress/Jest)
+- `qa` — autonomous browser-use agents for golden-path regression
+- `voice-test` — if the UX has voice surfaces (realtime audio, interviews)
+
+## When to use this
+
+UI-heavy work: design explorations, component libraries, front-end prototypes, voice UI. Layer `stack-fullstack` on top once you're past exploration.
+
+## When not
+
+Pure agent or backend work → `stack-ai-agent` or `stack-fullstack`.

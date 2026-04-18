@@ -1,0 +1,27 @@
+{
+  "slug": "stack-fullstack",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-18",
+  "tier": "extended",
+  "quality_score": 85,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-18",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Primary target — 15 Claude plugins installed via frenxt stack.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "pass",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-18",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Codex plugins enabled in ~/.codex/config.toml.",
+      "blockers": []
+    }
+  }
+}

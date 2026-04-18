@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: FRE|Nxt Labs
+    url: https://frenxt.com
+    about: The team maintaining Cables — reach us if this isn't the right place for your question.
+  - name: Cables on the web
+    url: https://frenxt.com/cables
+    about: Browse all cables, search by tool/category, or read a builder playbook.
