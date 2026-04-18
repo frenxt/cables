@@ -1,0 +1,8 @@
+{
+  "$schema": "https://frenxt.com/schema/community-stack-submission-v1.json",
+  "schema_version": 1,
+  "slug": "cables-stack-e2e",
+  "repo": "sragavendraselvam/cables-stack-e2e",
+  "ref": "v0.1.0",
+  "submitted_by": "sragavendraselvam"
+}
