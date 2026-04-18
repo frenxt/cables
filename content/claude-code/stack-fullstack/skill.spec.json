@@ -1,0 +1,32 @@
+{
+  "slug": "stack-fullstack",
+  "canonical_name": "Full-stack dev stack",
+  "summary": "Install the plugins and skills needed to ship a typed Next.js + Vercel/Netlify project from scaffold to prod.",
+  "capability_cluster": "developer-productivity",
+  "maturity": "beta",
+  "owner": "frenxt",
+  "version": "0.1.0",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "installed_stack_manifest",
+      "type": "report",
+      "description": "List of plugins installed and skills synced."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": ["claude"],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Install the 15 Claude plugins defined in the stack.",
+    "Enable 3 Codex plugins via config.toml.",
+    "Sync e2e-review skill into every ~/.claude* profile."
+  ],
+  "verification": {
+    "smoke_test": "Run `claude plugins list` and verify vercel, frontend-design, feature-dev, and sentry are installed.",
+    "expected_artifacts": ["claude_plugins_installed", "e2e_review_skill_synced"]
+  }
+}

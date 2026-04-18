@@ -1,18 +1,12 @@
 {
   "slug": "skill-stack-replication",
   "artifact_type": "skill",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "requires": [],
   "files": [
     { "source": "artifact/SKILL.md", "target": ".claude/skills/replicate-frenxt-stack/SKILL.md", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/commands/replicate-frenxt-stack.md", "target": ".claude/commands/replicate-frenxt-stack.md", "action": "copy", "on_conflict": "prompt" },
 
-    { "source": "artifact/plugins/installed-plugins.txt", "target": ".claude/stacks/frenxt/installed-plugins.txt", "action": "copy", "on_conflict": "prompt" },
-    { "source": "artifact/plugins/installed-codex-plugins.txt", "target": ".claude/stacks/frenxt/installed-codex-plugins.txt", "action": "copy", "on_conflict": "prompt" },
-    { "source": "artifact/plugins/install-plugins.sh", "target": ".claude/stacks/frenxt/install-plugins.sh", "action": "copy", "on_conflict": "prompt" },
-
-    { "source": "artifact/scripts/bootstrap-frenxt-stack.sh", "target": ".claude/stacks/frenxt/bootstrap-frenxt-stack.sh", "action": "copy", "on_conflict": "prompt" },
-    { "source": "artifact/scripts/sync-skills-to-profiles.sh", "target": ".claude/stacks/frenxt/sync-skills-to-profiles.sh", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/scripts/install-category-plugins.sh", "target": ".claude/stacks/frenxt/install-category-plugins.sh", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/scripts/sync-category-skills-to-profiles.sh", "target": ".claude/stacks/frenxt/sync-category-skills-to-profiles.sh", "action": "copy", "on_conflict": "prompt" },
 
@@ -35,5 +29,35 @@
     { "source": "artifact/skills/qa-release/SKILL.md", "target": ".claude/skills/qa-release/SKILL.md", "action": "copy", "on_conflict": "prompt" },
     { "source": "artifact/skills/voice-test/SKILL.md", "target": ".claude/skills/voice-test/SKILL.md", "action": "copy", "on_conflict": "prompt" }
   ],
-  "post_install_notes": "Run `bash .claude/stacks/frenxt/bootstrap-frenxt-stack.sh` for full replication (Claude + Codex plugins, Claude skills), or run the category scripts for selective install/copy."
+  "stack": {
+    "marketplaces": [
+      { "name": "marketingskills", "source": "https://github.com/coreyhaines31/marketingskills" }
+    ],
+    "claude_plugins": [
+      "superpowers@claude-plugins-official",
+      "code-review@claude-plugins-official",
+      "frontend-design@claude-plugins-official",
+      "feature-dev@claude-plugins-official",
+      "code-simplifier@claude-plugins-official",
+      "claude-md-management@claude-plugins-official",
+      "claude-code-setup@claude-plugins-official",
+      "linear@claude-plugins-official",
+      "sentry@claude-plugins-official",
+      "skill-creator@claude-plugins-official",
+      "vercel@claude-plugins-official",
+      "netlify-skills@claude-plugins-official",
+      "posthog@claude-plugins-official",
+      "commit-commands@claude-plugins-official",
+      "github@claude-plugins-official",
+      "security-guidance@claude-plugins-official",
+      "marketing-skills@marketingskills"
+    ],
+    "codex_plugins": [
+      "build-web-apps@openai-curated",
+      "github@openai-curated",
+      "vercel@openai-curated"
+    ],
+    "sync_skills_from": ".claude/skills"
+  },
+  "post_install_notes": "Full stack installed — plugins, skills, and skill sync all complete. For selective installs by taxonomy, use the focused cables: `frenxt stack stack-fullstack`, `stack-ai-agent`, or `stack-ux`."
 }

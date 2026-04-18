@@ -11,73 +11,107 @@ tags:
   - stack
   - standardization
 difficulty: intermediate
-time_required: 20 min
+time_required: 15 min
 artifact_type: skill
 has_war_story: true
 contributors:
   - '@frenxt'
-last_verified: '2026-04-16'
+last_verified: '2026-04-18'
 source_links:
   - label: Claude Code docs
     url: 'https://docs.claude.com/en/docs/claude-code'
 kind: standalone
 ---
 
-# Replicate Ragav's stack (skills + plugins + scripts)
+# Replicate Ragav's stack
 
-This cable installs the actual stack artifacts from Ragav's `~/.claude*` and `~/.codex` setup so anyone can replicate it quickly.
+Pick the stack that matches what you're building. Each one is a single `npx` command — plugins installed, skills synced, marketplaces configured, no bash scripts.
 
 <WarStory title="Same prompt, different output across profiles">
-The gap was stack drift: different skills and plugins loaded in different profiles. This pack removes that drift by shipping one installable baseline.
+The gap was stack drift: different skills and plugins loaded in different profiles. This pack removes that drift by shipping one installable baseline — and now, four focused slices of it.
 </WarStory>
 
-## One command to install the pack
+---
+
+## 🧱 Full-stack development (Next.js + Vercel)
+
+For typed Next.js apps on Vercel or Netlify — the full shipping loop from scaffold to prod with CI/CD, observability, and release review.
 
 ```bash
-npx frenxt-cables add skill-stack-replication
+npx -y frenxt-cables stack stack-fullstack --force
 ```
 
-What gets installed in your project:
+**Plugins (15 Claude · 3 Codex):** `superpowers`, `claude-md-management`, `claude-code-setup`, `feature-dev`, `code-review`, `code-simplifier`, `commit-commands`, `github`, `security-guidance`, `frontend-design`, `vercel`, `netlify-skills`, `sentry`, `posthog`, `linear` · Codex: `build-web-apps`, `vercel`, `github`
+**Skills:** `e2e-review`
 
-- Core personal skills (`analyse-langsmith-trace`, `benchmark`, `e2e-review`, `qa`, `bugfix-cycle`, `debug-prompt-caching`, `qa-release`, `voice-test`)
-- Claude + Codex plugin manifests and install script
-- Bootstrap scripts
-- Category manifests for selective copy/install
+---
 
-## Subcategory replication (your taxonomy)
+## 🤖 AI agent development (LangGraph + LangSmith)
 
-- **Developer Workflow Systems**
-- **Reasoning Frameworks**
-- **Domain Playbooks**
-
-After install, copy by subcategory:
-
-Install only category plugins (Claude + Codex):
+For building, debugging, and evaluating multi-step LLM agents. Trace-first debugging, cache forensics, manual eval review.
 
 ```bash
+npx -y frenxt-cables stack stack-ai-agent --force
+```
+
+**Plugins (4 Claude):** `superpowers`, `claude-md-management`, `vercel`, `sentry`
+**Skills:** `analyse-langsmith-trace`, `debug-prompt-caching`, `benchmark`
+
+---
+
+## 🎨 UX design
+
+For designing, shipping, and validating product UI — distinctive components and browser-QA.
+
+```bash
+npx -y frenxt-cables stack stack-ux --force
+```
+
+**Plugins (3 Claude):** `frontend-design`, `vercel`, `superpowers`
+**Skills:** `e2e-review`, `qa`, `voice-test`
+
+---
+
+## 🧰 Everything (the full stack)
+
+All 17 Claude plugins, 3 Codex plugins, 8 skills, and the `marketingskills` marketplace. Use when you want the complete baseline or when you're setting up a generalist workstation.
+
+```bash
+npx -y frenxt-cables stack skill-stack-replication --force
+```
+
+**Plugins (17 Claude · 3 Codex):** everything above + `skill-creator`, `netlify-skills`, `posthog`, `commit-commands`, `marketing-skills`
+**Skills (8):** `analyse-langsmith-trace`, `benchmark`, `e2e-review`, `qa`, `bugfix-cycle`, `debug-prompt-caching`, `qa-release`, `voice-test`
+
+---
+
+## What each command actually does
+
+1. Writes the skill files into `.claude/skills/`
+2. Adds any required marketplaces via `claude plugins marketplace add`
+3. Installs each Claude plugin via `claude plugins install`
+4. Enables Codex plugins in `~/.codex/config.toml`
+5. Syncs the skills to **every** `~/.claude*` profile you have
+6. Prints a summary of what installed, what was skipped, what failed
+
+No bash scripts. No two-step flow. One command per stack.
+
+## Flags
+
+- `--dry-run` — show what would happen without touching disk or running claude plugins
+- `--skip-plugins` — only install files + marketplaces
+- `--skip-skills` — don't sync to `~/.claude*/skills/`
+- `--skip-marketplaces` — assume marketplaces are already configured
+- `--force` — overwrite existing files without prompting
+
+## Selective install by taxonomy (advanced)
+
+If you want to layer by the original category taxonomy (developer-workflow-systems · reasoning-frameworks · domain-playbooks), the mono cable still ships the category scripts:
+
+```bash
+npx -y frenxt-cables add skill-stack-replication
 bash .claude/stacks/frenxt/install-category-plugins.sh developer-workflow-systems
+bash .claude/stacks/frenxt/sync-category-skills-to-profiles.sh reasoning-frameworks
 ```
 
-Sync only category skills to `~/.claude*`:
-
-```bash
-bash .claude/stacks/frenxt/sync-category-skills-to-profiles.sh developer-workflow-systems
-```
-
-Accepted category values:
-
-- `developer-workflow-systems`
-- `reasoning-frameworks`
-- `domain-playbooks`
-
-## Full replication
-
-```bash
-bash .claude/stacks/frenxt/bootstrap-frenxt-stack.sh
-```
-
-## Why this works
-
-- Shared baseline skills remove behavior drift.
-- Category manifests let readers adopt only the parts they need.
-- Plugin setup becomes repeatable across both tools with explicit manifests instead of manual memory.
+Most users don't need this. The four stacks above cover 95% of setups.
