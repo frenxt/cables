@@ -1,0 +1,27 @@
+{
+  "slug": "publish-your-stack",
+  "owner": "frenxt",
+  "reviewed_at": "2026-04-18",
+  "tier": "extended",
+  "quality_score": 85,
+  "matrix": {
+    "claude-code": {
+      "status": "pass",
+      "adapter_version": "claude-code-2026.04",
+      "verified_on": "2026-04-18",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Primary target — the skill orchestrates gh, git, and claude CLIs.",
+      "blockers": []
+    },
+    "codex": {
+      "status": "partial",
+      "adapter_version": "codex-2026.04",
+      "verified_on": "2026-04-18",
+      "plugin_equivalents": [],
+      "skill_fallbacks": [],
+      "notes": "Codex can run the same shell commands but the skill prompt is written for Claude Code context.",
+      "blockers": []
+    }
+  }
+}

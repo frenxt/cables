@@ -1,0 +1,62 @@
+{
+  "slug": "publish-your-stack",
+  "canonical_name": "Publish your stack (automated)",
+  "summary": "Automate publishing a Claude Code stack to the Cables community marketplace — detect setup, generate stack.json, validate, tag, and open the submission PR.",
+  "capability_cluster": "workflow-automation",
+  "maturity": "beta",
+  "owner": "frenxt",
+  "version": "0.1.0",
+  "inputs": [
+    {
+      "name": "stack_slug",
+      "type": "string",
+      "required": true,
+      "description": "Kebab-case unique identifier for the stack on frenxt.com."
+    },
+    {
+      "name": "stack_purpose",
+      "type": "enum",
+      "required": true,
+      "description": "fullstack-development | ai-agent-development | ux-design | qa-release | marketing-growth | meta | other"
+    },
+    {
+      "name": "publisher_repo",
+      "type": "string",
+      "required": true,
+      "description": "owner/repo where the stack.json lives — existing or to be created."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "submission_pr_url",
+      "type": "text",
+      "description": "The opened PR against frenxt/cables with the submission pointer file."
+    },
+    {
+      "name": "stack_json_path",
+      "type": "file",
+      "description": "Location of the generated .cables/stack.json in the publisher repo."
+    }
+  ],
+  "dependencies": {
+    "env_vars": [],
+    "binaries": ["gh", "git", "claude", "node"],
+    "services": [],
+    "plugins": []
+  },
+  "workflow_steps": [
+    "Detect existing Claude plugins, Codex plugins, marketplaces, and local skills.",
+    "Collect stack metadata (slug, title, purpose, publisher repo) from the user.",
+    "Prepare the publisher repo (new via gh repo create or use existing).",
+    "Generate .cables/stack.json from the detected setup + user input.",
+    "Bundle user-approved skills into .claude/skills/ in the publisher repo.",
+    "Run frenxt stack-publish locally — loop on REJECTED until APPROVED or user-confirmed NEEDS REVIEW.",
+    "Commit, tag v0.1.0, push with tags.",
+    "Fork frenxt/cables, add community-stacks/<slug>.json submission pointer, push, open PR.",
+    "Report PR URL and next steps to the user."
+  ],
+  "verification": {
+    "smoke_test": "Run through a dry-run scenario with a fake stack — confirm stack.json passes validation and submission pointer format is correct.",
+    "expected_artifacts": ["stack_json_generated", "validator_approved_or_review", "submission_pr_opened"]
+  }
+}
