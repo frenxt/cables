@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-18T09:47:00.696Z",
+  "generated_at": "2026-04-18T10:05:19.581Z",
   "entries": [
     {
       "title": "Anthropic's Responsible Scaling Policy (Sep 2023) — safety as operating procedure",
@@ -1858,7 +1858,7 @@
       "compatibility_claude_status": "pass",
       "compatibility_codex_status": "pass",
       "compatibility_reviewed_at": "2026-04-16",
-      "compatibility_rank": 11,
+      "compatibility_rank": 12,
       "path": "content/claude-code/langgraph-agent-benchmark"
     },
     {
@@ -1963,6 +1963,41 @@
       "compatibility_reviewed_at": "2026-04-16",
       "compatibility_rank": 6,
       "path": "content/claude-code/publish-to-frenxt-cables"
+    },
+    {
+      "title": "Publish your stack to Cables (automated)",
+      "slug": "publish-your-stack",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "beginner",
+      "day": null,
+      "series": null,
+      "series_title": null,
+      "series_order": null,
+      "series_total": null,
+      "tags": [
+        "stack",
+        "publishing",
+        "community",
+        "automation"
+      ],
+      "time_required": "10 min",
+      "artifact_type": "skill",
+      "has_war_story": false,
+      "last_verified": "2026-04-18",
+      "publisher": null,
+      "provenance_repo": null,
+      "provenance_ref": null,
+      "skill_capability_cluster": "workflow-automation",
+      "skill_maturity": "beta",
+      "compatibility_tier": "extended",
+      "compatibility_quality_score": 85,
+      "compatibility_claude_status": "pass",
+      "compatibility_codex_status": "partial",
+      "compatibility_reviewed_at": "2026-04-18",
+      "compatibility_rank": 8,
+      "path": "content/claude-code/publish-your-stack"
     },
     {
       "title": "How QA Agent Works (Architecture)",
@@ -2311,7 +2346,7 @@
       "compatibility_claude_status": "pass",
       "compatibility_codex_status": "partial",
       "compatibility_reviewed_at": "2026-04-18",
-      "compatibility_rank": 8,
+      "compatibility_rank": 9,
       "path": "content/claude-code/stack-ai-agent"
     },
     {
@@ -2346,7 +2381,7 @@
       "compatibility_claude_status": "pass",
       "compatibility_codex_status": "pass",
       "compatibility_reviewed_at": "2026-04-18",
-      "compatibility_rank": 9,
+      "compatibility_rank": 10,
       "path": "content/claude-code/stack-fullstack"
     },
     {
@@ -2381,7 +2416,7 @@
       "compatibility_claude_status": "pass",
       "compatibility_codex_status": "partial",
       "compatibility_reviewed_at": "2026-04-18",
-      "compatibility_rank": 10,
+      "compatibility_rank": 11,
       "path": "content/claude-code/stack-ux"
     }
   ]
