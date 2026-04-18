@@ -1,11 +1,16 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync, cpSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, statSync, cpSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 import pc from "picocolors";
 import type { ContentResolver } from "../lib/resolver/types";
 import { installPlan, type InstallOptions } from "../lib/installer";
-import type { PreparedInstall, InstallResult, Stack, StackMarketplace } from "../lib/types";
+import type { PreparedInstall, InstallResult, Registry, StackMarketplace } from "../lib/types";
+import {
+  parseSlug,
+  resolveCommunityStack,
+  type ResolvedCommunityStack,
+} from "../lib/resolve-community-stack";
 
 export interface StackOptions extends InstallOptions {
   skipPlugins?: boolean;
@@ -17,8 +22,64 @@ export interface StackResult {
   install: InstallResult;
   marketplaces: { added: string[]; skipped: string[]; failed: string[] };
   claudePlugins: { installed: string[]; failed: string[] };
-  codexPlugins: { enabled: string[]; failed: string[] };
   skillsSyncedTo: string[];
+  community?: { repo: string; ref: string };
+}
+
+interface ResolvedFirstPartyStack {
+  kind: "first-party";
+  registry: Registry;
+  files: Map<string, string>;
+}
+
+interface ResolvedCommunityStackTagged extends ResolvedCommunityStack {
+  kind: "community";
+}
+
+type ResolvedStack = ResolvedFirstPartyStack | ResolvedCommunityStackTagged;
+
+/**
+ * Resolve a stack slug to an installable plan. First tries the first-party
+ * content index in the cables repo. If the slug looks scoped (@handle/slug) or
+ * isn't found first-party, falls back to community-stacks/ submissions.
+ */
+async function resolveStack(
+  resolver: ContentResolver,
+  rawSlug: string
+): Promise<ResolvedStack> {
+  const parsed = parseSlug(rawSlug);
+  if (!parsed) {
+    throw new Error(
+      `Invalid slug "${rawSlug}". Expected kebab-case (e.g. stack-fullstack) or scoped (e.g. @handle/stack-name).`
+    );
+  }
+
+  // Scoped slugs are always community — skip the first-party lookup.
+  if (parsed.kind === "bare") {
+    const index = await resolver.getIndex();
+    const entry = index.entries.find((e) => e.slug === parsed.slug);
+    if (entry && entry.artifact_type !== null) {
+      const registry = await resolver.getRegistry(parsed.slug);
+      if (registry && registry.stack) {
+        const files = new Map<string, string>();
+        for (const file of registry.files) {
+          const content = await resolver.getArtifactFile(parsed.slug, file.source);
+          files.set(file.source, content);
+        }
+        return { kind: "first-party", registry, files };
+      }
+    }
+  }
+
+  const community = await resolveCommunityStack(parsed);
+  if (!community) {
+    const hint =
+      parsed.kind === "scoped"
+        ? `community-stacks/${parsed.handle}/${parsed.slug}.json not found in frenxt/cables.`
+        : `Stack "${parsed.slug}" not found as a first-party cable or community submission.`;
+    throw new Error(hint);
+  }
+  return { ...community, kind: "community" };
 }
 
 export async function runStack(
@@ -26,31 +87,14 @@ export async function runStack(
   slug: string,
   options: StackOptions
 ): Promise<StackResult> {
-  const index = await resolver.getIndex();
-  const entry = index.entries.find((e) => e.slug === slug);
-  if (!entry) {
-    throw new Error(`Cable "${slug}" not found in the index.`);
-  }
-  if (entry.artifact_type === null) {
-    throw new Error(`Cable "${slug}" has no artifact — cannot stack.`);
-  }
+  const resolved = await resolveStack(resolver, slug);
+  const { registry, files } = resolved;
 
-  const registry = await resolver.getRegistry(slug);
-  if (!registry) {
-    throw new Error(`Cable "${slug}" has no registry.json — cannot stack.`);
-  }
   if (!registry.stack) {
-    throw new Error(
-      `Cable "${slug}" has no "stack" block in registry.json — use "frenxt add ${slug}" instead.`
-    );
+    throw new Error(`Stack "${slug}" resolved but has no stack block.`);
   }
 
   // Step 1 — install files (same behavior as `add`).
-  const files = new Map<string, string>();
-  for (const file of registry.files) {
-    const content = await resolver.getArtifactFile(slug, file.source);
-    files.set(file.source, content);
-  }
   const plan: PreparedInstall = { registry, files };
   const install = await installPlan(plan, options);
 
@@ -58,8 +102,11 @@ export async function runStack(
     install,
     marketplaces: { added: [], skipped: [], failed: [] },
     claudePlugins: { installed: [], failed: [] },
-    codexPlugins: { enabled: [], failed: [] },
     skillsSyncedTo: [],
+    community:
+      resolved.kind === "community"
+        ? { repo: resolved.source.submission.repo, ref: resolved.source.submission.ref }
+        : undefined,
   };
 
   if (options.dryRun) {
@@ -74,15 +121,9 @@ export async function runStack(
     await configureMarketplaces(stack.marketplaces, result);
   }
 
-  if (!options.skipPlugins) {
-    if (stack.claude_plugins && stack.claude_plugins.length > 0) {
-      console.log(`\n${pc.cyan("──")}  Step 3a · Install Claude plugins`);
-      installClaudePlugins(stack.claude_plugins, result);
-    }
-    if (stack.codex_plugins && stack.codex_plugins.length > 0) {
-      console.log(`\n${pc.cyan("──")}  Step 3b · Enable Codex plugins`);
-      enableCodexPlugins(stack.codex_plugins, result);
-    }
+  if (!options.skipPlugins && stack.claude_plugins && stack.claude_plugins.length > 0) {
+    console.log(`\n${pc.cyan("──")}  Step 3 · Install Claude plugins`);
+    installClaudePlugins(stack.claude_plugins, result);
   }
 
   if (!options.skipSkills && stack.sync_skills_from) {
@@ -179,42 +220,6 @@ function installClaudePlugins(plugins: string[], result: StackResult): void {
   }
 }
 
-function enableCodexPlugins(plugins: string[], result: StackResult): void {
-  const probe = spawnSync("codex", ["--version"], { stdio: "ignore" });
-  if (probe.status !== 0) {
-    console.log(pc.dim("  Codex CLI not found — skipping Codex plugin enablement."));
-    return;
-  }
-  const cfg = join(homedir(), ".codex", "config.toml");
-  mkdirSync(dirname(cfg), { recursive: true });
-  let current = "";
-  try {
-    current = readFileSync(cfg, "utf8");
-  } catch {
-    current = "";
-  }
-  for (const plugin of plugins) {
-    const header = `[plugins."${plugin}"]`;
-    if (current.includes(header)) {
-      current = current.replace(
-        new RegExp(
-          `(${escapeRegex(header)}[^[]*?)enabled\\s*=\\s*(?:true|false)`,
-          "s"
-        ),
-        `$1enabled = true`
-      );
-      if (!new RegExp(`${escapeRegex(header)}[^[]*?enabled\\s*=`, "s").test(current)) {
-        current = current.replace(header, `${header}\nenabled = true`);
-      }
-    } else {
-      current += `\n${header}\nenabled = true\n`;
-    }
-    result.codexPlugins.enabled.push(plugin);
-    console.log(`  enabled: ${plugin}`);
-  }
-  writeFileSync(cfg, current);
-}
-
 function syncSkillsToProfiles(sourceDir: string, result: StackResult): void {
   if (!existsSync(sourceDir)) {
     console.error(pc.red(`  Skills source dir not found: ${sourceDir}`));
@@ -262,14 +267,10 @@ function syncSkillsToProfiles(sourceDir: string, result: StackResult): void {
   }
 }
 
-function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 function printSummary(result: StackResult): void {
-  const { marketplaces, claudePlugins, codexPlugins, skillsSyncedTo } = result;
+  const { marketplaces, claudePlugins, skillsSyncedTo, community } = result;
   const totalFailed =
-    marketplaces.failed.length + claudePlugins.failed.length + codexPlugins.failed.length;
+    marketplaces.failed.length + claudePlugins.failed.length;
 
   console.log(`\n${pc.cyan("═══════════════════════════════════════════")}`);
   if (totalFailed === 0) {
@@ -277,20 +278,20 @@ function printSummary(result: StackResult): void {
   } else {
     console.log(`${pc.yellow("⚠")} Stack install finished with ${totalFailed} failure(s).`);
   }
+  if (community) {
+    console.log(pc.dim(`  Source: ${community.repo}@${community.ref}`));
+  }
   console.log(
     `  Marketplaces — added: ${marketplaces.added.length}, ` +
       `skipped: ${marketplaces.skipped.length}, failed: ${marketplaces.failed.length}`
   );
   console.log(
-    `  Claude plugins — installed: ${claudePlugins.installed.length}, failed: ${claudePlugins.failed.length}`
-  );
-  console.log(
-    `  Codex plugins — enabled: ${codexPlugins.enabled.length}, failed: ${codexPlugins.failed.length}`
+    `  Plugins — installed: ${claudePlugins.installed.length}, failed: ${claudePlugins.failed.length}`
   );
   console.log(`  Skills synced to ${skillsSyncedTo.length} profile(s).`);
 
   if (claudePlugins.failed.length > 0) {
-    console.log(pc.dim("  Claude failed: " + claudePlugins.failed.join(", ")));
+    console.log(pc.dim("  Plugins failed: " + claudePlugins.failed.join(", ")));
   }
   if (marketplaces.failed.length > 0) {
     console.log(pc.dim("  Marketplace failed: " + marketplaces.failed.join(", ")));

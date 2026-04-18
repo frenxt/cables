@@ -4,8 +4,18 @@
   "version": "0.1.0",
   "requires": [],
   "files": [
-    { "source": "artifact/SKILL.md", "target": ".claude/skills/stack-fullstack/SKILL.md", "action": "copy", "on_conflict": "prompt" },
-    { "source": "artifact/skills/e2e-review/SKILL.md", "target": ".claude/skills/e2e-review/SKILL.md", "action": "copy", "on_conflict": "prompt" }
+    {
+      "source": "artifact/SKILL.md",
+      "target": ".claude/skills/stack-fullstack/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    },
+    {
+      "source": "artifact/skills/e2e-review/SKILL.md",
+      "target": ".claude/skills/e2e-review/SKILL.md",
+      "action": "copy",
+      "on_conflict": "prompt"
+    }
   ],
   "stack": {
     "marketplaces": [],
@@ -25,11 +35,6 @@
       "sentry@claude-plugins-official",
       "posthog@claude-plugins-official",
       "linear@claude-plugins-official"
-    ],
-    "codex_plugins": [
-      "build-web-apps@openai-curated",
-      "vercel@openai-curated",
-      "github@openai-curated"
     ],
     "sync_skills_from": ".claude/skills"
   },
