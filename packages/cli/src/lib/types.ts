@@ -44,6 +44,18 @@ export interface RegistryFile {
   on_conflict: "prompt" | "skip" | "overwrite";
 }
 
+export interface StackMarketplace {
+  name: string;
+  source: string;
+}
+
+export interface Stack {
+  marketplaces?: StackMarketplace[];
+  claude_plugins?: string[];
+  codex_plugins?: string[];
+  sync_skills_from?: string;
+}
+
 export interface Registry {
   slug: string;
   artifact_type: ArtifactType;
@@ -51,6 +63,7 @@ export interface Registry {
   requires: string[];
   files: RegistryFile[];
   post_install_notes?: string;
+  stack?: Stack;
 }
 
 export interface PreparedInstall {
