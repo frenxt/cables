@@ -22,6 +22,7 @@ import {
   promptConflict,
   spinner,
 } from "./lib/output";
+import { maybePrintPostInstallNudge } from "./lib/nudge";
 import { select, isCancel, cancel } from "@clack/prompts";
 import type { ArtifactType } from "./lib/types";
 import type { ConflictResolution } from "./lib/installer";
@@ -190,6 +191,9 @@ export async function run(argv: string[]): Promise<void> {
         }
         for (const f of result.writtenFiles) success(`Wrote ${f}`);
         for (const f of result.skippedFiles) console.log(`Skipped ${f}`);
+        if (!opts.dryRun && result.writtenFiles.length > 0) {
+          maybePrintPostInstallNudge({ dryRun: !!opts.dryRun });
+        }
         bye(opts.dryRun ? "Dry run complete — no files were written." : "Done.");
       } catch (e) {
         logError((e as Error).message);
