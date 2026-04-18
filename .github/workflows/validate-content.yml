@@ -31,7 +31,18 @@ jobs:
       - run: pnpm validate
       - run: pnpm build-index
       - name: Ensure index is current
-        run: git diff --exit-code content/index.json
+        # build-index stamps a fresh `generated_at` on every run, so a raw
+        # `git diff --exit-code` would always fail. Compare structural content
+        # instead — everything except the timestamp must match the committed
+        # file. If entries drifted, this still fails.
+        run: |
+          set -euo pipefail
+          jq 'del(.generated_at)' content/index.json > /tmp/index.rebuilt.json
+          git show HEAD:content/index.json | jq 'del(.generated_at)' > /tmp/index.committed.json
+          if ! diff -u /tmp/index.committed.json /tmp/index.rebuilt.json; then
+            echo "::error::content/index.json is stale. Run 'pnpm build-index' locally and commit the result."
+            exit 1
+          fi
 
   cli:
     runs-on: ubuntu-latest
