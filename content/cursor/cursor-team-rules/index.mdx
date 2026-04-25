@@ -21,10 +21,10 @@ kind: standalone
 
 # Team Cursor Rules: shared conventions for multi-developer projects
 
-The problem with AI-assisted teams is not that the tools are inconsistent — it's that each developer's tool has a different idea of what "correct" looks like. One person's Cursor knows your naming conventions. Another's doesn't. The code they produce diverges, and you debug it in review.
+The problem with AI-assisted teams is not that the tools are inconsistent. It's that each developer's tool has a different idea of what "correct" looks like. One person's Cursor knows your naming conventions. Another's doesn't. The code they produce diverges, and you debug it in review.
 
 <WarStory title="Four developers, four different component patterns">
-We had a monorepo where four engineers were using Cursor daily. After three sprints, we noticed something in code review: the same component problem was being solved four different ways. Not wrong ways — just different ones. One person used compound components. One used render props. Two used prop drilling in different shapes. The cause wasn't skill variance; it was context variance. Each developer's Cursor knew what they individually preferred, not what the team had agreed on. We'd never written it down in a place the tool could read.
+We had a monorepo where four engineers were using Cursor daily. After three sprints, we noticed something in code review: the same component problem was being solved four different ways. Not wrong ways. Just different ones. One person used compound components. One used render props. Two used prop drilling in different shapes. The cause wasn't skill variance; it was context variance. Each developer's Cursor knew what they individually preferred, not what the team had agreed on. We'd never written it down in a place the tool could read.
 </WarStory>
 
 ## What we tried
@@ -33,7 +33,7 @@ We checked the `.cursor/rules/` directory into the repo. That was the entire fix
 
 ## What happened
 
-Code review got shorter. Not because we reviewed less carefully, but because the common pattern mismatches — the ones that generated three-comment threads — stopped appearing. The tool was catching them before commit.
+Code review got shorter. Not because we reviewed less carefully, but because the common pattern mismatches. The ones that generated three-comment threads. Stopped appearing. The tool was catching them before commit.
 
 ## What we learned
 
@@ -70,7 +70,7 @@ Cursor merges both. Project rules apply to everyone; personal rules stay local. 
 
 **Keep the team rules short:**
 
-A shared rules file that nobody reads is worse than no shared rules file. Keep `project.mdc` under 100 words. Put architecture decisions that need explanation in `CONTRIBUTING.md` and `ADR` docs — that's where prose belongs. Rules are constraints, not documentation.
+A shared rules file that nobody reads is worse than no shared rules file. Keep `project.mdc` under 100 words. Put architecture decisions that need explanation in `CONTRIBUTING.md` and `ADR` docs. That's where prose belongs. Rules are constraints, not documentation.
 
 **Onboarding:**
 

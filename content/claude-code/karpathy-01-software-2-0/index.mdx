@@ -1,5 +1,5 @@
 ---
-title: Karpathy's Software 2.0 (2017) — the blog post that predicted the decade
+title: 'Karpathy''s Software 2.0 (2017): the blog post that predicted the decade'
 slug: karpathy-01-software-2-0
 tool: claude-code
 track: thought-leadership
@@ -21,14 +21,14 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: 'Karpathy — Software 2.0 (Medium, Nov 2017)'
+  - label: 'Karpathy: Software 2.0 (Medium, Nov 2017)'
     url: 'https://karpathy.medium.com/software-2-0-a64152b37c35'
 kind: standalone
 ---
 
 # The Karpathy Playbook #1: Software 2.0
 
-*A six-part series tracing Andrej Karpathy's public thinking from 2017 to 2025 — one foundational post per entry, each with FRE|Nxt Labs live commentary on how we apply it in production AI work.*
+*A six-part series tracing Andrej Karpathy's public thinking from 2017 to 2025. One foundational post per entry, each with FRE|Nxt Labs live commentary on how we apply it in production AI work.*
 
 ---
 
@@ -38,7 +38,7 @@ kind: standalone
 >
 > "The 'classical stack' of Software 1.0 is what we're all familiar with — it is written in languages such as Python, C++, etc. It consists of explicit instructions to the computer written by a programmer."
 >
-> — [**Andrej Karpathy, *Software 2.0*, Medium**](https://karpathy.medium.com/software-2-0-a64152b37c35), 11 November 2017
+> [**Andrej Karpathy, *Software 2.0*, Medium**](https://karpathy.medium.com/software-2-0-a64152b37c35), 11 November 2017
 
 ---
 
@@ -48,7 +48,7 @@ Read this post in 2017 and it sounded like category theory. Read it in 2026 and 
 
 Karpathy's thesis: Software 1.0 is humans writing explicit instructions. Software 2.0 is humans curating datasets; the neural network writes the function itself. The programmer's job shifts from *writing code* to *designing the training signal*.
 
-The part most people missed on first read: Karpathy was already arguing in 2017 that Software 2.0 has its own stack — datasets are the new source code, model weights are the new binaries, gradient descent is the new compiler. Everything we now call "MLOps" is the infrastructure he sketched eight years earlier.
+The part most people missed on first read: Karpathy was already arguing in 2017 that Software 2.0 has its own stack. Datasets are the new source code, model weights are the new binaries, gradient descent is the new compiler. Everything we now call "MLOps" is the infrastructure he sketched eight years earlier.
 
 ---
 
@@ -74,7 +74,7 @@ In the InterviewLM system, we used both paradigms explicitly:
 - **Software 1.0**: Session routing, rate limits, billing, auth, transcript storage. Pure deterministic code.
 - **Software 2.0**: Candidate response evaluation, follow-up question generation, persona selection. LLM-native, trained/tuned via prompt + examples.
 
-The boundary was drawn on day one. Every new feature has to be assigned to one side or the other before anyone writes code. This is the single biggest factor in why the architecture stayed coherent across 8 agents and 100+ concurrent sessions — we never tried to make the LLM handle billing logic, and we never tried to make regex understand a candidate's hedged answer.
+The boundary was drawn on day one. Every new feature has to be assigned to one side or the other before anyone writes code. This is the single biggest factor in why the architecture stayed coherent across 8 agents and 100+ concurrent sessions. We never tried to make the LLM handle billing logic, and we never tried to make regex understand a candidate's hedged answer.
 
 ---
 
@@ -86,4 +86,4 @@ Before you start your next AI feature, draw a line on a whiteboard. On the left:
 
 ## Next in this series
 
-**#2 — LLM OS (September 2023)**. Karpathy's framing of LLMs not as chatbots but as the kernel of a new operating system. The architecture blueprint we still use today.
+**#2. LLM OS (September 2023)**. Karpathy's framing of LLMs not as chatbots but as the kernel of a new operating system. The architecture blueprint we still use today.

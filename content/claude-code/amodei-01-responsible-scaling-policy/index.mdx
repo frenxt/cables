@@ -1,6 +1,6 @@
 ---
 title: >-
-  Anthropic's Responsible Scaling Policy (Sep 2023) — safety as operating
+  Anthropic's Responsible Scaling Policy (Sep 2023): safety as operating
   procedure
 slug: amodei-01-responsible-scaling-policy
 tool: claude-code
@@ -37,7 +37,7 @@ kind: standalone
 
 # Inside Anthropic with Dario Amodei #1: The Responsible Scaling Policy
 
-*A five-part series tracing Anthropic's public thinking through Dario Amodei's writing and the company's model spec — one foundational document per entry, each with FRE|Nxt Labs live commentary on how we apply it in production AI work.*
+*A five-part series tracing Anthropic's public thinking through Dario Amodei's writing and the company's model spec. One foundational document per entry, each with FRE|Nxt Labs live commentary on how we apply it in production AI work.*
 
 ---
 
@@ -47,15 +47,15 @@ kind: standalone
 >
 > "Risk governance in this rapidly evolving domain should be **proportional, iterative, and exportable**."
 >
-> — [**Anthropic's Responsible Scaling Policy v1.0**](https://www-cdn.anthropic.com/1adf000c8f675958c2ee23805d91aaade1cd4613/responsible-scaling-policy.pdf), published 19 September 2023
+> [**Anthropic's Responsible Scaling Policy v1.0**](https://www-cdn.anthropic.com/1adf000c8f675958c2ee23805d91aaade1cd4613/responsible-scaling-policy.pdf), published 19 September 2023
 
-The RSP introduced **AI Safety Levels (ASL)** — graduated tiers of required safeguards that escalate as model capabilities escalate. ASL-2 governs today's frontier models; ASL-3, ASL-4, and beyond define what Anthropic commits to build *before* training models that could plausibly cause catastrophic harm.
+The RSP introduced **AI Safety Levels (ASL)**: graduated tiers of required safeguards that escalate as model capabilities escalate. ASL-2 governs today's frontier models; ASL-3, ASL-4, and beyond define what Anthropic commits to build *before* training models that could plausibly cause catastrophic harm.
 
 ---
 
 ## What we heard
 
-The RSP's contribution is not the rules themselves — it's the framing. Three words do most of the work:
+The RSP's contribution is not the rules themselves. It is the framing. Three words do most of the work:
 
 - **Proportional**: safeguards scale with capability. Don't over-engineer for GPT-3-era risks on a GPT-3-era model; don't under-engineer for frontier risks on a frontier model.
 - **Iterative**: update the policy as capability grows. The v3.0 document is a direct descendant of v1.0, and the mechanism to update it is baked into the policy itself.
@@ -67,7 +67,7 @@ This is an operating procedure, not a press release. That distinction matters: e
 
 ## What we actually do with this
 
-We adapted the RSP frame into what we call a **deployment-level matrix** for every client engagement. Instead of AI Safety Levels, we define **Production Risk Levels (PRL)** — four tiers based on blast radius:
+We adapted the RSP frame into what we call a **deployment-level matrix** for every client engagement. Instead of AI Safety Levels, we define **Production Risk Levels (PRL)**: four tiers based on blast radius.
 
 | Tier | Description | Example | Required safeguards |
 |---|---|---|---|
@@ -76,7 +76,27 @@ We adapted the RSP frame into what we call a **deployment-level matrix** for eve
 | **PRL-3** | External, financial or identity-linked | Candidate evaluations, lead qualification | + human review of sampled outputs, adversarial testing, cost guardrails |
 | **PRL-4** | Autonomous agents with tool access | Multi-agent systems with writes | + full trace replay, kill switches, incident response runbook |
 
-Every AI feature we ship is assigned a PRL at spec time. The safeguards required at each tier are non-negotiable — you don't get to skip them because the deadline is tight. This is exactly the RSP's "proportional" principle, applied to production systems instead of frontier model training.
+Every AI feature we ship is assigned a PRL at spec time. The safeguards required at each tier are non-negotiable. You do not get to skip them because the deadline is tight. That is the RSP's "proportional" principle, applied to production systems instead of frontier model training.
+
+## The PRL decision, at spec time
+
+```mermaid
+flowchart TD
+  F["new AI feature"] --> Q1{"external users?"}
+  Q1 -->|"no"| PRL1["PRL-1: internal, HITL"]
+  Q1 -->|"yes"| Q2{"reversible output?"}
+  Q2 -->|"yes"| PRL2["PRL-2: external, reversible"]
+  Q2 -->|"no"| Q3{"financial / identity-linked?"}
+  Q3 -->|"yes"| PRL3["PRL-3: high-stakes external"]
+  Q3 -->|"no"| PRL2
+  PRL1 -. spec-time assignment .-> Gates["gates chosen before build"]
+  PRL2 -. spec-time assignment .-> Gates
+  PRL3 -. spec-time assignment .-> Gates
+  Agents["autonomous tool-writing agents"] --> PRL4["PRL-4: full trace + kill switch"]
+  PRL4 --> Gates
+```
+
+The tier is picked before the first line of the feature is written. That is the whole point of the "proportional, iterative, exportable" frame: you commit to the gates first, the product second.
 
 ---
 
@@ -86,7 +106,7 @@ InterviewLM is a PRL-3 system (external, identity-linked via candidate assessmen
 
 - **Adversarial eval set**: 40+ prompt-injection and jailbreak attempts that must all return safe outputs before deployment
 - **Human sampling review**: 5% of production sessions sampled weekly by an engineering lead
-- **Cost guardrails**: hard-cap at $3.00 per session — no soft-alert, just termination
+- **Cost guardrails**: hard-cap at $3.00 per session. No soft-alert, just termination.
 - **Kill switch**: single-config toggle to disable all LLM calls without redeploying
 - **Trace replay**: every session is reproducible from LangSmith traces
 
@@ -96,10 +116,10 @@ All five gates existed before we shipped. None were bolted on after an incident.
 
 ## The one thing to steal from this
 
-Before your next AI feature ships, write a one-page Production Risk Level for it. Assign the tier. List the required safeguards. Get sign-off on the list — not the product, the safeguards. The RSP's real innovation is that it separates "what we're building" from "what we're committing to have in place before we ship it." Do the same.
+Before your next AI feature ships, write a one-page Production Risk Level for it. Assign the tier. List the required safeguards. Get sign-off on the list, not the product, the safeguards. The RSP's real innovation is that it separates "what we are building" from "what we are committing to have in place before we ship it." Do the same.
 
 ---
 
 ## Next in this series
 
-**#2 — Claude's Constitution**. The "brilliant friend" framing that defines what Claude should actually be, and how we use it to audit every AI advisor product we ship.
+**#2. Claude's Constitution.** The "brilliant friend" framing that defines what Claude should actually be, and how we use it to audit every AI advisor product we ship.

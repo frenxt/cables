@@ -1,6 +1,6 @@
 ---
 title: >-
-  Harrison Chase: "a single 800-line Python package" (Oct 2022) — the LangChain
+  Harrison Chase: "a single 800-line Python package" (Oct 2022): the LangChain
   origin story
 slug: chase-01-langchain-origin
 tool: claude-code
@@ -24,18 +24,18 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Harrison Chase — Reflections on Three Years of Building LangChain
+  - label: 'Harrison Chase: Reflections on Three Years of Building LangChain'
     url: 'https://blog.langchain.com/three-years-langchain/'
   - label: LangChain on Wikipedia
     url: 'https://en.wikipedia.org/wiki/LangChain'
-  - label: Latent Space interview — The Point of LangChain
+  - label: 'Latent Space interview: The Point of LangChain'
     url: 'https://www.latent.space/p/langchain'
 kind: standalone
 ---
 
 # Harrison Chase on Production Agents #1: The 800-line weekend project
 
-*A five-part series tracing Harrison Chase's public thinking on production AI agents — from LangChain as a weekend project to ambient agents — with FRE|Nxt Labs commentary on how we apply each pattern in production engagements.*
+*A five-part series tracing Harrison Chase's public thinking on production AI agents. From LangChain as a weekend project to ambient agents. With FRE|Nxt Labs commentary on how we apply each pattern in production engagements.*
 
 ---
 
@@ -43,7 +43,7 @@ kind: standalone
 
 > "langchain was launched as a single (800 line long?) python package in fall of 2022 out of my personal github hwchase17. It was a side project. I was inspired by going to meetups and running into a few folks on the bleeding edge, building some experimental stuff with language models."
 >
-> — [**Harrison Chase**, *Reflections on Three Years of Building LangChain*](https://blog.langchain.com/three-years-langchain/)
+> [**Harrison Chase**, *Reflections on Three Years of Building LangChain*](https://blog.langchain.com/three-years-langchain/)
 
 First commit: 16 October 2022. First tweet: 24 October 2022. LangChain was incorporated in January 2023, a couple of months after ChatGPT's launch brought the first wave of developers to the project.
 
@@ -65,7 +65,7 @@ The lesson isn't "get lucky with timing." It's: *an 800-line package that does o
 
 We treat **minimal viable abstraction (MVA)** as an explicit discipline on every client engagement. Before writing any framework-scale code, we ask:
 
-1. **What is the one thing we're abstracting?** If the answer is "it handles many things," stop — we haven't scoped it tightly enough yet.
+1. **What is the one thing we're abstracting?** If the answer is "it handles many things," stop. We haven't scoped it tightly enough yet.
 2. **Can this live in a single file?** If not, we need to explain why multiple files are load-bearing right now, not "later when we scale."
 3. **What existing library could we adopt instead?** Nine times out of ten there's a library that does 80% of what we need. We adopt it, write the missing 20%, and move on.
 
@@ -91,4 +91,4 @@ Next time you're tempted to write a framework, write the 800-line version first.
 
 ## Next in this series
 
-**#2 — LangGraph: the runtime (June 2024)**. When LangChain-the-library wasn't enough for stateful multi-agent systems, LangChain-the-company shipped a graph-based runtime. Why state machines beat prompts for agent orchestration.
+**#2. LangGraph: the runtime (June 2024)**. When LangChain-the-library wasn't enough for stateful multi-agent systems, LangChain-the-company shipped a graph-based runtime. Why state machines beat prompts for agent orchestration.

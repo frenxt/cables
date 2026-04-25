@@ -138,16 +138,16 @@ Expected score differentiation:
 ## Output
 
 Results saved to `apps/qa-agent/results/voice-sim/<session>-<persona>-<timestamp>/`:
-- `conversation.json` — full transcript with timing metrics
-- `interview.wav` — combined audio (AI + candidate), 24kHz mono, with 0.5s silence between turns
+- `conversation.json`. Full transcript with timing metrics
+- `interview.wav`. Combined audio (AI + candidate), 24kHz mono, with 0.5s silence between turns
 
 Listen to the WAV to verify: natural turn-taking, no stuttering, question variety, appropriate interview flow.
 
 ## Resolved Issues (Fixed)
 
-- **Gemini silent turns**: Empty `turnComplete` with no speech — fixed with immediate nudge + retry (up to 3) in `gemini-live.ts`
-- **Question repetition**: Gemini re-asked covered topics — fixed with explicit "NEVER repeat" in system instruction + covered topic context in tool responses
-- **Audio stuttering in WAV**: Per-chunk saving caused gaps — fixed with per-turn buffering in `voice_sim.py`
+- **Gemini silent turns**: Empty `turnComplete` with no speech. Fixed with immediate nudge + retry (up to 3) in `gemini-live.ts`
+- **Question repetition**: Gemini re-asked covered topics. Fixed with explicit "NEVER repeat" in system instruction + covered topic context in tool responses
+- **Audio stuttering in WAV**: Per-chunk saving caused gaps. Fixed with per-turn buffering in `voice_sim.py`
 
 ## Common Fixes
 

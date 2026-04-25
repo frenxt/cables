@@ -1,6 +1,6 @@
 ---
 title: >-
-  Dario Amodei's Urgency of Interpretability (April 2025) — the unsolved problem
+  Dario Amodei's Urgency of Interpretability (April 2025): the unsolved problem
   in production
 slug: amodei-04-urgency-of-interpretability
 tool: claude-code
@@ -24,7 +24,7 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Dario Amodei — The Urgency of Interpretability (April 2025)
+  - label: 'Dario Amodei: The Urgency of Interpretability (April 2025)'
     url: 'https://www.darioamodei.com/post/the-urgency-of-interpretability'
   - label: Dario's tweet announcing the essay
     url: 'https://x.com/DarioAmodei/status/1915515160607023391'
@@ -36,7 +36,7 @@ kind: standalone
 
 # Inside Anthropic with Dario Amodei #4: The Urgency of Interpretability
 
-*Part 4 of 5 — tracing Anthropic's public thinking with FRE|Nxt Labs production commentary.*
+*Part 4 of 5. Tracing Anthropic's public thinking with FRE|Nxt Labs production commentary.*
 
 ---
 
@@ -48,7 +48,7 @@ kind: standalone
 >
 > "We therefore must move fast if we want interpretability to mature in time to matter."
 >
-> — [**Dario Amodei, *The Urgency of Interpretability*, April 2025**](https://www.darioamodei.com/post/the-urgency-of-interpretability) ([tweet](https://x.com/DarioAmodei/status/1915515160607023391))
+> [**Dario Amodei, *The Urgency of Interpretability*, April 2025**](https://www.darioamodei.com/post/the-urgency-of-interpretability) ([tweet](https://x.com/DarioAmodei/status/1915515160607023391))
 
 Dario's public goal: open the black box of production AI systems by 2027.
 
@@ -58,7 +58,7 @@ Dario's public goal: open the black box of production AI systems by 2027.
 
 Every production engineer knows a version of Amodei's point intuitively. You've debugged a weird bug by reading a stack trace, grepping a log, attaching a debugger. None of that works for an LLM. The model emits an answer. You either trust it or you don't. When it's wrong, you can't ask *why*.
 
-That gap — between "I can debug any traditional bug" and "I cannot debug any LLM behaviour" — is the gap Amodei is calling urgent. It's not a research problem in the abstract. It's a production problem in the specific.
+That gap, between "I can debug any traditional bug" and "I cannot debug any LLM behaviour", is the gap Amodei is calling urgent. It's not a research problem in the abstract. It's a production problem in the specific.
 
 If interpretability matures before capability, we can trust what we're building. If capability outruns interpretability, we're deploying systems we can't inspect into places where inspection matters. Production AI work in 2026 lives inside that gap.
 
@@ -66,7 +66,7 @@ If interpretability matures before capability, we can trust what we're building.
 
 ## What we actually do with this
 
-We can't solve mechanistic interpretability — that's Anthropic's (and the field's) job. What we can do is stack every available proxy for it. Our **observability-as-interpretability stack** for every LLM-powered system:
+We can't solve mechanistic interpretability. That's Anthropic's (and the field's) job. What we can do is stack every available proxy for it. Our **observability-as-interpretability stack** for every LLM-powered system:
 
 | Layer | Tool | What it tells you |
 |---|---|---|
@@ -93,7 +93,7 @@ Every LLM call in InterviewLM returns structured output with three fields: the a
 }
 ```
 
-The reasoning field is not just observability — it's a cheap proxy for interpretability. When a session goes wrong, we can read the reasoning chain and see where the model's stated logic diverged from the rubric. About 80% of the time, the reasoning field reveals the failure before a human has to reverse-engineer it.
+The reasoning field is not just observability. It's a cheap proxy for interpretability. When a session goes wrong, we can read the reasoning chain and see where the model's stated logic diverged from the rubric. About 80% of the time, the reasoning field reveals the failure before a human has to reverse-engineer it.
 
 This is not perfect. The model can lie about its reasoning or confabulate a plausible one. But "imperfect proxy" beats "nothing to look at" on every production failure we've investigated.
 
@@ -107,4 +107,4 @@ Add a `reasoning` field to every structured output in your AI system today. One 
 
 ## Next in this series
 
-**#5 — "We are near the end of the exponential" (Dwarkesh, Feb 2026)**. Dario's most recent public framing — the endgame is coming, and the question is whether your architecture is ready for it.
+**#5. "We are near the end of the exponential" (Dwarkesh, Feb 2026)**. Dario's most recent public framing. The endgame is coming, and the question is whether your architecture is ready for it.

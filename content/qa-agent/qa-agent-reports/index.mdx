@@ -12,7 +12,7 @@ contributors:
   - frenxt
 last_verified: '2026-04-17'
 series: qa-agent-guides
-series_title: QA Agent — Complete Guide
+series_title: 'QA Agent: Complete Guide'
 series_order: 4
 series_total: 7
 tags:
@@ -37,7 +37,7 @@ A green result is only useful if you trust it. A red result is only useful if yo
 - How to share reports with your team
 
 <WarStory title="107 tests, 33 failures, one release decision in under an hour">
-Before a major release on TheBlueOne, we ran all 338 specs across 9 suites. The full run took 47 minutes and surfaced 33 failures. Without visual evidence we would have spent a day triaging from logs alone. The HTML report had screenshots and GIFs for every failure — the team resolved 28 of them as known regressions to defer, flagged 5 as blockers, and shipped the release same day. The visual evidence is what made that conversation fast.
+Before a major release on TheBlueOne, we ran all 338 specs across 9 suites. The full run took 47 minutes and surfaced 33 failures. Without visual evidence we would have spent a day triaging from logs alone. The HTML report had screenshots and GIFs for every failure. The team resolved 28 of them as known regressions to defer, flagged 5 as blockers, and shipped the release same day. The visual evidence is what made that conversation fast.
 </WarStory>
 
 ## The `run` command
@@ -48,7 +48,7 @@ Before a major release on TheBlueOne, we ran all 338 specs across 9 suites. The 
 python cli.py run --suite smoke
 ```
 
-Runs every `.md` file inside `tests/smoke/`. Suites run in parallel — the default is 3 concurrent browser sessions (configurable in `config.yaml` under `parallel`).
+Runs every `.md` file inside `tests/smoke/`. Suites run in parallel. The default is 3 concurrent browser sessions (configurable in `config.yaml` under `parallel`).
 
 ### Run a single file
 
@@ -93,11 +93,11 @@ Shows total tests, pass count, fail count, skip count, total duration, and the t
 ### Per-test timeline
 
 Each test gets its own card with:
-- **Status badge** — PASS (green), FAIL (red), or SKIP (grey)
-- **Duration** — how long the test took
-- **Step log** — each step the agent executed, in order, with its interpretation
-- **Screenshots** — one per step, shown inline
-- **Failure note** (on FAIL) — structured text: which step failed, the agent's reasoning, and the screenshot path
+- **Status badge**. PASS (green), FAIL (red), or SKIP (grey)
+- **Duration**. How long the test took
+- **Step log**. Each step the agent executed, in order, with its interpretation
+- **Screenshots**. One per step, shown inline
+- **Failure note** (on FAIL). Structured text: which step failed, the agent's reasoning, and the screenshot path
 
 A typical failure note:
 
@@ -110,7 +110,7 @@ Reproduction: Load /cart with free-user persona, add item, proceed to checkout
 
 ### GIF / video evidence
 
-At the bottom of each test card is a GIF of the full browser session. Share this directly in a Slack thread or Linear issue — no need for anyone to reproduce the failure locally to understand what happened.
+At the bottom of each test card is a GIF of the full browser session. Share this directly in a Slack thread or Linear issue. No need for anyone to reproduce the failure locally to understand what happened.
 
 ## Sharing reports
 

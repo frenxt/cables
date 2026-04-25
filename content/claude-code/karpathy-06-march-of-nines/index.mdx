@@ -1,5 +1,5 @@
 ---
-title: Karpathy's march of nines (Oct 2025) — why 90%→99.999% is the real AI problem
+title: 'Karpathy''s march of nines (Oct 2025): why 90%→99.999% is the real AI problem'
 slug: karpathy-06-march-of-nines
 tool: claude-code
 track: thought-leadership
@@ -22,7 +22,7 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Dwarkesh Patel — Karpathy interview transcript
+  - label: 'Dwarkesh Patel: Karpathy interview transcript'
     url: 'https://www.dwarkesh.com/p/andrej-karpathy'
   - label: Dwarkesh Patel's tweet with chapter timestamps
     url: 'https://x.com/dwarkesh_sp/status/1979234976777539987'
@@ -33,7 +33,7 @@ kind: standalone
 
 # The Karpathy Playbook #6: The march of nines
 
-*Final entry in the Karpathy Playbook — from 2017's Software 2.0 to 2025's reality check.*
+*Final entry in the Karpathy Playbook. From 2017's Software 2.0 to 2025's reality check.*
 
 ---
 
@@ -45,9 +45,9 @@ kind: standalone
 >
 > On reinforcement learning: *"Sucking supervision through a straw."* When you only reward the final outcome, models get credit for wrong turns. That's noise, not learning.
 >
-> — [**Andrej Karpathy on Dwarkesh Patel's podcast**](https://www.dwarkesh.com/p/andrej-karpathy), October 2025
+> [**Andrej Karpathy on Dwarkesh Patel's podcast**](https://www.dwarkesh.com/p/andrej-karpathy), October 2025
 
-The central concept: the **march of nines**. Getting an AI agent to 90% reliability (one nine) is the easy part. Each subsequent nine — 99%, 99.9%, 99.99% — requires as much work as every nine before it combined. The journey from demo to production is not linear; it is asymptotic.
+The central concept: the **march of nines**. Getting an AI agent to 90% reliability (one nine) is the easy part. Each subsequent nine. 99%, 99.9%, 99.99%. Requires as much work as every nine before it combined. The journey from demo to production is not linear; it is asymptotic.
 
 ---
 
@@ -55,7 +55,7 @@ The central concept: the **march of nines**. Getting an AI agent to 90% reliabil
 
 This is the bookend to everything in this series. Entries 1–5 were about what LLMs *can* do: rewrite software, power new products, be programmed in English. Entry 6 is about the thing that separates "works in a demo" from "works for a real customer who is paying for it."
 
-The march of nines is a physics fact of production software. What makes it worse for AI is that every nine costs *more* than the previous one — not less, because LLM failure modes aren't well-distributed. The 10% that fails at 90% reliability contains the pathological cases. Fixing them is precisely the work people avoid because it's not fun.
+The march of nines is a physics fact of production software. What makes it worse for AI is that every nine costs *more* than the previous one. Not less, because LLM failure modes aren't well-distributed. The 10% that fails at 90% reliability contains the pathological cases. Fixing them is precisely the work people avoid because it's not fun.
 
 Karpathy's decade-of-agents framing is the sensible response. The industry is in year one or two of that decade. Companies shipping production AI in 2026 are the ones that took the march of nines seriously in 2024 and 2025.
 
@@ -79,10 +79,10 @@ The practical work that closes each gap:
 
 - **1→2 nines**: Better prompts, basic evals, fallback paths.
 - **2→3 nines**: Tool-call retries with exponential backoff, observability on every step, circuit breakers.
-- **3→4 nines**: Recovery from every known failure mode (not just catching errors — *recovering* from them), graceful degradation that preserves user value.
+- **3→4 nines**: Recovery from every known failure mode (not just catching errors, but *recovering* from them), graceful degradation that preserves user value.
 - **4→5 nines**: Chaos engineering, adversarial testing, cost guardrails that hard-cap instead of soft-alert.
 
-Most of our engagements live in the 2→3 nines transition. That is the hardest, least glamorous, most valuable work in production AI — and the work the industry under-invests in because it doesn't make for good demo videos.
+Most of our engagements live in the 2→3 nines transition. That is the hardest, least glamorous, most valuable work in production AI. And the work the industry under-invests in because it doesn't make for good demo videos.
 
 ---
 
@@ -102,15 +102,15 @@ Before you sign off on an AI feature, write the nines audit above. Be honest abo
 
 ---
 
-## Series complete — The Karpathy Playbook
+## Series complete. The Karpathy Playbook
 
 Six entries, one intellectual arc, one pattern per entry for production AI work:
 
-1. [Software 2.0 (2017)](../karpathy-01-software-2-0) — draw the line between deterministic and learned
-2. [LLM OS (2023)](../karpathy-02-llm-os) — architect every agent system with OS vocabulary
-3. [Eureka Labs (2024)](../karpathy-03-eureka-labs) — split the artifact from the teacher
-4. [Vibe coding (Feb 2025)](../karpathy-04-vibe-coding) — vibe phase fast, production gate slow
-5. [Software 3.0 (Jun 2025)](../karpathy-05-software-3-0) — prompts are source code
-6. **March of nines (Oct 2025)** — every nine costs more than the last
+1. [Software 2.0 (2017)](../karpathy-01-software-2-0). Draw the line between deterministic and learned
+2. [LLM OS (2023)](../karpathy-02-llm-os). Architect every agent system with OS vocabulary
+3. [Eureka Labs (2024)](../karpathy-03-eureka-labs). Split the artifact from the teacher
+4. [Vibe coding (Feb 2025)](../karpathy-04-vibe-coding). Vibe phase fast, production gate slow
+5. [Software 3.0 (Jun 2025)](../karpathy-05-software-3-0). Prompts are source code
+6. **March of nines (Oct 2025)**. Every nine costs more than the last
 
-Next in the broader *Playbooks* project: **Inside Anthropic with Dario Amodei** — Machines of Loving Grace, Claude's constitution, the end-of-exponential debate, and what we build on top of their model spec.
+Next in the broader *Playbooks* project: **Inside Anthropic with Dario Amodei**. Machines of Loving Grace, Claude's constitution, the end-of-exponential debate, and what we build on top of their model spec.

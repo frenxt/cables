@@ -1,6 +1,6 @@
 ---
 title: >-
-  Dario Amodei's Machines of Loving Grace (Oct 2024) — planning against the
+  Dario Amodei's Machines of Loving Grace (Oct 2024): planning against the
   upside case
 slug: amodei-03-machines-of-loving-grace
 tool: claude-code
@@ -24,7 +24,7 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Dario Amodei — Machines of Loving Grace
+  - label: 'Dario Amodei: Machines of Loving Grace'
     url: 'https://www.darioamodei.com/essay/machines-of-loving-grace'
   - label: Dario's tweet announcing the essay (12 Oct 2024)
     url: 'https://x.com/DarioAmodei/status/1844830404064288934'
@@ -33,7 +33,7 @@ kind: standalone
 
 # Inside Anthropic with Dario Amodei #3: Machines of Loving Grace
 
-*Part 3 of 5 — tracing Anthropic's public thinking with FRE|Nxt Labs production commentary.*
+*Part 3 of 5. Tracing Anthropic's public thinking with FRE|Nxt Labs production commentary.*
 
 ---
 
@@ -47,7 +47,7 @@ kind: standalone
 >
 > On biology and medicine: the **"compressed 21st century"** — "after powerful AI is developed, we will in a few years make all the progress in biology and medicine that we would have made in the whole 21st century."
 >
-> — [**Dario Amodei, *Machines of Loving Grace*, October 2024**](https://www.darioamodei.com/essay/machines-of-loving-grace) ([tweet](https://x.com/DarioAmodei/status/1844830404064288934))
+> [**Dario Amodei, *Machines of Loving Grace*, October 2024**](https://www.darioamodei.com/essay/machines-of-loving-grace) ([tweet](https://x.com/DarioAmodei/status/1844830404064288934))
 
 The essay is ~14,000 words across five domains: biology & health, neuroscience & mental health, economic development & poverty, peace & governance, and work & meaning. Each section makes specific, falsifiable predictions about what powerful AI unlocks in that domain.
 
@@ -55,7 +55,7 @@ The essay is ~14,000 words across five domains: biology & health, neuroscience &
 
 ## What we heard
 
-Most AI writing is either doom or hype. *Machines of Loving Grace* is neither — it's planning material. Amodei is saying: *if the upside case is real, it deserves as much operational specificity as the downside case.*
+Most AI writing is either doom or hype. *Machines of Loving Grace* is neither. It's planning material. Amodei is saying: *if the upside case is real, it deserves as much operational specificity as the downside case.*
 
 This matters for anyone shipping AI in 2026: your roadmap is implicitly a bet on which version of the next five years you think is real. If you're building for "AI is a useful tool that helps some workflows," you're building a 2024 product. If you're building for "AI compresses decades of R&D into years," you're building for something else entirely.
 
@@ -76,7 +76,7 @@ Concretely:
 | Cost profile | Current token prices | Prices will drop 100×; design for capability-per-session, not cost-per-session |
 | Integration surface | Human-triggered actions | Agent-triggered actions; APIs that assume an AI is the caller |
 
-This isn't strategy speculation — it's schema design. The decision to log full reasoning traces today costs you storage. The decision *not* to log them costs you every future analysis you can't run. Amodei's essay is the argument for which of those costs is higher.
+This isn't strategy speculation. It's schema design. The decision to log full reasoning traces today costs you storage. The decision *not* to log them costs you every future analysis you can't run. Amodei's essay is the argument for which of those costs is higher.
 
 ---
 
@@ -85,7 +85,7 @@ This isn't strategy speculation — it's schema design. The decision to log full
 Three decisions on InterviewLM were made with the ten-year lens:
 
 - **Full trace retention**: every agent step, tool call, and model response is stored in LangSmith. Cost today: non-trivial. Payoff: when eval tooling matures over the next three years, every historical session is replayable.
-- **Multi-model routing as a first-class abstraction**: the system doesn't assume "Claude" — it assumes "the current best model for this task class." When model costs drop 10× or capability jumps, we swap; no rewrite.
+- **Multi-model routing as a first-class abstraction**: the system doesn't assume "Claude". It assumes "the current best model for this task class." When model costs drop 10× or capability jumps, we swap; no rewrite.
 - **Rubric separation**: hiring rubrics are stored as structured data, not embedded in prompts. When future models can consume richer schemas directly, we already have the schema. No migration.
 
 All three are small costs today. All three become load-bearing if Amodei's essay is directionally right.
@@ -94,10 +94,10 @@ All three are small costs today. All three become load-bearing if Amodei's essay
 
 ## The one thing to steal from this
 
-On your next architectural decision, write two versions of the one-year-out outcome: one where AI capability grows 2× year-over-year, one where it grows 10×. If the decision looks the same in both worlds, ship it. If it only makes sense in the 2× world, you're building against your own ceiling. Plan for the higher bound — the downside of being wrong is much smaller than the downside of being right and locked in.
+On your next architectural decision, write two versions of the one-year-out outcome: one where AI capability grows 2× year-over-year, one where it grows 10×. If the decision looks the same in both worlds, ship it. If it only makes sense in the 2× world, you're building against your own ceiling. Plan for the higher bound. The downside of being wrong is much smaller than the downside of being right and locked in.
 
 ---
 
 ## Next in this series
 
-**#4 — The Urgency of Interpretability (April 2025)**. Dario's essay on the most important unsolved problem: we've built AI systems nobody fully understands. "We can't stop the bus, but we can steer it."
+**#4. The Urgency of Interpretability (April 2025)**. Dario's essay on the most important unsolved problem: we've built AI systems nobody fully understands. "We can't stop the bus, but we can steer it."

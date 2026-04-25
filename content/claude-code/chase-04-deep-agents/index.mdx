@@ -1,5 +1,5 @@
 ---
-title: 'Harrison Chase: Deep Agents (July 2025) — batteries-included harness'
+title: 'Harrison Chase: Deep Agents (July 2025): batteries-included harness'
 slug: chase-04-deep-agents
 tool: claude-code
 track: thought-leadership
@@ -22,9 +22,9 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: LangChain — Deep Agents announcement
+  - label: 'LangChain: Deep Agents announcement'
     url: 'https://www.langchain.com/blog/deep-agents'
-  - label: Harrison Chase on Deep Agents — ODSC keynote coverage
+  - label: 'Harrison Chase on Deep Agents: ODSC keynote coverage'
     url: >-
       https://opendatascience.com/harrison-chase-on-deep-agents-the-next-evolution-in-autonomous-ai/
   - label: Deep Agents UI announcement (LinkedIn)
@@ -35,7 +35,7 @@ kind: standalone
 
 # Harrison Chase on Production Agents #4: Deep Agents
 
-*Part 4 of 5 — tracing Chase's production agent thinking with FRE|Nxt Labs commentary.*
+*Part 4 of 5. Tracing Chase's production agent thinking with FRE|Nxt Labs commentary.*
 
 ---
 
@@ -45,7 +45,7 @@ kind: standalone
 >
 > Deep Agents implement a combination of four things: *a planning tool, sub-agents, access to a file system, and a detailed prompt.* Applications like Deep Research, Manus, and Claude Code have gotten around the limitation of "shallow" agents by implementing these characteristics.
 >
-> — [**LangChain — Deep Agents**](https://www.langchain.com/blog/deep-agents), launched July 2025
+> [**LangChain — Deep Agents**](https://www.langchain.com/blog/deep-agents), launched July 2025
 
 Chase's own summary from a related thread: *"agents are a filesystem. memory built in. triggers turn it into an ambient agent. a feed for reviewing and approving agent work. supports MCPs, skills, and subagents."*
 
@@ -74,7 +74,7 @@ Our decision tree:
 | System needs a coordinator + specialist subagents with shared state | Strongly consider adopting Deep Agents or similar |
 | System has a single agent doing many tasks in one prompt | Refactor into Deep Agents subagent pattern regardless of framework choice |
 | System's failure modes are task-planning-related | Deep Agents' explicit planning tool will likely help |
-| System's state is simple (single conversation, no long-horizon work) | Deep Agents is overkill — plain LangGraph is fine |
+| System's state is simple (single conversation, no long-horizon work) | Deep Agents is overkill. Plain LangGraph is fine |
 | Client has strong preferences or existing framework | Respect the preference; reach for the Deep Agents *patterns* even if not the library |
 
 Importantly: we don't adopt Deep Agents reflexively. The packaged harness is powerful when you need what it provides. When you don't need planning-as-tool or a filesystem abstraction, the extra abstraction makes the system harder to reason about.
@@ -107,4 +107,4 @@ Audit your current agent system against the four Deep Agents primitives: plannin
 
 ## Next in this series
 
-**#5 — Ambient Agents (2025–26)**. Chase's vision for the next UX: agents that act on event streams, not chat prompts — and why "ambient" doesn't mean "autonomous."
+**#5. Ambient Agents (2025–26)**. Chase's vision for the next UX: agents that act on event streams, not chat prompts. And why "ambient" doesn't mean "autonomous."

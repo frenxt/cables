@@ -12,7 +12,7 @@ contributors:
   - frenxt
 last_verified: '2026-04-17'
 series: qa-agent-guides
-series_title: QA Agent — Complete Guide
+series_title: 'QA Agent: Complete Guide'
 series_order: 7
 series_total: 7
 tags:
@@ -76,8 +76,8 @@ All unit tests should pass before you start making changes.
 ## Code conventions
 
 - **Python 3.11+**, typed with `mypy --strict` (check `pyproject.toml` for config)
-- **Modules are single-responsibility** — one module per integration, one module per pipeline stage
-- **No global state** — pass config and dependencies explicitly through function arguments
+- **Modules are single-responsibility**. One module per integration, one module per pipeline stage
+- **No global state**. Pass config and dependencies explicitly through function arguments
 - **Ruff** for formatting and linting: `ruff check . && ruff format .`
 
 ## Adding a new integration
@@ -118,8 +118,8 @@ github:
 
 A good PR has three things:
 
-1. **The implementation** — focused, minimal, one feature or fix per PR
-2. **A unit test** — in `unit_tests/`, testing the new behaviour directly. For integrations, mock the external API. For parser changes, use a fixture markdown file.
+1. **The implementation**. Focused, minimal, one feature or fix per PR
+2. **A unit test**. In `unit_tests/`, testing the new behaviour directly. For integrations, mock the external API. For parser changes, use a fixture markdown file.
 3. **An updated `CONTRIBUTING.md`** or `README.md` section if you added a new config key or CLI flag
 
 ## PR checklist
@@ -137,8 +137,8 @@ All three should pass with no errors.
 ## Areas where contributors can have the most impact
 
 - **New reporter integrations** (GitHub Issues, Jira, PagerDuty, Slack)
-- **Report format improvements** — the HTML report is functional; a redesign with better mobile support or dark mode would be valuable
-- **Custom tool extensions** — `custom_tools.py` is thin; drag-and-drop, file upload, and canvas interaction helpers are all missing
-- **Release pipeline** — the CSV-driven release runner works but has no UI; a simple web dashboard for release sign-off is on the roadmap
+- **Report format improvements**. The HTML report is functional; a redesign with better mobile support or dark mode would be valuable
+- **Custom tool extensions.** `custom_tools.py` is thin; drag-and-drop, file upload, and canvas interaction helpers are all missing
+- **Release pipeline**. The CSV-driven release runner works but has no UI; a simple web dashboard for release sign-off is on the roadmap
 
 Open an issue before starting large changes to confirm the approach aligns with the project direction.

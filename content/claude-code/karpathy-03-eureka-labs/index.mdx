@@ -1,6 +1,6 @@
 ---
 title: >-
-  Karpathy's Eureka Labs bet (2024) — what AI-native education reveals about his
+  Karpathy's Eureka Labs bet (2024): what AI-native education reveals about his
   model of the future
 slug: karpathy-03-eureka-labs
 tool: claude-code
@@ -24,7 +24,7 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Karpathy's Eureka Labs announcement — 16 Jul 2024
+  - label: 'Karpathy''s Eureka Labs announcement: 16 Jul 2024'
     url: 'https://x.com/karpathy/status/1813263734707790301'
   - label: VentureBeat coverage
     url: >-
@@ -34,7 +34,7 @@ kind: standalone
 
 # The Karpathy Playbook #3: Eureka Labs
 
-*Part 3 of 6 — tracing Karpathy's public thinking with FRE|Nxt Labs production commentary.*
+*Part 3 of 6. Tracing Karpathy's public thinking with FRE|Nxt Labs production commentary.*
 
 ---
 
@@ -42,7 +42,7 @@ kind: standalone
 
 > "⚡️ Excited to share that I am starting an AI+Education company called Eureka Labs. We are Eureka Labs and we are building a new kind of school that is AI native. How can we approach an ideal experience for learning something new?"
 >
-> — [**@karpathy**](https://x.com/karpathy/status/1813263734707790301), 16 July 2024
+> [**@karpathy**](https://x.com/karpathy/status/1813263734707790301), 16 July 2024
 
 Five months after leaving OpenAI, his pitch: teachers still design course materials, but an AI teaching assistant guides each student through them. First product: [LLM101n](https://github.com/karpathy/LLM101n), an undergraduate course where students train their own LLM.
 
@@ -50,11 +50,11 @@ Five months after leaving OpenAI, his pitch: teachers still design course materi
 
 ## What we heard
 
-Eureka Labs is the most concrete signal Karpathy has given about what he thinks "AI native" actually means as a product pattern — and it's the opposite of what most people build.
+Eureka Labs is the most concrete signal Karpathy has given about what he thinks "AI native" actually means as a product pattern. And it's the opposite of what most people build.
 
-Most "AI-powered" products are a thin wrapper: take a human-designed experience, bolt on a chatbot. Eureka's model is the reverse. A domain expert designs the *content* once. The AI's job is to be the *teacher* — ask the student questions, diagnose what they don't understand, re-explain in their vocabulary, pace the session. The human designs the thing being taught. The AI designs the teaching.
+Most "AI-powered" products are a thin wrapper: take a human-designed experience, bolt on a chatbot. Eureka's model is the reverse. A domain expert designs the *content* once. The AI's job is to be the *teacher*. Ask the student questions, diagnose what they don't understand, re-explain in their vocabulary, pace the session. The human designs the thing being taught. The AI designs the teaching.
 
-That split — *expert designs the artifact, AI personalizes the delivery* — is a genuinely new product pattern. It's what separates an AI-native product from an AI-feature bolted onto a SaaS tool.
+That split (*expert designs the artifact, AI personalises the delivery*) is a genuinely new product pattern. It is what separates an AI-native product from an AI feature bolted onto a SaaS tool.
 
 ---
 
@@ -80,7 +80,7 @@ InterviewLM is structured exactly this way:
 
 **Artifact half**: The interview rubrics, job-role competency frameworks, and evaluation criteria. Designed by hiring managers and psychometric experts. Stored as structured data, versioned in Git, reviewable by humans.
 
-**Teacher half**: The interviewer persona agents. They read the rubric and run a conversational assessment — ask, probe, redirect, score. This half is LLM-native, runs on LangGraph, uses prompt caching for the rubric (90%+ cache hits because the rubric is stable across all candidates).
+**Teacher half**: The interviewer persona agents. They read the rubric and run a conversational assessment. Ask, probe, redirect, score. This half is LLM-native, runs on LangGraph, uses prompt caching for the rubric (90%+ cache hits because the rubric is stable across all candidates).
 
 The artifact is updated monthly by human experts. The teacher half is updated weekly by us as we observe failure modes in production traces. The two halves evolve independently.
 
@@ -89,13 +89,13 @@ The artifact is updated monthly by human experts. The teacher half is updated we
 ## The one thing to steal from this
 
 For your next AI product spec, write two docs, not one:
-1. **The artifact doc** — what the domain expert is contributing
-2. **The teacher doc** — what the LLM is personalizing or pacing
+1. **The artifact doc**. What the domain expert is contributing
+2. **The teacher doc**. What the LLM is personalizing or pacing
 
-If you can't write the artifact doc, your product isn't ready for AI — it's ready for a designer. If you can't write the teacher doc, you don't have an AI product — you have a content library.
+If you can't write the artifact doc, your product isn't ready for AI. It's ready for a designer. If you can't write the teacher doc, you don't have an AI product. You have a content library.
 
 ---
 
 ## Next in this series
 
-**#4 — Vibe coding (February 2025)**. Karpathy's throwaway tweet that named a generation of AI-assisted development — and why "mostly works" is not a production SLA.
+**#4. Vibe coding (February 2025)**. Karpathy's throwaway tweet that named a generation of AI-assisted development. And why "mostly works" is not a production SLA.

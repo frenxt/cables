@@ -12,7 +12,7 @@ contributors:
   - frenxt
 last_verified: '2026-04-17'
 series: qa-agent-guides
-series_title: QA Agent — Complete Guide
+series_title: 'QA Agent: Complete Guide'
 series_order: 5
 series_total: 7
 tags:
@@ -38,7 +38,7 @@ A flat folder of 30 test cases becomes unmanageable fast. Suites and personas ar
 - How to use tags for targeted runs
 
 <WarStory title="How TheBlueOne ended up with 9 suites">
-We started with one suite called `smoke`. After three weeks it had 40 tests and `run --suite smoke` took 22 minutes. We split by product area — `auth`, `billing`, `dashboard`, `onboarding`, `checkout`, `admin`, `api-surface`, `mobile-pwa`, `smoke`. Each suite now runs in under 8 minutes. The `smoke` suite kept only the 12 tests that block a deploy. Everything else runs nightly or on-demand before a release.
+We started with one suite called `smoke`. After three weeks it had 40 tests and `run --suite smoke` took 22 minutes. We split by product area: `auth`, `billing`, `dashboard`, `onboarding`, `checkout`, `admin`, `api-surface`, `mobile-pwa`, `smoke`. Each suite now runs in under 8 minutes. The `smoke` suite kept only the 12 tests that block a deploy. Everything else runs nightly or on-demand before a release.
 </WarStory>
 
 ## Suite structure
@@ -64,7 +64,7 @@ tests/
 
 ## Personas
 
-A persona represents a user state — their authentication level and saved credentials. The three built-in personas:
+A persona represents a user state. Their authentication level and saved credentials. The three built-in personas:
 
 | persona | auth state | credential file |
 |---------|-----------|-----------------|
@@ -92,7 +92,7 @@ Set `persona` in the test metadata:
 - **persona**: free-user
 ```
 
-The agent starts the browser with the saved session. Steps can assume the user is already authenticated — no need to write "Navigate to /login, enter credentials, click sign in" in every test.
+The agent starts the browser with the saved session. Steps can assume the user is already authenticated. No need to write "Navigate to /login, enter credentials, click sign in" in every test.
 
 ## Tags for targeted runs
 
@@ -106,10 +106,10 @@ python cli.py run --tag smoke,critical # run tests tagged smoke OR critical
 
 Tag conventions that work well in practice:
 
-- `smoke` — safe to include in CI
-- `critical` — must pass before any production deploy
-- `release` — full coverage run before a release
-- `<feature-name>` — scoped to one product area for targeted runs after a feature change
+- `smoke`. Safe to include in CI
+- `critical`. Must pass before any production deploy
+- `release`. Full coverage run before a release
+- `<feature-name>`. Scoped to one product area for targeted runs after a feature change
 
 ## What's next
 

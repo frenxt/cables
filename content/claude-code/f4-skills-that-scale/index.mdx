@@ -23,31 +23,48 @@ kind: team-playbook
 
 # F4: Skills that scale past solo usage
 
-Most skills fail at team scale because they are written for one person's assumptions.
+A skill that works only for its author is not a skill; it is a shell alias with extra steps. Most skills fail at team scale because they assume context the author forgot to write down. Fixing that takes a sharper brief, not a longer one.
 
 <WarStory title="Skills built for one person got ignored by everyone else">
-We had eleven skills in the shared library. Three of us were using the same two regularly; the other nine were rarely touched. When we asked why, the answer was consistent: the unused skills assumed context that wasn't obvious — a specific file structure, a variable that needed setting before running, an output format that only made sense if you'd written the skill yourself. One engineer said it felt like running someone else's shell alias. The skills weren't bad; they just weren't written for a reader who wasn't the author.
+We had eleven skills in the shared library. Three of us were using the same two regularly; the other nine were barely touched. When we asked why, the answer was consistent: the unused skills assumed context that was not obvious. A specific file layout. A variable that had to be set before running. An output format that only made sense if you had written the skill yourself. One engineer said it felt like running someone else's shell alias. The skills were not bad. They were written for a reader who did not exist: the author.
 </WarStory>
 
 ## What we tried
 
-We kept only skills that were:
+We deleted most of the library and kept only skills that passed four tests:
 
-- role-agnostic
-- input-explicit
-- output-structured
-- testable in review
+1. **Role-agnostic.** Works for any engineer on the team, not only the person who wrote it.
+2. **Input-explicit.** States what it needs, in what shape, up front. No implicit file structure.
+3. **Output-structured.** Produces the same shape every time (table, diff, checklist). No free-form paragraphs.
+4. **Testable in review.** A teammate can read the output and tell you whether the skill ran correctly, without looking at the code.
+
+## The bar before adding a new skill
+
+```mermaid
+flowchart TD
+  Propose["proposed skill"] --> Q1{"role-agnostic?"}
+  Q1 -->|"no"| Drop["keep as a personal tool, not shared"]
+  Q1 -->|"yes"| Q2{"inputs explicit and named?"}
+  Q2 -->|"no"| Rewrite["tighten scope or reject"]
+  Q2 -->|"yes"| Q3{"output shape fixed?"}
+  Q3 -->|"no"| Rewrite
+  Q3 -->|"yes"| Q4{"a teammate can run cold?"}
+  Q4 -->|"no"| Rewrite
+  Q4 -->|"yes"| Add["add to shared library"]
+```
+
+The "run cold" question is the one that catches the subtle failures. If a teammate has to ask what a variable means or where a file lives, the skill is not ready.
 
 ## What happened
 
-Reuse went up and onboarding time dropped because teammates could run the same skill and get comparable results.
+Reuse went up and onboarding sped up because every teammate could run the same skill and get comparable results. The library got smaller and more valuable in the same step.
 
 ## What we learned
 
-- Skills should encode team standards, not personal style.
-- Structured outputs make downstream review faster.
-- Prune aggressively: one high-quality skill is better than five vague ones.
+- Skills should encode team standards, not personal style. If the brief includes "the way I usually do this", it is not a shared skill yet.
+- Structured outputs make downstream review faster. A table you can scan beats a paragraph you have to interpret.
+- Prune aggressively. One high-quality skill is better than five vague ones. The library is a palette, not a museum.
 
 ## Result
 
-We went from eleven skills to five. Usage rate on the remaining five went from sporadic to near-daily across the team. The two skills that got used most were the most narrowly scoped: one for generating typed API response handlers, one for writing test stubs from a function signature. The broader ones — a "write a component" skill, a "refactor this module" skill — kept getting ignored. Too much assumed context, too little specified input. The honest lesson is that skills which feel powerful when you write them often feel ambiguous to everyone else. The bar we now use before adding a skill: can a teammate run it cold, with no explanation, and get a result they'd commit?
+We went from eleven skills to five. Usage on the remaining five moved from sporadic to near-daily across the team. The two most-used skills were the most narrowly scoped: one that generated typed API response handlers from an OpenAPI schema, and one that wrote test stubs from a function signature. The broader "write a component" and "refactor this module" skills kept getting ignored. Too much assumed context, too little specified input. The honest lesson is that skills which feel powerful when you write them often feel ambiguous to everyone else. The bar we now use before adding anything: can a teammate run it cold, with no explanation, and get a result they would commit?

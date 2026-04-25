@@ -1,6 +1,6 @@
 ---
 title: >-
-  Karpathy's vibe coding (Feb 2025) — and why "mostly works" is not a production
+  Karpathy's vibe coding (Feb 2025): and why "mostly works" is not a production
   SLA
 slug: karpathy-04-vibe-coding
 tool: claude-code
@@ -24,7 +24,7 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Karpathy's original vibe coding tweet — 2 Feb 2025
+  - label: 'Karpathy''s original vibe coding tweet: 2 Feb 2025'
     url: 'https://x.com/karpathy/status/1886192184808149383'
   - label: Karpathy's one-year retrospective
     url: 'https://x.com/karpathy/status/2019137879310836075'
@@ -33,7 +33,7 @@ kind: standalone
 
 # The Karpathy Playbook #4: Vibe coding
 
-*Part 4 of 6 — tracing Karpathy's public thinking with FRE|Nxt Labs production commentary.*
+*Part 4 of 6. Tracing Karpathy's public thinking with FRE|Nxt Labs production commentary.*
 
 ---
 
@@ -41,9 +41,9 @@ kind: standalone
 
 > "There's a new kind of coding I call 'vibe coding', where you fully give in to the vibes, embrace exponentials, and forget that the code even exists. It's possible because the LLMs (e.g. Cursor Composer w Sonnet) are getting too good. Also I just talk to Composer with SuperWhisper so it's not even coding, I just speak."
 >
-> — [**@karpathy**](https://x.com/karpathy/status/1886192184808149383), 2 February 2025
+> [**@karpathy**](https://x.com/karpathy/status/1886192184808149383), 2 February 2025
 
-One year later, in his [retrospective](https://x.com/karpathy/status/2019137879310836075), he called it "a shower of thoughts throwaway tweet" — and noted he still can't predict tweet engagement after 17 years on the platform. The throwaway tweet became a generational label.
+One year later, in his [retrospective](https://x.com/karpathy/status/2019137879310836075), he called it "a shower of thoughts throwaway tweet". And noted he still can't predict tweet engagement after 17 years on the platform. The throwaway tweet became a generational label.
 
 ---
 
@@ -59,17 +59,17 @@ The trap is stopping there. "Mostly works" is not a production SLA. Every produc
 
 We split every AI-assisted build into two explicit phases:
 
-**Phase 1 — vibe phase (intentionally fast)**
+**Phase 1. Vibe phase (intentionally fast)**
 We do exactly what Karpathy describes. We use Claude Code to scaffold, generate, iterate at idea speed. We don't review individual lines. We run it and look at output.
 
-**Phase 2 — production gate (intentionally slow)**
+**Phase 2. Production gate (intentionally slow)**
 Before any output leaves our environment we run:
-- `npm run build` — type errors are load-bearing
-- `npm run lint` — catches the copy-paste artifacts AI loves to leave
+- `npm run build`. Type errors are load-bearing
+- `npm run lint`. Catches the copy-paste artifacts AI loves to leave
 - A smoke test against the real API (not a mock)
 - A cost estimate: tokens-in × token price at expected QPS
 
-The vibe phase might take 20 minutes. The production gate takes 40 minutes. The ratio is the point — we're not abandoning rigour, we're front-loading creativity and back-loading verification.
+The vibe phase might take 20 minutes. The production gate takes 40 minutes. The ratio is the point. We're not abandoning rigour, we're front-loading creativity and back-loading verification.
 
 ---
 
@@ -84,10 +84,10 @@ Without the production gate: three personas with live security issues.
 
 ## The one thing to steal from this
 
-Add a `pre-commit` hook that runs your build + lint. It forces you to exit the vibe phase before you ship. Claude Code with Turbopack makes this nearly zero latency — there is no longer a meaningful cost to running a build.
+Add a `pre-commit` hook that runs your build + lint. It forces you to exit the vibe phase before you ship. Claude Code with Turbopack makes this nearly zero latency. There is no longer a meaningful cost to running a build.
 
 ---
 
 ## Next in this series
 
-**#5 — Software 3.0 (June 2025)**. Four months after "vibe coding," Karpathy gave it a formal name at YC AI Startup School: "The hottest new programming language is English." What that reframing unlocks.
+**#5. Software 3.0 (June 2025)**. Four months after "vibe coding," Karpathy gave it a formal name at YC AI Startup School: "The hottest new programming language is English." What that reframing unlocks.

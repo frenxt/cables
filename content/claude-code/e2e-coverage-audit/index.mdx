@@ -47,13 +47,13 @@ The skill exposed blind spots quickly:
 - Flows with setup assertions but missing completion assertions
 - Flows that existed only in manual QA notes
 
-On the first pass, Claude Code made some confident mistakes. It matched tests to routes by filename similarity — a file named `checkout.spec.ts` was counted as covering the `/checkout` route even though the test only validated cart state, not payment completion. It also counted `beforeEach` and `afterAll` setup blocks as tests, inflating the coverage numbers by about 15%. We corrected both by telling it to match on explicit `test()` or `it()` calls only, and to check that each test included an assertion against a post-flow state (a confirmation message, a redirect, a database side effect) rather than just reaching the flow's entry screen.
+On the first pass, Claude Code made some confident mistakes. It matched tests to routes by filename similarity. A file named `checkout.spec.ts` was counted as covering the `/checkout` route even though the test only validated cart state, not payment completion. It also counted `beforeEach` and `afterAll` setup blocks as tests, inflating the coverage numbers by about 15%. We corrected both by telling it to match on explicit `test()` or `it()` calls only, and to check that each test included an assertion against a post-flow state (a confirmation message, a redirect, a database side effect) rather than just reaching the flow's entry screen.
 
 ## What we learned
 
 - Measure coverage by user journeys, not file count. A project can have 200 test files and still be missing the three flows that matter most.
 - Every critical flow should have: enter flow, complete flow, and confirm side effects. Steps without a completion assertion are scaffolding, not coverage.
-- Keep one markdown coverage matrix in-repo so regression gaps are visible during PR review. We named ours `docs/e2e-coverage.md` — a single table of flow, status, and test file path that lives next to the code.
+- Keep one markdown coverage matrix in-repo so regression gaps are visible during PR review. We named ours `docs/e2e-coverage.md`. A single table of flow, status, and test file path that lives next to the code.
 - Re-run the audit when you add new routes or pages, not on a fixed schedule. A monthly reminder to audit often misses the gap introduced by a new feature shipped in week two. Trigger the audit from your definition-of-done checklist for any PR that adds a route.
 - Work the gap list in order of user impact, not technical complexity. A missing test for the signup confirmation screen matters more than a missing test for the admin settings page, even if the settings test is easier to write. Sort by how many users hit the flow per week.
 
@@ -65,4 +65,4 @@ On the first pass, Claude Code made some confident mistakes. It matched tests to
 
 ## Next
 
-- Next — Fix your prompt caching.
+- Next. Fix your prompt caching.

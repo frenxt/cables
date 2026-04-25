@@ -27,13 +27,13 @@ kind: standalone
 Prompt caching is one of those optimizations we all think we enabled "well enough" until costs spike and response times drift.
 
 <WarStory title="The week caching silently regressed">
-We were refactoring how our agent assembled its system prompt — moving from a hardcoded string to a config-driven builder that injected tool descriptions, user role context, and environment metadata at request time. The refactor looked clean. Tests passed. We shipped it on a Tuesday.
+We were refactoring how our agent assembled its system prompt. Moving from a hardcoded string to a config-driven builder that injected tool descriptions, user role context, and environment metadata at request time. The refactor looked clean. Tests passed. We shipped it on a Tuesday.
 
-Latency moved first. By Wednesday morning, p95 on our busiest path had climbed about 18%. We assumed it was infrastructure noise — we'd had some Cloudflare hiccups that week — and let it sit.
+Latency moved first. By Wednesday morning, p95 on our busiest path had climbed about 18%. We assumed it was infrastructure noise (there had been Cloudflare hiccups that week) and let it sit.
 
 Cost followed two days later. Thursday's billing snapshot showed input token spend up roughly 40% day-over-day. That's when we looked harder.
 
-The problem was template string interpolation. Our new builder was injecting a `generated_at` timestamp near the top of the system prompt — before the stable instruction blocks — to help us correlate prompts to log entries. Every request produced a different prefix. The cache never hit.
+The problem was template string interpolation. Our new builder was injecting a `generated_at` timestamp near the top of the system prompt, before the stable instruction blocks, to help us correlate prompts with log entries. Every request produced a different prefix. The cache never hit.
 
 What made it genuinely hard to debug: latency is noisy enough that an 18% shift doesn't scream "caching broke." And cost lags by a billing day on the Anthropic dashboard, so by the time the cost signal was obvious, we'd been running cache-cold for 48 hours across all traffic.
 </WarStory>
@@ -69,7 +69,7 @@ The output is a short ranked list of cache-break patterns with the line numbers,
 
 We found three preventable issues across our three prompt paths:
 
-- **Dynamic timestamp too early**: the `generated_at` field was in the third line of our system prompt. Moving it to a comment at the end — or dropping it entirely in favour of a correlation header — recovered the full cache hit ratio on that path.
+- **Dynamic timestamp too early**: the `generated_at` field was in the third line of our system prompt. Moving it to a comment at the end. Or dropping it entirely in favour of a correlation header. Recovered the full cache hit ratio on that path.
 - **Changing metadata block**: we were injecting a JSON blob of user feature flags. The flags themselves rarely changed, but we were serializing a Python dict, so key order was non-deterministic. Two requests with identical flags produced different prompt strings. We switched to `json.dumps(flags, sort_keys=True)` and the problem disappeared.
 - **Over-eager templating whitespace**: our Jinja template was adding a trailing newline after each injected block conditionally. When a block was absent, the whitespace pattern changed. Anthropic's cache key is exact-string, so even a single character difference breaks the hit. We normalized the template output with `.strip()` before returning it.
 
@@ -80,11 +80,11 @@ What surprised us: none of these were obvious from reading the code. They all lo
 - **Stable at top, volatile at bottom.** The Anthropic cache key matches on a prefix. Anything that changes between requests must come after the last stable block. In practice this means your system prompt should look roughly like:
 
   ```
-  [SYSTEM INSTRUCTIONS — never changes]
-  [TOOL DESCRIPTIONS — changes only on deploy]
-  [USER ROLE CONTEXT — changes per user, not per request]
+  [SYSTEM INSTRUCTIONS. Never changes]
+  [TOOL DESCRIPTIONS. Changes only on deploy]
+  [USER ROLE CONTEXT. Changes per user, not per request]
   ----
-  [REQUEST-SPECIFIC VALUES — timestamps, session data, injected context]
+  [REQUEST-SPECIFIC VALUES. Timestamps, session data, injected context]
   ```
 
   The cache breakpoint lives at the `----` line. Everything above it is cached; everything below is not.
@@ -104,10 +104,10 @@ What surprised us: none of these were obvious from reading the code. They all lo
   def test_prompt_assembly_is_deterministic():
       p1 = build_system_prompt(user_id="test", flags={"feature_x": True})
       p2 = build_system_prompt(user_id="test", flags={"feature_x": True})
-      assert p1 == p2, "Prompt assembly is non-deterministic — will break cache"
+      assert p1 == p2, "Prompt assembly is non-deterministic. Will break cache"
   ```
 
-- **Prompt caching and semantic caching are different tools.** Prompt caching (what this cable covers) works at the token-prefix level — it caches the KV computation for an exact prefix match. Semantic caching (e.g., GPTCache, Redis with embedding similarity) works at the response level and is useful when many requests ask similar questions. They solve different problems and can be used together, but don't mistake one for the other. If you're seeing cache misses on varied queries, prompt caching will not help — you want semantic caching or response memoization.
+- **Prompt caching and semantic caching are different tools.** Prompt caching (what this cable covers) works at the token-prefix level. It caches the KV computation for an exact prefix match. Semantic caching (e.g., GPTCache, Redis with embedding similarity) works at the response level and is useful when many requests ask similar questions. They solve different problems and can be used together, but don't mistake one for the other. If you're seeing cache misses on varied queries, prompt caching will not help. You want semantic caching or response memoization.
 
 ## When this doesn't fit
 
@@ -117,4 +117,4 @@ What surprised us: none of these were obvious from reading the code. They all lo
 
 ## Next
 
-- Next — Debug an agent from a LangSmith trace.
+- Next. Debug an agent from a LangSmith trace.

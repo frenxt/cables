@@ -1,6 +1,6 @@
 ---
 title: >-
-  Boris Cherny: "the model just wants to use tools" (2026) — the design
+  Boris Cherny: "the model just wants to use tools" (2026): the design
   philosophy behind Claude Code
 slug: cherny-04-model-wants-tools
 tool: claude-code
@@ -24,17 +24,17 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Building Claude Code with Boris Cherny — Pragmatic Engineer newsletter
+  - label: 'Building Claude Code with Boris Cherny: Pragmatic Engineer newsletter'
     url: >-
       https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny
-  - label: Gergely Orosz on X — interview summary
+  - label: 'Gergely Orosz on X: interview summary'
     url: 'https://x.com/GergelyOrosz/status/2029295486574747872'
 kind: standalone
 ---
 
 # Boris Cherny's Claude Code Setup #4: The model just wants to use tools
 
-*Final entry in the Cherny Playbook — from origin story to design philosophy.*
+*Final entry in the Cherny Playbook. From origin story to design philosophy.*
 
 ---
 
@@ -48,7 +48,7 @@ kind: standalone
 >
 > "It just one shotted it… this was my first field AGI moment at Anthropic."
 >
-> — [**Boris Cherny on the Pragmatic Engineer podcast with Gergely Orosz**](https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny), 2026
+> [**Boris Cherny on the Pragmatic Engineer podcast with Gergely Orosz**](https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny), 2026
 
 ---
 
@@ -56,11 +56,11 @@ kind: standalone
 
 This interview surfaces the design principle behind Claude Code that most agent frameworks in 2026 still miss. Three things:
 
-**1. "The model wants to use tools."** This is a claim about model psychology, not framework capability. Modern Claude models — when given access to tools — default to action. They'd rather run `ls` than ask what files exist. They'd rather `grep` than hallucinate a symbol. Systems that force the model to reason in a vacuum before acting underutilize this.
+**1. "The model wants to use tools."** This is a claim about model psychology, not framework capability. Modern Claude models. When given access to tools. Default to action. They'd rather run `ls` than ask what files exist. They'd rather `grep` than hallucinate a symbol. Systems that force the model to reason in a vacuum before acting underutilize this.
 
 **2. "Agentic search is a fancy word for glob and grep."** Cherny is being deliberate here. He's not saying "don't build retrieval systems." He's saying: the best retrieval primitive for code-shaped problems is often already installed on your machine. Vector databases have a place. So does `rg`. Know which one you need.
 
-**3. "20–30 PRs a day, each completely different."** The throughput figure is secondary — the real claim is *variety*. Cherny is doing many small, heterogeneous things per day, not one large thing. That shape of work is what an agent loop supports; it's not what a traditional "do the feature end-to-end" IDE supports.
+**3. "20–30 PRs a day, each completely different."** The throughput figure is secondary. The real claim is *variety*. Cherny is doing many small, heterogeneous things per day, not one large thing. That shape of work is what an agent loop supports; it's not what a traditional "do the feature end-to-end" IDE supports.
 
 ---
 
@@ -85,11 +85,11 @@ A common failure mode we see in client engagements: teams build elaborate tool w
 
 On InterviewLM, our interviewer persona agents have access to five tools:
 
-1. `get_rubric(role_id)` — reads structured YAML from disk
-2. `get_transcript(session_id)` — reads current session state
-3. `score_response(criterion_id, score, reasoning)` — writes to session state
-4. `next_question(category, difficulty)` — reads candidate question bank
-5. `end_session(summary)` — closes the session
+1. `get_rubric(role_id)`. Reads structured YAML from disk
+2. `get_transcript(session_id)`. Reads current session state
+3. `score_response(criterion_id, score, reasoning)`. Writes to session state
+4. `next_question(category, difficulty)`. Reads candidate question bank
+5. `end_session(summary)`. Closes the session
 
 Four out of five are backed by filesystem operations or simple database reads. One writes structured state. No wrappers, no "smart" retrieval, no elaborate context management. Cache hit rate: 90%+. Tool call success rate: 99.2%. Median latency: sub-50ms per tool call.
 
@@ -111,13 +111,13 @@ Audit your current agent's tool surface. For each tool, answer: *is this a primi
 
 ---
 
-## Series complete — Boris Cherny's Claude Code Setup
+## Series complete. Boris Cherny's Claude Code Setup
 
 Four entries, one workflow, one pattern per entry for production AI work:
 
-1. [Origin story: "code is not the bottleneck"](../cherny-01-origin-story) — the bottleneck diagnostic
-2. [5 parallel Claudes + iTerm2](../cherny-02-parallel-agents) — the 5-lane pattern with git worktrees
-3. [CLAUDE.md as postmortem](../cherny-03-claude-md-postmortem) — living memory with a forcing function
-4. **"The model just wants to use tools"** — tool-first design; prefer primitives over wrappers
+1. [Origin story: "code is not the bottleneck"](../cherny-01-origin-story). The bottleneck diagnostic
+2. [5 parallel Claudes + iTerm2](../cherny-02-parallel-agents). The 5-lane pattern with git worktrees
+3. [CLAUDE.md as postmortem](../cherny-03-claude-md-postmortem). Living memory with a forcing function
+4. **"The model just wants to use tools"**. Tool-first design; prefer primitives over wrappers
 
-Next in the broader *Playbooks* project: **Harrison Chase on Production Agents** — why better models alone won't ship your agent, the LangGraph runtime, and the Deep Agents harness.
+Next in the broader *Playbooks* project: **Harrison Chase on Production Agents**. Why better models alone won't ship your agent, the LangGraph runtime, and the Deep Agents harness.

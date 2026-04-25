@@ -53,8 +53,8 @@ ls -td apps/langgraph-python/benchmarks/results/2*/ | head -1
 ```
 
 Read these files from the results directory:
-1. `reports/*.md` — the generated report
-2. `evaluation.json` — deterministic evaluation scores
+1. `reports/*.md`. The generated report
+2. `evaluation.json`. Deterministic evaluation scores
 3. Find turn traces: look inside the results dir for a scenario-named subdirectory with `traces/turn-*.json`
 4. The scenario YAML that was run (for evaluation criteria)
 
@@ -65,16 +65,16 @@ Read these files from the results directory:
 For each criterion in the scenario YAML's `evaluation.criteria` section, score 0.0-1.0 based on actual trace data.
 
 **Scoring guide:**
-- **0.0** = Complete failure — criterion not addressed at all
-- **0.25** = Poor — attempted but fundamentally wrong
-- **0.5** = Partial — partially met with significant gaps
-- **0.75** = Good — mostly met with minor issues
-- **1.0** = Excellent — fully met the criterion
+- **0.0** = Complete failure. Criterion not addressed at all
+- **0.25** = Poor. Attempted but fundamentally wrong
+- **0.5** = Partial. Partially met with significant gaps
+- **0.75** = Good. Mostly met with minor issues
+- **1.0** = Excellent. Fully met the criterion
 
 For each criterion, provide:
 - **Score** (0.0-1.0)
-- **Evidence** — specific references to turn traces (tool calls, file contents, state changes)
-- **Reasoning** — why this score was given
+- **Evidence**. Specific references to turn traces (tool calls, file contents, state changes)
+- **Reasoning**. Why this score was given
 
 Output a summary table:
 
@@ -136,11 +136,11 @@ There are TWO sources of cache metrics (use both for cross-validation):
    - **Caveat**: `stream_mode="values"` emits duplicate state snapshots that appear as LLM calls with identical `input_tokens`. These are NOT real LLM calls. Filter them by looking for calls with `cache_read_tokens > 0` to identify real LLM calls.
 
 2. **Server logs** (`run_with_server.sh` captures to `results/server-logs/langgraph-*.log`): Grep for middleware log lines:
-   - `[OpenRouterCaching] Response:` — per-call cache metrics (input, cached, write, rate%)
-   - `[OpenRouterCaching] Per-block:` — breakpoint count and placement
-   - `[OpenRouterCaching] Converted + added cache_control` — tool caching confirmation
-   - `[AnthropicCaching]` — should NOT appear for OpenRouter (skip is working)
-   - `[MemoryBootstrap]` — dynamic content injection after cache breakpoint
+   - `[OpenRouterCaching] Response:`. Per-call cache metrics (input, cached, write, rate%)
+   - `[OpenRouterCaching] Per-block:`. Breakpoint count and placement
+   - `[OpenRouterCaching] Converted + added cache_control`. Tool caching confirmation
+   - `[AnthropicCaching]`. Should NOT appear for OpenRouter (skip is working)
+   - `[MemoryBootstrap]`. Dynamic content injection after cache breakpoint
 
 ### Cache analysis script
 
@@ -184,12 +184,12 @@ This shows per-LLM-call: `input=N cached=N write=N rate=N%`
 | Symptom | Likely Cause | Where to Check |
 |---------|-------------|----------------|
 | `cached=0` on all calls | Cache cold or middleware not running | Server log: look for `[OpenRouterCaching] Per-block` entries |
-| `cached=16153` stuck | Only system prompt cached, tools/messages not | Server log: check `write=0` — breakpoints set but not creating cache entries |
-| `[AnthropicCaching]` in logs | Anthropic middleware firing for OpenRouter | `anthropic_caching.py` — check `current_model == "openrouter"` skip |
-| No `Converted + added cache_control` | Tools not being cached | `openrouter_caching.py` — tool conversion failing |
+| `cached=16153` stuck | Only system prompt cached, tools/messages not | Server log: check `write=0`. Breakpoints set but not creating cache entries |
+| `[AnthropicCaching]` in logs | Anthropic middleware firing for OpenRouter | `anthropic_caching.py`. Check `current_model == "openrouter"` skip |
+| No `Converted + added cache_control` | Tools not being cached | `openrouter_caching.py`. Tool conversion failing |
 | `write=0` consistently | OpenRouter not reporting cache writes (normal) OR breakpoints not reaching API | Check `bind_tools` monkey-patch in `openrouter_caching.py` |
-| Rate drops to ~35% on large contexts | 20-block lookback limit hit | Normal for OpenRouter agentic loops — tool outputs break prefix |
-| Rate ~95%+ on consecutive calls then drops | Lookback cascade working then breaking | Expected pattern — cache resets after large tool output changes |
+| Rate drops to ~35% on large contexts | 20-block lookback limit hit | Normal for OpenRouter agentic loops. Tool outputs break prefix |
+| Rate ~95%+ on consecutive calls then drops | Lookback cascade working then breaking | Expected pattern. Cache resets after large tool output changes |
 
 ### Cache architecture reference
 
@@ -201,15 +201,15 @@ This shows per-LLM-call: `input=N cached=N write=N rate=N%`
 3. Last message with content `cache_control` (leverages 20-block lookback for incremental caching)
 
 **Key files**:
-- `src/middleware/before_model/openrouter_caching.py` — per-block caching + monkey-patches for ChatOpenAI
-- `src/middleware/before_model/anthropic_caching.py` — direct Anthropic API caching (skips OpenRouter)
-- `src/middleware/before_model/memory_bootstrap.py` — injects dynamic content AFTER cache breakpoint
-- `benchmarks/runner/scenario_runner.py:_process_chunk` — extracts cache metrics from stream chunks
-- `benchmarks/runner/trace_logger.py` — stores cache metrics in turn traces
+- `src/middleware/before_model/openrouter_caching.py`. Per-block caching + monkey-patches for ChatOpenAI
+- `src/middleware/before_model/anthropic_caching.py`. Direct Anthropic API caching (skips OpenRouter)
+- `src/middleware/before_model/memory_bootstrap.py`. Injects dynamic content AFTER cache breakpoint
+- `benchmarks/runner/scenario_runner.py:_process_chunk`. Extracts cache metrics from stream chunks
+- `benchmarks/runner/trace_logger.py`. Stores cache metrics in turn traces
 
 **Monkey-patches** in `openrouter_caching.py` (required because ChatOpenAI strips non-standard fields):
-- `_sanitize_chat_completions_content` — preserves `cache_control` on message content blocks
-- `BaseChatOpenAI.bind_tools` — preserves `cache_control` on tool dicts through `convert_to_openai_tool`
+- `_sanitize_chat_completions_content`. Preserves `cache_control` on message content blocks
+- `BaseChatOpenAI.bind_tools`. Preserves `cache_control` on tool dicts through `convert_to_openai_tool`
 
 **Known limitations** (OpenRouter per-block caching):
 - Haiku 4.5 requires 4,096 minimum cacheable tokens per breakpoint
@@ -218,4 +218,4 @@ This shows per-LLM-call: `input=N cached=N write=N rate=N%`
 - Agentic loops with large/variable tool outputs break prefix, causing cache resets to system-only (~16K)
 - Practical ceiling: ~60-65% overall cache rate for multi-turn agentic loops
 - Peak rates of 97-99%+ achievable during lookback cascades (consecutive similar calls)
-- `write=0` in response metrics is normal — OpenRouter may not report `cache_write_tokens`
+- `write=0` in response metrics is normal. OpenRouter may not report `cache_write_tokens`

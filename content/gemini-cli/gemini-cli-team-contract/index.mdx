@@ -21,15 +21,15 @@ kind: standalone
 
 # Team GEMINI.md: shared AI conventions for multi-developer projects
 
-When one engineer's Gemini CLI session produces different code shape than another's, the root cause is almost always context — not the tool. One person has a `GEMINI.md` with naming conventions; another doesn't. One has prohibited patterns listed; another discovers them through code review.
+When one engineer's Gemini CLI session produces different code shape than another's, the root cause is almost always context. Not the tool. One person has a `GEMINI.md` with naming conventions; another doesn't. One has prohibited patterns listed; another discovers them through code review.
 
 <WarStory title="Two engineers, one repo, opposite output">
-We reviewed a PR where the component structure looked unfamiliar. Tabs instead of spaces (we're a spaces team), class components instead of hooks, inline styles instead of Tailwind. The author wasn't a junior — they were senior, new to the team. Their Gemini CLI had no GEMINI.md to constrain it, so it produced reasonable code that happened to be wrong for our project. Three rounds of review to fix what twenty lines of shared context would have prevented.
+We reviewed a PR where the component structure looked unfamiliar. Tabs instead of spaces (we're a spaces team), class components instead of hooks, inline styles instead of Tailwind. The author wasn't a junior. They were senior, new to the team. Their Gemini CLI had no GEMINI.md to constrain it, so it produced reasonable code that happened to be wrong for our project. Three rounds of review to fix what twenty lines of shared context would have prevented.
 </WarStory>
 
 ## What we tried
 
-We added a project-level `GEMINI.md` to the repo and had everyone pull it. That solved the conventions problem immediately. The remaining problem was personal preferences — verbosity, response language, preferred explanation style — that varied between team members.
+We added a project-level `GEMINI.md` to the repo and had everyone pull it. That solved the conventions problem immediately. The remaining problem was personal preferences. Verbosity, response language, preferred explanation style. That varied between team members.
 
 ## What happened
 
@@ -98,7 +98,7 @@ Make GEMINI.md part of the onboarding checklist alongside `.env.example` and SSH
 
 **Keeping it current:**
 
-`GEMINI.md` drifts if no one owns it. Assign ownership the same way you'd assign ownership of `CONTRIBUTING.md` — a specific person, a review in the same PR when conventions change. A stale `GEMINI.md` that contradicts the codebase is worse than no `GEMINI.md`.
+`GEMINI.md` drifts if no one owns it. Assign ownership the same way you'd assign ownership of `CONTRIBUTING.md`. A specific person, a review in the same PR when conventions change. A stale `GEMINI.md` that contradicts the codebase is worse than no `GEMINI.md`.
 
 **Review it in retros:**
 

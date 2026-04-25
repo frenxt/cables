@@ -1,6 +1,6 @@
 ---
 title: >-
-  Dario Amodei: "We are near the end of the exponential" (Feb 2026) — building
+  Dario Amodei: "We are near the end of the exponential" (Feb 2026): building
   for the endgame
 slug: amodei-05-end-of-exponential
 tool: claude-code
@@ -24,7 +24,7 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: 'Dwarkesh Patel — Dario Amodei: "We are near the end of the exponential"'
+  - label: 'Dwarkesh Patel: Dario Amodei: "We are near the end of the exponential"'
     url: 'https://www.dwarkesh.com/p/dario-amodei-2'
   - label: Hacker News discussion
     url: 'https://news.ycombinator.com/item?id=47005565'
@@ -33,7 +33,7 @@ kind: standalone
 
 # Inside Anthropic with Dario Amodei #5: The end of the exponential
 
-*Final entry in the Amodei Playbook — from the safety floor of 2023 to the endgame framing of 2026.*
+*Final entry in the Amodei Playbook. From the safety floor of 2023 to the endgame framing of 2026.*
 
 ---
 
@@ -41,9 +41,9 @@ kind: standalone
 
 > "The most surprising thing has been the lack of public recognition of how close we are to the end of the exponential... **we're near the end of the exponential.**"
 >
-> — [**Dario Amodei on Dwarkesh Patel's podcast**](https://www.dwarkesh.com/p/dario-amodei-2), February 2026
+> [**Dario Amodei on Dwarkesh Patel's podcast**](https://www.dwarkesh.com/p/dario-amodei-2), February 2026
 
-**Important nuance:** Amodei is *not* saying progress is plateauing. "End" means *endgame* — the top of the S-curve. Benchmarks pegged to human ability are being saturated. Models have gone from high-school-student level → college → PhD-level cognitive work, and the terminal point is expert-human performance on most cognitive tasks. Amodei puts the odds of "a country of geniuses in a datacentre" arriving this decade at around 90%.
+**Important nuance:** Amodei is *not* saying progress is plateauing. "End" means *endgame*. The top of the S-curve. Benchmarks pegged to human ability are being saturated. Models have gone from high-school-student level → college → PhD-level cognitive work, and the terminal point is expert-human performance on most cognitive tasks. Amodei puts the odds of "a country of geniuses in a datacentre" arriving this decade at around 90%.
 
 ---
 
@@ -51,7 +51,7 @@ kind: standalone
 
 This is the opposite message from Karpathy's "decade of agents" framing (see [*The Karpathy Playbook* entry #6](../karpathy-06-march-of-nines)). Same industry, same year, two thoughtful founders, reading the same capability curve, reaching opposite conclusions about timeline.
 
-They're not actually contradicting each other. Karpathy is talking about **agent reliability** — the march from 90% to 99.999%, which is asymptotic no matter how capable the underlying model gets. Amodei is talking about **raw cognitive capability** — the distance between today's model and expert-human parity, which is compressing.
+They're not actually contradicting each other. Karpathy is talking about **agent reliability**: the march from 90% to 99.999%, which is asymptotic no matter how capable the underlying model gets. Amodei is talking about **raw cognitive capability**: the distance between today's model and expert-human parity, which is compressing.
 
 You can believe both. And if you're shipping production AI, you probably should.
 
@@ -65,7 +65,7 @@ We run every architectural decision against a **two-question check**:
 
 2. **Reliability question (Karpathy)**: Does this architecture still need every nine I promised the customer, regardless of how capable the model gets? Better models don't replace retry logic, graceful degradation, cost guardrails, or traces.
 
-Both must be answered. A system built only for the capability question collapses under production load. A system built only for the reliability question gets leapfrogged in 18 months. We aim for architectures that absorb capability gains and enforce reliability floors — model-agnostic at the top, safety-scaffolded at the bottom.
+Both must be answered. A system built only for the capability question collapses under production load. A system built only for the reliability question gets leapfrogged in 18 months. We aim for architectures that absorb capability gains and enforce reliability floors. Model-agnostic at the top, safety-scaffolded at the bottom.
 
 ---
 
@@ -75,7 +75,7 @@ We designed InterviewLM from day one to absorb model capability without requirin
 
 - **Provider abstraction**: we route by task class, not by model name. "Reasoning task → use the current best reasoning model at acceptable cost." Today that's Claude Opus. When the endpoint changes, the routing layer absorbs it.
 - **Structured output as the contract**: agents emit typed JSON, not free-text. A 10× more capable model with the same output schema drops into the same pipeline without any code changes.
-- **Eval graph as the gate**: whenever a new model is released, we run it against the golden set before it sees production traffic. The decision to adopt is automatic — if scores improve without regressions, it ships. No engineering debate.
+- **Eval graph as the gate**: whenever a new model is released, we run it against the golden set before it sees production traffic. The decision to adopt is automatic. If scores improve without regressions, it ships. No engineering debate.
 
 The result: in the 18 months we've been running it, InterviewLM has swapped underlying models three times. Each swap took an hour of engineering work. None required a re-architecture. If Amodei is right about the next 18 months, that same spine absorbs whatever arrives.
 
@@ -89,14 +89,14 @@ Read your system's code and ask: where is the model hard-coded? Every `"claude-3
 
 ---
 
-## Series complete — Inside Anthropic with Dario Amodei
+## Series complete. Inside Anthropic with Dario Amodei
 
 Five entries, one arc from safety scaffolding to the endgame, one production pattern per entry:
 
-1. [Responsible Scaling Policy (Sep 2023)](../amodei-01-responsible-scaling-policy) — Production Risk Levels as the pre-ship gate
-2. [Claude's Constitution](../amodei-02-brilliant-friend) — the brilliant friend test for AI advisors
-3. [Machines of Loving Grace (Oct 2024)](../amodei-03-machines-of-loving-grace) — the ten-year lens on architectural decisions
-4. [The Urgency of Interpretability (Apr 2025)](../amodei-04-urgency-of-interpretability) — observability-as-interpretability stack
-5. **"End of the exponential" (Feb 2026)** — capability-agnostic spine + reliability-agnostic scaffolding
+1. [Responsible Scaling Policy (Sep 2023)](../amodei-01-responsible-scaling-policy). Production Risk Levels as the pre-ship gate
+2. [Claude's Constitution](../amodei-02-brilliant-friend). The brilliant friend test for AI advisors
+3. [Machines of Loving Grace (Oct 2024)](../amodei-03-machines-of-loving-grace). The ten-year lens on architectural decisions
+4. [The Urgency of Interpretability (Apr 2025)](../amodei-04-urgency-of-interpretability). Observability-as-interpretability stack
+5. **"End of the exponential" (Feb 2026)**. Capability-agnostic spine + reliability-agnostic scaffolding
 
-Next in the broader *Playbooks* project: **Boris Cherny's Claude Code Setup** — the viral workflow thread broken down: parallel agents, Opus-for-everything, CLAUDE.md as postmortem log, and the `/commit-push-pr` pattern.
+Next in the broader *Playbooks* project: **Boris Cherny's Claude Code Setup**. The viral workflow thread broken down: parallel agents, Opus-for-everything, CLAUDE.md as postmortem log, and the `/commit-push-pr` pattern.

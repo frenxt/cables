@@ -5,7 +5,7 @@ description: Use when prompt caching isn't working, cache rates are low, cached 
 
 # Debug Prompt Caching
 
-Systematic approach to diagnosing and fixing prompt caching issues for Anthropic Claude models — both direct API and via OpenRouter.
+Systematic approach to diagnosing and fixing prompt caching issues for Anthropic Claude models. Both direct API and via OpenRouter.
 
 ## When to Use
 
@@ -67,14 +67,14 @@ LLM frameworks often strip non-standard fields. Known stripping points:
 ### 4. Are breakpoints in the right places?
 
 Optimal 3-breakpoint strategy:
-1. **System prompt** — static, caches ~10-20K tokens
-2. **Last tool definition** — stable within session, caches tools prefix
-3. **Last message with content** — leverages 20-block lookback for incremental caching
+1. **System prompt**. Static, caches ~10-20K tokens
+2. **Last tool definition**. Stable within session, caches tools prefix
+3. **Last message with content**. Leverages 20-block lookback for incremental caching
 
 Common mistakes:
-- Breakpoint on assistant message with `content=None` (tool_call messages) — has no effect
-- Breakpoint on first message instead of last — doesn't leverage lookback
-- Too many breakpoints (>4) — request rejected or degraded
+- Breakpoint on assistant message with `content=None` (tool_call messages). Has no effect
+- Breakpoint on first message instead of last. Doesn't leverage lookback
+- Too many breakpoints (>4). Request rejected or degraded
 
 ### 5. Does content meet minimum token threshold?
 
@@ -142,18 +142,18 @@ msg.response_metadata = {
 }
 ```
 
-Check both locations — different framework versions populate different fields.
+Check both locations. Different framework versions populate different fields.
 
 ## Interpreting Cache Patterns
 
 | Pattern | Meaning |
 |---------|---------|
-| `cached=0` on all calls | Cache completely broken — go to step 1 |
-| `cached=N` (fixed) on every call | Only one prefix cached (likely system). Other breakpoints failing — steps 3-5 |
+| `cached=0` on all calls | Cache completely broken. Go to step 1 |
+| `cached=N` (fixed) on every call | Only one prefix cached (likely system). Other breakpoints failing. Steps 3-5 |
 | `cached` grows then resets to fixed N | Lookback working, then tool output breaks prefix. Expected in agentic loops |
-| `cached` grows monotonically | Ideal — incremental caching working |
+| `cached` grows monotonically | Ideal. Incremental caching working |
 | 95-99% on consecutive calls, then drops to 35% | Lookback cascade working then breaking on large content change. Normal for agentic loops |
-| `cache_write=0` always (OpenRouter) | May be normal — OpenRouter doesn't always report writes. Check reads instead |
+| `cache_write=0` always (OpenRouter) | May be normal. OpenRouter doesn't always report writes. Check reads instead |
 
 ## Provider-Specific Notes
 

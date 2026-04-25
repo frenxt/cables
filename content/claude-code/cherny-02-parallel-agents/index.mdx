@@ -1,6 +1,6 @@
 ---
 title: >-
-  Boris Cherny: 5 parallel Claudes + 5-10 browser sessions (Jan 2026) —
+  Boris Cherny: 5 parallel Claudes + 5-10 browser sessions (Jan 2026) :
   concurrency as the multiplier
 slug: cherny-02-parallel-agents
 tool: claude-code
@@ -24,9 +24,9 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: 'Boris Cherny — parallel workflow thread (Threads, Jan 2026)'
+  - label: 'Boris Cherny: parallel workflow thread (Threads, Jan 2026)'
     url: 'https://www.threads.com/@boris_cherny/post/DTBVlq0kobo/'
-  - label: Boris Cherny — opening thread post
+  - label: 'Boris Cherny: opening thread post'
     url: 'https://www.threads.com/@boris_cherny/post/DTBVlMIkpcm/'
   - label: VentureBeat coverage
     url: >-
@@ -36,7 +36,7 @@ kind: standalone
 
 # Boris Cherny's Claude Code Setup #2: Five parallel Claudes
 
-*Part 2 of 4 — breaking down the Claude Code creator's actual workflow with FRE|Nxt Labs production commentary.*
+*Part 2 of 4. Breaking down the Claude Code creator's actual workflow with FRE|Nxt Labs production commentary.*
 
 ---
 
@@ -44,7 +44,7 @@ kind: standalone
 
 > "I run 5 Claudes in parallel in my terminal. I number my tabs 1-5, and use system notifications to know when a Claude needs input."
 >
-> — [**Boris Cherny**](https://www.threads.com/@boris_cherny/post/DTBVlq0kobo/), January 2026
+> [**Boris Cherny**](https://www.threads.com/@boris_cherny/post/DTBVlq0kobo/), January 2026
 
 Plus 5–10 more Claude sessions in `claude.ai/code` in the browser. Plus mobile. Total concurrent workflow capacity: **10–15 Claude sessions at once**.
 
@@ -58,7 +58,7 @@ Two things stand out from Cherny's setup:
 
 **1. It's vanilla.** The creator of Claude Code doesn't heavily customize it. No exotic hooks, no deep plugin stack. The leverage comes from *how* he uses the tool, not from *configuring* the tool. This is a rebuke to every team that has built a 500-line custom integration before trying the basic workflow.
 
-**2. Concurrency is the multiplier.** Five terminals + 5–10 browser sessions is not a productivity gimmick — it's the entire insight. A single agent session waiting for input is dead time. Five sessions means at any moment, at least one is ready for review. The iTerm2 notification pattern is the UX primitive that makes it work; without notifications, you're just manually polling tabs.
+**2. Concurrency is the multiplier.** Five terminals + 5–10 browser sessions is not a productivity gimmick. It's the entire insight. A single agent session waiting for input is dead time. Five sessions means at any moment, at least one is ready for review. The iTerm2 notification pattern is the UX primitive that makes it work; without notifications, you're just manually polling tabs.
 
 ---
 
@@ -76,10 +76,10 @@ We adapted Cherny's setup into what we call the **5-lane pattern**, adjusted for
 
 Rules:
 
-- **Separate worktrees per lane**, not branches — concurrent `git` state is the trap Cherny's setup avoids.
-- **Named terminal tabs (1–5)** with system notifications — so you always know which lane needs input, not which tab was most recent.
+- **Separate worktrees per lane**, not branches. Concurrent `git` state is the trap Cherny's setup avoids.
+- **Named terminal tabs (1–5)** with system notifications. So you always know which lane needs input, not which tab was most recent.
 - **Opus for coding lanes**, Haiku for test generation and research. Model choice per lane, not per session.
-- **Review gate between lanes**, not parallel commits — only one lane can be in the process of committing at a time. Prevents merge conflicts.
+- **Review gate between lanes**, not parallel commits. Only one lane can be in the process of committing at a time. Prevents merge conflicts.
 
 ---
 
@@ -94,7 +94,7 @@ On the InterviewLM build week, we ran five concurrent lanes for three days strai
 - **Lane 5**: Prompt caching optimization (long-running profile-and-iterate)
 
 Without the pattern: linear, maybe 2× productivity from Claude Code.
-With the pattern: 5× on implementation, 3× on overall engagement throughput (limited by review and merge capacity — see entry #1's bottleneck diagnostic).
+With the pattern: 5× on implementation, 3× on overall engagement throughput (limited by review and merge capacity. See entry #1's bottleneck diagnostic).
 
 The cost: every engineer on the team had to rewire their mental model from "sequential focus" to "parallel supervision." Not every engineer adapts. The ones who did produced roughly 3× more shipped code per week than the ones who stuck with a single-session workflow.
 
@@ -102,10 +102,10 @@ The cost: every engineer on the team had to rewire their mental model from "sequ
 
 ## The one thing to steal from this
 
-Set up a separate git worktree for Claude Code this week (`git worktree add ../myproject-lane2 main`). Start two parallel sessions — one in the main checkout, one in the worktree. Notice what work becomes viable that wasn't before: running tests while coding, refactoring while feature-building, researching while implementing. Two sessions, not five, is the right starting experiment. Scale up from there only if you hit review capacity faster than you hit agent capacity.
+Set up a separate git worktree for Claude Code this week (`git worktree add ../myproject-lane2 main`). Start two parallel sessions. One in the main checkout, one in the worktree. Notice what work becomes viable that wasn't before: running tests while coding, refactoring while feature-building, researching while implementing. Two sessions, not five, is the right starting experiment. Scale up from there only if you hit review capacity faster than you hit agent capacity.
 
 ---
 
 ## Next in this series
 
-**#3 — CLAUDE.md as a living postmortem**. Cherny's team adds to the file every time Claude does something wrong. Why this converts "AI tool" into "self-correcting team memory."
+**#3. CLAUDE.md as a living postmortem**. Cherny's team adds to the file every time Claude does something wrong. Why this converts "AI tool" into "self-correcting team memory."

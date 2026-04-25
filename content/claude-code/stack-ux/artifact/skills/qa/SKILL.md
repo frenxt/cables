@@ -138,7 +138,7 @@ Reports are stored in Supabase `qa-reports` bucket and served via a juliet-v2 AP
 - **IMPORTANT:** This route is dev-env only. The `qa-reports` bucket and proxy route should NOT exist in production.
 
 **How the upload works:**
-1. `supabase_uploader.py` uploads GIFs in batches of 10 (skip videos — too large)
+1. `supabase_uploader.py` uploads GIFs in batches of 10 (skip videos. Too large)
 2. HTML report paths are rewritten from `reports/{run_id}/gifs/...` to `/api/qa-reports/releases/{run_id}/gifs/...`
 3. Rewritten HTML is uploaded to Supabase
 4. The proxy route serves it with correct Content-Type headers
@@ -226,11 +226,11 @@ Based on results:
 
 ## Writing Good Test Cases
 
-- **One flow per file** — keep tests focused
-- **Natural language steps** — the AI agent interprets them like a human would
+- **One flow per file**. Keep tests focused
+- **Natural language steps**. The AI agent interprets them like a human would
 - **Include negative checks** — "No crash screens", "No console errors"
-- **Tag for discoverability** — use issue IDs, feature names
-- **Set the right persona** — test as the user type that matters
+- **Tag for discoverability**. Use issue IDs, feature names
+- **Set the right persona**. Test as the user type that matters
 
 ## Auth Personas
 

@@ -1,6 +1,6 @@
 ---
 title: >-
-  Harrison Chase: LangGraph as the runtime (June 2024) — state machines for
+  Harrison Chase: LangGraph as the runtime (June 2024): state machines for
   agents
 slug: chase-02-langgraph-runtime
 tool: claude-code
@@ -24,7 +24,7 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Harrison Chase — LangGraph announcement thread (June 2024)
+  - label: 'Harrison Chase: LangGraph announcement thread (June 2024)'
     url: 'https://x.com/hwchase17/status/1798386148982878477'
   - label: LangGraph Platform announcement
     url: 'https://blog.langchain.com/langgraph-platform-announce/'
@@ -36,7 +36,7 @@ kind: standalone
 
 # Harrison Chase on Production Agents #2: LangGraph as the runtime
 
-*Part 2 of 5 — tracing Chase's production agent thinking with FRE|Nxt Labs commentary.*
+*Part 2 of 5. Tracing Chase's production agent thinking with FRE|Nxt Labs commentary.*
 
 ---
 
@@ -44,7 +44,7 @@ kind: standalone
 
 > "🚨 New DeepLearning course: AI agents in LangGraph. LangGraph is an extension of LangChain for building agent & multi-agent systems. I believe it's the best way to build agents for a few reasons: 🔀 Controllability 🧠 Memory 🫂 Novel UX paradigms"
 >
-> — [**Harrison Chase (@hwchase17)**](https://x.com/hwchase17/status/1798386148982878477), June 2024
+> [**Harrison Chase (@hwchase17)**](https://x.com/hwchase17/status/1798386148982878477), June 2024
 
 Later framing from a 2025 interview: *"LangGraph is the runtime. LangChain is the abstraction. Deep Agents are the harness."*
 
@@ -64,6 +64,26 @@ Three specific things LangGraph provides that a plain LangChain composition does
 
 If your agent doesn't need those three things, you don't need LangGraph. If it does, you do.
 
+## The runtime, in one picture
+
+```mermaid
+flowchart LR
+  subgraph State["SessionState (single source of truth)"]
+    Fields["typed fields: messages, plan, evals..."]
+  end
+  N1["entry"] -->|reads/writes state| State
+  N2["coordinator"] --> State
+  N3["persona nodes"] --> State
+  N4["human-in-the-loop (interrupt)"] --> State
+  N5["exit"] --> State
+  State -. checkpointed after each node .-> DB[("Postgres checkpointer")]
+  DB -. resume from last successful node .-> N1
+  DB -. resume from last successful node .-> N2
+  DB -. resume from last successful node .-> N3
+```
+
+Nodes never pass context through nested arguments. Everything flows through state, and state is durable. That is the whole reason the runtime exists.
+
 ---
 
 ## What we actually do with this
@@ -74,7 +94,7 @@ We treat LangGraph as the default runtime for any PRL-3 or higher agent system (
 |---|---|
 | **State schema** | The single source of truth for session state. All node inputs and outputs flow through it. |
 | **Node per agent role** | One LangGraph node per persona/capability. Each node is small, testable, and independently versioned. |
-| **Edges as routing** | Conditional edges encode the state machine. No `if/else` in agent code — all branching lives in edges. |
+| **Edges as routing** | Conditional edges encode the state machine. No `if/else` in agent code. All branching lives in edges. |
 | **Interrupts for approval gates** | Every human-in-the-loop checkpoint is a LangGraph interrupt. Resumable from exactly that point. |
 | **Checkpointer backed by Postgres** | Session state survives restarts. Replays are free. |
 
@@ -93,9 +113,9 @@ InterviewLM is one LangGraph per candidate session. The graph has 12 nodes:
 - 1 human-in-the-loop node (optional live interviewer intervention)
 - 1 exit node (session summary + transcript storage)
 
-Every node reads and writes to a shared `SessionState` schema. The checkpointer writes to Postgres after each node. A failed session — for any reason, including LLM provider outage — resumes from the last successful checkpoint. We've had zero data loss on 100+ concurrent sessions over the engagement lifetime.
+Every node reads and writes to a shared `SessionState` schema. The checkpointer writes to Postgres after each node. A failed session, for any reason, including an LLM provider outage, resumes from the last successful checkpoint. We have had zero data loss across 100+ concurrent sessions over the engagement lifetime.
 
-The design cost: roughly one week of state-schema design upfront. The design payoff: every failure scenario has a deterministic recovery path. We never have to reconstruct "what was the agent doing when it died?" — the state tells us.
+The design cost: roughly one week of state-schema design upfront. The design payoff: every failure scenario has a deterministic recovery path. We never have to reconstruct "what was the agent doing when it died?". The state tells us.
 
 ---
 
@@ -107,4 +127,4 @@ On your next agent system, model the state *before* writing a single node. Draw 
 
 ## Next in this series
 
-**#3 — Better models alone won't ship your agent (2025)**. Chase's central argument in every interview and keynote since 2024: the gap between prototype and production is orchestration, not model capability. What we run before calling an agent production-ready.
+**#3. Better models alone won't ship your agent (2025)**. Chase's central argument in every interview and keynote since 2024: the gap between prototype and production is orchestration, not model capability. What we run before calling an agent production-ready.

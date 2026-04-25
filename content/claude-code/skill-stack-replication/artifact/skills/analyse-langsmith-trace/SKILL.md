@@ -12,7 +12,7 @@ Extract and analyze a LangSmith public trace using Playwright (SPA requires brow
 
 ### Step 1: Extract trace data with Playwright
 
-LangSmith is a React SPA — WebFetch won't work. Use Playwright to render the page and extract text.
+LangSmith is a React SPA. WebFetch won't work. Use Playwright to render the page and extract text.
 
 ```bash
 cd /tmp && node -e "
@@ -107,12 +107,12 @@ Produce a structured report covering:
 ## What to Look For
 
 **Common failure patterns:**
-- `IndentationError` / `SyntaxError` in generated Python scripts — sandbox code generation bugs
-- `git commit` failures with "Changes not staged" — concurrent write race conditions
-- Tool calls returning `error: true` — check the message field for root cause
-- Agent retrying the same failed operation — indicates missing error handling
-- Excessive token usage — system prompt duplication, large tool outputs
-- Missing `write_memory` after analysis — agent not persisting findings
+- `IndentationError` / `SyntaxError` in generated Python scripts. Sandbox code generation bugs
+- `git commit` failures with "Changes not staged". Concurrent write race conditions
+- Tool calls returning `error: true`. Check the message field for root cause
+- Agent retrying the same failed operation. Indicates missing error handling
+- Excessive token usage. System prompt duplication, large tool outputs
+- Missing `write_memory` after analysis. Agent not persisting findings
 
 **Performance signals:**
 - TTFT > 3s may indicate cold start or large prompt
@@ -123,5 +123,5 @@ Produce a structured report covering:
 
 - The system prompt is often duplicated (base template + household-specific). Skip the duplicate when reading.
 - Tool calls appear as `tool_name toolu_XXXX` followed by YAML params, then `TOOL` section with the result.
-- `YAML` / `RAW` markers are LangSmith UI artifacts — ignore them.
+- `YAML` / `RAW` markers are LangSmith UI artifacts. Ignore them.
 - For long traces (1000+ lines), focus on: user message, tool call sequence, errors, and final output.

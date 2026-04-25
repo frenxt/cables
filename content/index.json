@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-18T11:07:14.453Z",
+  "generated_at": "2026-04-25T03:00:57.691Z",
   "entries": [
     {
-      "title": "Anthropic's Responsible Scaling Policy (Sep 2023) — safety as operating procedure",
+      "title": "Anthropic's Responsible Scaling Policy (Sep 2023): safety as operating procedure",
       "slug": "amodei-01-responsible-scaling-policy",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -38,7 +38,7 @@
       "path": "content/claude-code/amodei-01-responsible-scaling-policy"
     },
     {
-      "title": "Anthropic's \"brilliant friend\" spec — the product voice that defines Claude",
+      "title": "Anthropic's \"brilliant friend\" spec: the product voice that defines Claude",
       "slug": "amodei-02-brilliant-friend",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -74,7 +74,7 @@
       "path": "content/claude-code/amodei-02-brilliant-friend"
     },
     {
-      "title": "Dario Amodei's Machines of Loving Grace (Oct 2024) — planning against the upside case",
+      "title": "Dario Amodei's Machines of Loving Grace (Oct 2024): planning against the upside case",
       "slug": "amodei-03-machines-of-loving-grace",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -110,7 +110,7 @@
       "path": "content/claude-code/amodei-03-machines-of-loving-grace"
     },
     {
-      "title": "Dario Amodei's Urgency of Interpretability (April 2025) — the unsolved problem in production",
+      "title": "Dario Amodei's Urgency of Interpretability (April 2025): the unsolved problem in production",
       "slug": "amodei-04-urgency-of-interpretability",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -146,7 +146,7 @@
       "path": "content/claude-code/amodei-04-urgency-of-interpretability"
     },
     {
-      "title": "Dario Amodei: \"We are near the end of the exponential\" (Feb 2026) — building for the endgame",
+      "title": "Dario Amodei: \"We are near the end of the exponential\" (Feb 2026): building for the endgame",
       "slug": "amodei-05-end-of-exponential",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -180,6 +180,41 @@
       "compatibility_reviewed_at": null,
       "compatibility_rank": null,
       "path": "content/claude-code/amodei-05-end-of-exponential"
+    },
+    {
+      "title": "Use auto mode, not --dangerously-skip-permissions",
+      "slug": "auto-mode-over-skip-permissions",
+      "tool": "claude-code",
+      "track": "fundamentals",
+      "category": "workflow",
+      "difficulty": "intermediate",
+      "day": null,
+      "series": null,
+      "series_title": null,
+      "series_order": null,
+      "series_total": null,
+      "tags": [
+        "auto-mode",
+        "permissions",
+        "safety",
+        "workflow"
+      ],
+      "time_required": "8 min",
+      "artifact_type": null,
+      "has_war_story": true,
+      "last_verified": "2026-04-25",
+      "publisher": "frenxt-labs",
+      "provenance_repo": "frenxt/cables",
+      "provenance_ref": null,
+      "skill_capability_cluster": null,
+      "skill_maturity": null,
+      "compatibility_tier": null,
+      "compatibility_quality_score": null,
+      "compatibility_claude_status": null,
+      "compatibility_codex_status": null,
+      "compatibility_reviewed_at": null,
+      "compatibility_rank": null,
+      "path": "content/claude-code/auto-mode-over-skip-permissions"
     },
     {
       "title": "Autonomous browser QA with browser-use",
@@ -216,7 +251,7 @@
       "path": "content/claude-code/browser-use-qa"
     },
     {
-      "title": "Harrison Chase: \"a single 800-line Python package\" (Oct 2022) — the LangChain origin story",
+      "title": "Harrison Chase: \"a single 800-line Python package\" (Oct 2022): the LangChain origin story",
       "slug": "chase-01-langchain-origin",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -252,7 +287,7 @@
       "path": "content/claude-code/chase-01-langchain-origin"
     },
     {
-      "title": "Harrison Chase: LangGraph as the runtime (June 2024) — state machines for agents",
+      "title": "Harrison Chase: LangGraph as the runtime (June 2024): state machines for agents",
       "slug": "chase-02-langgraph-runtime",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -288,7 +323,7 @@
       "path": "content/claude-code/chase-02-langgraph-runtime"
     },
     {
-      "title": "Harrison Chase: better models alone won't ship your agent (2025) — the production gap",
+      "title": "Harrison Chase: better models alone won't ship your agent (2025): the production gap",
       "slug": "chase-03-production-gap",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -324,7 +359,7 @@
       "path": "content/claude-code/chase-03-production-gap"
     },
     {
-      "title": "Harrison Chase: Deep Agents (July 2025) — batteries-included harness",
+      "title": "Harrison Chase: Deep Agents (July 2025): batteries-included harness",
       "slug": "chase-04-deep-agents",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -360,7 +395,7 @@
       "path": "content/claude-code/chase-04-deep-agents"
     },
     {
-      "title": "Harrison Chase: Ambient Agents (2025–26) — the UX after chat",
+      "title": "Harrison Chase: Ambient Agents (2025–26): the UX after chat",
       "slug": "chase-05-ambient-agents",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -396,7 +431,7 @@
       "path": "content/claude-code/chase-05-ambient-agents"
     },
     {
-      "title": "Boris Cherny: \"code is not the bottleneck\" (2024–26) — the origin story of Claude Code",
+      "title": "Boris Cherny: \"code is not the bottleneck\" (2024–26): the origin story of Claude Code",
       "slug": "cherny-01-origin-story",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -432,7 +467,7 @@
       "path": "content/claude-code/cherny-01-origin-story"
     },
     {
-      "title": "Boris Cherny: 5 parallel Claudes + 5-10 browser sessions (Jan 2026) — concurrency as the multiplier",
+      "title": "Boris Cherny: 5 parallel Claudes + 5-10 browser sessions (Jan 2026) : concurrency as the multiplier",
       "slug": "cherny-02-parallel-agents",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -468,7 +503,7 @@
       "path": "content/claude-code/cherny-02-parallel-agents"
     },
     {
-      "title": "Boris Cherny: CLAUDE.md as a living postmortem (Jan 2026) — turning Claude into team memory",
+      "title": "Boris Cherny: CLAUDE.md as a living postmortem (Jan 2026): turning Claude into team memory",
       "slug": "cherny-03-claude-md-postmortem",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -504,7 +539,7 @@
       "path": "content/claude-code/cherny-03-claude-md-postmortem"
     },
     {
-      "title": "Boris Cherny: \"the model just wants to use tools\" (2026) — the design philosophy behind Claude Code",
+      "title": "Boris Cherny: \"the model just wants to use tools\" (2026): the design philosophy behind Claude Code",
       "slug": "cherny-04-model-wants-tools",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -1435,7 +1470,7 @@
       "path": "content/claude-code/f4-skills-that-scale"
     },
     {
-      "title": "Prompt caching kills dynamic injection — pick one",
+      "title": "Prompt caching kills dynamic injection. Pick one",
       "slug": "f5-prompt-cache-vs-dynamic-injection",
       "tool": "claude-code",
       "track": "founder",
@@ -1613,7 +1648,7 @@
       "path": "content/gemini-cli/gemini-cli-team-contract"
     },
     {
-      "title": "Karpathy's Software 2.0 (2017) — the blog post that predicted the decade",
+      "title": "Karpathy's Software 2.0 (2017): the blog post that predicted the decade",
       "slug": "karpathy-01-software-2-0",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -1648,7 +1683,7 @@
       "path": "content/claude-code/karpathy-01-software-2-0"
     },
     {
-      "title": "Karpathy's LLM OS (2023) — the architecture blueprint we still use today",
+      "title": "Karpathy's LLM OS (2023): the architecture blueprint we still use today",
       "slug": "karpathy-02-llm-os",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -1684,7 +1719,7 @@
       "path": "content/claude-code/karpathy-02-llm-os"
     },
     {
-      "title": "Karpathy's Eureka Labs bet (2024) — what AI-native education reveals about his model of the future",
+      "title": "Karpathy's Eureka Labs bet (2024): what AI-native education reveals about his model of the future",
       "slug": "karpathy-03-eureka-labs",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -1720,7 +1755,7 @@
       "path": "content/claude-code/karpathy-03-eureka-labs"
     },
     {
-      "title": "Karpathy's vibe coding (Feb 2025) — and why \"mostly works\" is not a production SLA",
+      "title": "Karpathy's vibe coding (Feb 2025): and why \"mostly works\" is not a production SLA",
       "slug": "karpathy-04-vibe-coding",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -1756,7 +1791,7 @@
       "path": "content/claude-code/karpathy-04-vibe-coding"
     },
     {
-      "title": "Karpathy's Software 3.0 (June 2025) — \"the hottest new programming language is English\"",
+      "title": "Karpathy's Software 3.0 (June 2025): \"the hottest new programming language is English\"",
       "slug": "karpathy-05-software-3-0",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -1792,7 +1827,7 @@
       "path": "content/claude-code/karpathy-05-software-3-0"
     },
     {
-      "title": "Karpathy's march of nines (Oct 2025) — why 90%→99.999% is the real AI problem",
+      "title": "Karpathy's march of nines (Oct 2025): why 90%→99.999% is the real AI problem",
       "slug": "karpathy-06-march-of-nines",
       "tool": "claude-code",
       "track": "thought-leadership",
@@ -2008,7 +2043,7 @@
       "difficulty": "intermediate",
       "day": null,
       "series": "qa-agent-guides",
-      "series_title": "QA Agent — Complete Guide",
+      "series_title": "QA Agent: Complete Guide",
       "series_order": 6,
       "series_total": 7,
       "tags": [
@@ -2043,7 +2078,7 @@
       "difficulty": "intermediate",
       "day": null,
       "series": "qa-agent-guides",
-      "series_title": "QA Agent — Complete Guide",
+      "series_title": "QA Agent: Complete Guide",
       "series_order": 7,
       "series_total": 7,
       "tags": [
@@ -2078,7 +2113,7 @@
       "difficulty": "beginner",
       "day": null,
       "series": "qa-agent-guides",
-      "series_title": "QA Agent — Complete Guide",
+      "series_title": "QA Agent: Complete Guide",
       "series_order": 3,
       "series_total": 7,
       "tags": [
@@ -2113,7 +2148,7 @@
       "difficulty": "intermediate",
       "day": null,
       "series": "qa-agent-guides",
-      "series_title": "QA Agent — Complete Guide",
+      "series_title": "QA Agent: Complete Guide",
       "series_order": 4,
       "series_total": 7,
       "tags": [
@@ -2148,7 +2183,7 @@
       "difficulty": "beginner",
       "day": null,
       "series": "qa-agent-guides",
-      "series_title": "QA Agent — Complete Guide",
+      "series_title": "QA Agent: Complete Guide",
       "series_order": 2,
       "series_total": 7,
       "tags": [
@@ -2183,7 +2218,7 @@
       "difficulty": "intermediate",
       "day": null,
       "series": "qa-agent-guides",
-      "series_title": "QA Agent — Complete Guide",
+      "series_title": "QA Agent: Complete Guide",
       "series_order": 5,
       "series_total": 7,
       "tags": [
@@ -2219,7 +2254,7 @@
       "difficulty": "beginner",
       "day": null,
       "series": "qa-agent-guides",
-      "series_title": "QA Agent — Complete Guide",
+      "series_title": "QA Agent: Complete Guide",
       "series_order": 1,
       "series_total": 7,
       "tags": [

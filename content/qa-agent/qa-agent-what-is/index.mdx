@@ -12,7 +12,7 @@ contributors:
   - frenxt
 last_verified: '2026-04-17'
 series: qa-agent-guides
-series_title: QA Agent — Complete Guide
+series_title: 'QA Agent: Complete Guide'
 series_order: 1
 series_total: 7
 tags:
@@ -63,11 +63,11 @@ The key design choice: test specs are written in product language, not code. A s
 - No console errors during the flow
 ```
 
-This means a non-engineer can read and review a test case. More importantly, the spec survives a UI refactor — if a button's label changes from "Proceed to checkout" to "Review order", you update one line of markdown, not a selector chain spread across multiple test files.
+This means a non-engineer can read and review a test case. More importantly, the spec survives a UI refactor. If a button's label changes from "Proceed to checkout" to "Review order", you update one line of markdown, not a selector chain spread across multiple test files.
 
 ## How it runs
 
-QA Agent uses `browser-use` under the hood, which drives a real Chromium instance. The AI model interprets each step in the spec and translates it into browser actions — clicks, navigation, form fills, assertions. At the end of every run it generates:
+QA Agent uses `browser-use` under the hood, which drives a real Chromium instance. The AI model interprets each step in the spec and translates it into browser actions. Clicks, navigation, form fills, assertions. At the end of every run it generates:
 
 - An **HTML report** with per-test pass/fail, timing, and failure notes
 - **Screenshots** at each step

@@ -12,7 +12,7 @@ contributors:
   - frenxt
 last_verified: '2026-04-17'
 series: qa-agent-guides
-series_title: QA Agent — Complete Guide
+series_title: 'QA Agent: Complete Guide'
 series_order: 3
 series_total: 7
 tags:
@@ -28,7 +28,7 @@ kind: standalone
 
 # Writing Your First Test Case
 
-A good test case reads like a conversation between a QA engineer and a developer — not like code.
+A good test case reads like a conversation between a QA engineer and a developer. Not like code.
 
 ## What you'll learn
 
@@ -72,18 +72,18 @@ The first line (`# Title`) is both the test name shown in reports and what the A
 
 ### Metadata
 
-- **persona** — the user context for this test. Options: `unauthenticated`, `free-user`, `pro-user`. QA Agent loads the corresponding credentials from `personas/`. Start with `unauthenticated` for public flows.
-- **priority** — `critical`, `high`, `medium`, or `low`. Used to filter runs and prioritise triage.
-- **tags** — comma-separated. Used to run targeted subsets (`python cli.py run --tag smoke`).
+- **persona**. The user context for this test. Options: `unauthenticated`, `free-user`, `pro-user`. QA Agent loads the corresponding credentials from `personas/`. Start with `unauthenticated` for public flows.
+- **priority**. One of `critical`, `high`, `medium`, or `low`. Used to filter runs and prioritise triage.
+- **tags**. Comma-separated. Used to run targeted subsets (`python cli.py run --tag smoke`).
 
 ### Steps
 
 Write steps in plain imperative language. The AI model interprets them:
 
-- **Good:** `Click "Sign in"` — references visible UI text
+- **Good:** `Click "Sign in"`. References visible UI text
 - **Good:** `Verify the dashboard heading shows "Welcome back"`
-- **Avoid:** `Click button[data-testid="login-btn"]` — selectors break on refactors and the AI doesn't need them
-- **Avoid:** `Wait 2 seconds` — the agent handles timing automatically
+- **Avoid:** `Click button[data-testid="login-btn"]`. Selectors break on refactors and the AI doesn't need them
+- **Avoid:** `Wait 2 seconds`. The agent handles timing automatically
 
 ### Expected
 
@@ -91,7 +91,7 @@ List what success looks like. These become the pass/fail criteria the agent chec
 
 ## Writing steps that survive refactors
 
-The biggest advantage of prose steps is resilience. When a button's label changes from "Get started" to "Start free trial", update one line. When a nav item moves, update the step description — you don't hunt for selectors.
+The biggest advantage of prose steps is resilience. When a button's label changes from "Get started" to "Start free trial", update one line. When a nav item moves, update the step description. You don't hunt for selectors.
 
 Practical rules:
 1. Reference what the user *sees*, not what's in the DOM
@@ -119,11 +119,11 @@ Open the HTML report. You'll see a timeline of browser actions with screenshots 
 
 ## Common first-run issues
 
-**The agent gets stuck on a cookie banner** — add a step: `Dismiss any cookie consent banner if present`. The AI handles conditional UI well.
+**The agent gets stuck on a cookie banner**. Add a step: `Dismiss any cookie consent banner if present`. The AI handles conditional UI well.
 
-**A step fails because an element loads slowly** — add `Wait for the page to fully load` as the first step after navigation. The agent will wait for the visible state before proceeding.
+**A step fails because an element loads slowly**. Add `Wait for the page to fully load` as the first step after navigation. The agent will wait for the visible state before proceeding.
 
-**The test passes but the report shows a step differently than expected** — read the agent's reasoning in the report. Rewrite the step to be more explicit if the interpretation was wrong.
+**The test passes but the report shows a step differently than expected**. Read the agent's reasoning in the report. Rewrite the step to be more explicit if the interpretation was wrong.
 
 ## What's next
 

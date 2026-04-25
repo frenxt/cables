@@ -13,16 +13,16 @@ You are helping the user publish their Claude Code stack to the Cables community
 
 Before talking to the user, confirm these tools are present:
 
-- `gh --version` — GitHub CLI, authenticated
-- `git --version` — git
-- `claude plugins list` — Claude CLI (to read the user's current plugins)
-- `node --version` — Node.js for `npx`
+- `gh --version`. GitHub CLI, authenticated
+- `git --version`. Git
+- `claude plugins list`. Claude CLI (to read the user's current plugins)
+- `node --version`. Node.js for `npx`
 
 If any missing, stop and tell the user what's missing + install instructions.
 
 ---
 
-## Step 1 — Detect the user's existing stack
+## Step 1. Detect the user's existing stack
 
 Read the user's setup so we can pre-fill the manifest. Run:
 
@@ -41,24 +41,24 @@ Detected:
   Local skills (K):    qa, e2e-review, debug-prompt-caching, ...
 ```
 
-Ask: "Publish everything, or a curated subset?" Most users want to pick a subset — not every skill/plugin is ready to share.
+Ask: "Publish everything, or a curated subset?" Most users want to pick a subset. Not every skill/plugin is ready to share.
 
 ---
 
-## Step 2 — Gather the stack metadata
+## Step 2. Gather the stack metadata
 
 Ask the user (one question at a time, use reasonable defaults):
 
-1. **Slug** (kebab-case, unique on frenxt.com) — suggest `<github-handle>-<purpose>` e.g. `ravagin-ai-agents`
-2. **Title** — short, human-readable
-3. **Description** — 1–2 sentences; what this stack is for
-4. **Purpose** — one of: `fullstack-development`, `ai-agent-development`, `ux-design`, `qa-release`, `marketing-growth`, `meta`, `other`
-5. **GitHub username** — fetch with `gh api user -q .login` as default
-6. **Repo name** — default `<slug>-stack` or ask for existing repo
+1. **Slug** (kebab-case, unique on frenxt.com). Suggest `<github-handle>-<purpose>` e.g. `ravagin-ai-agents`
+2. **Title**. Short, human-readable
+3. **Description**. 1–2 sentences; what this stack is for
+4. **Purpose**. One of: `fullstack-development`, `ai-agent-development`, `ux-design`, `qa-release`, `marketing-growth`, `meta`, `other`
+5. **GitHub username**. Fetch with `gh api user -q .login` as default
+6. **Repo name**. Default `<slug>-stack` or ask for existing repo
 
 ---
 
-## Step 3 — Prepare the publisher repo
+## Step 3. Prepare the publisher repo
 
 Two paths:
 
@@ -68,11 +68,11 @@ Two paths:
 - Clone it to a scratch dir if not already checked out
 
 ### 3b. User wants a new repo
-- `gh repo create <owner/repo> --public --clone --description "<title> — a Cables stack"`
+- `gh repo create <owner/repo> --public --clone --description "<title>. A Cables stack"`
 
 ---
 
-## Step 4 — Generate `.cables/stack.json`
+## Step 4. Generate `.cables/stack.json`
 
 In the publisher repo root, create `.cables/stack.json` from detected setup + user input:
 
@@ -98,13 +98,13 @@ In the publisher repo root, create `.cables/stack.json` from detected setup + us
 ```
 
 **Important rules:**
-- NEVER include `claude-plugins-official` or `openai-curated` in `marketplaces[]` — they're implicit. Including them gets rejected by the schema.
+- NEVER include `claude-plugins-official` or `openai-curated` in `marketplaces[]`. They're implicit. Including them gets rejected by the schema.
 - Every plugin's `@<marketplace>` must either be an official one or be declared in `marketplaces[]`.
 - `last_verified` must be today (YYYY-MM-DD).
 
 ---
 
-## Step 5 — Bundle skills (optional)
+## Step 5. Bundle skills (optional)
 
 If the user wants to ship any skills, copy them from `~/.claude/skills/<slug>/` into `<publisher-repo>/.claude/skills/<slug>/`. One directory per skill. Each needs a `SKILL.md` file.
 
@@ -117,7 +117,7 @@ Ask the user to review each bundled skill before proceeding.
 
 ---
 
-## Step 6 — Validate locally
+## Step 6. Validate locally
 
 Run:
 
@@ -128,15 +128,15 @@ npx -y frenxt-cables stack-publish .
 
 Three outcomes:
 
-- **✓ APPROVED** — proceed to Step 7
-- **⚠ NEEDS REVIEW** — show the user the flagged items (typo-squat suspicion, external marketplace). Let them decide whether to proceed (maintainer review on PR side is the safety net)
-- **✗ REJECTED** — show the errors, help user fix (stale date, undeclared marketplace, forbidden key), re-run validator
+- **✓ APPROVED**. Proceed to Step 7
+- **⚠ NEEDS REVIEW**. Show the user the flagged items (typo-squat suspicion, external marketplace). Let them decide whether to proceed (maintainer review on PR side is the safety net)
+- **✗ REJECTED**. Show the errors, help user fix (stale date, undeclared marketplace, forbidden key), re-run validator
 
 Do NOT move forward on REJECTED. Loop until APPROVED or NEEDS REVIEW with user's OK.
 
 ---
 
-## Step 7 — Commit, tag, push
+## Step 7. Commit, tag, push
 
 ```bash
 git add .cables/ .claude/skills/
@@ -149,7 +149,7 @@ Capture the tag URL for the submission step.
 
 ---
 
-## Step 8 — Open the submission PR against frenxt/cables
+## Step 8. Open the submission PR against frenxt/cables
 
 This is where the user's stack officially enters the Cables namespace. Do it carefully.
 
@@ -190,7 +190,7 @@ This is where the user's stack officially enters the Cables namespace. Do it car
 
 ---
 
-## Step 9 — Show the user what's next
+## Step 9. Show the user what's next
 
 Print the PR URL and remind them:
 
@@ -208,7 +208,7 @@ Print the PR URL and remind them:
 3. **Never include sensitive content** in bundled skills (credentials, internal paths, company names).
 4. **If validator rejects, fix the root cause.** Don't suggest `--force` or bypasses.
 5. **Always tag the release** so installs are reproducible. Floating `main` refs are not allowed.
-6. **Ask once per decision** — don't re-confirm things the user has already answered.
+6. **Ask once per decision**. Don't re-confirm things the user has already answered.
 
 ## Output shape
 
@@ -216,4 +216,4 @@ At the end of each step, show:
 - What you did (one line)
 - What's next (one line)
 
-Keep your own commentary terse. The user is shipping a stack — they want progress updates, not explanations.
+Keep your own commentary terse. The user is shipping a stack. They want progress updates, not explanations.

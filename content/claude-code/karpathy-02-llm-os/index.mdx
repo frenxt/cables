@@ -1,5 +1,5 @@
 ---
-title: Karpathy's LLM OS (2023) — the architecture blueprint we still use today
+title: 'Karpathy''s LLM OS (2023): the architecture blueprint we still use today'
 slug: karpathy-02-llm-os
 tool: claude-code
 track: thought-leadership
@@ -22,16 +22,16 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: Karpathy LLM OS tweet — 28 Sep 2023
+  - label: 'Karpathy LLM OS tweet: 28 Sep 2023'
     url: 'https://x.com/karpathy/status/1707437820045062561'
-  - label: Karpathy LLM OS specs tweet — 10 Nov 2023
+  - label: 'Karpathy LLM OS specs tweet: 10 Nov 2023'
     url: 'https://x.com/karpathy/status/1723140519554105733'
 kind: standalone
 ---
 
 # The Karpathy Playbook #2: LLM OS
 
-*Part 2 of 6 — from Software 2.0 to the March of Nines, tracing Karpathy's public thinking with FRE|Nxt Labs production commentary.*
+*Part 2 of 6. From Software 2.0 to the March of Nines, tracing Karpathy's public thinking with FRE|Nxt Labs production commentary.*
 
 ---
 
@@ -39,13 +39,13 @@ kind: standalone
 
 > "With many pieces dropping recently, a more complete picture is emerging of LLMs not as a chatbot, but the kernel process of a new Operating System. E.g. today it orchestrates: Input & Output across modalities (text, audio, vision), Code interpreter, ability to write & run..."
 >
-> — [**@karpathy**](https://x.com/karpathy/status/1707437820045062561), 28 September 2023
+> [**@karpathy**](https://x.com/karpathy/status/1707437820045062561), 28 September 2023
 
 Six weeks later, he made it concrete:
 
 > "LLM OS. Bear with me I'm still cooking. Specs: — LLM: OpenAI GPT-4 Turbo 256 core (batch size) processor @ 20Hz (tok/s) — RAM: 128Ktok — Filesystem: Ada002"
 >
-> — [**@karpathy**](https://x.com/karpathy/status/1723140519554105733), 10 November 2023
+> [**@karpathy**](https://x.com/karpathy/status/1723140519554105733), 10 November 2023
 
 And later, at a Sequoia Capital event after leaving OpenAI: *"Everyone is trying to build what I like to refer to as a LLM OS."*
 
@@ -65,7 +65,7 @@ If Software 2.0 (entry #1 in this series) redefined *how* software is written, L
 | Kernel | The orchestration layer (LangGraph) |
 | User space | The application (your product) |
 
-Every architecture decision becomes obvious once the analogy clicks. You don't give every process unlimited RAM — you page memory in and out. You don't give every process root access — you scope permissions. You instrument the kernel — every syscall is logged.
+Every architecture decision becomes obvious once the analogy clicks. You don't give every process unlimited RAM. You page memory in and out. You don't give every process root access. You scope permissions. You instrument the kernel. Every syscall is logged.
 
 These aren't AI-specific insights. They're OS design principles from the 1970s. We just forgot to apply them to agents.
 
@@ -85,8 +85,8 @@ Engineers who have never trained a model understand memory paging, process isola
 
 Using the LLM OS framing:
 
-- **CPU routing**: Claude Opus for complex reasoning (agent coordination, evaluation), Claude Haiku for simple tasks (formatting, extraction). Dynamic routing based on task type — model switching mid-session.
-- **RAM management**: Each interviewer persona agent receives only the context relevant to its current turn. Full transcript lives in long-term store. Prompt caching keeps the "kernel" (system prompt) in cache — 90%+ cache hit rate, sub-50ms for cached tokens.
+- **CPU routing**: Claude Opus for complex reasoning (agent coordination, evaluation), Claude Haiku for simple tasks (formatting, extraction). Dynamic routing based on task type. Model switching mid-session.
+- **RAM management**: Each interviewer persona agent receives only the context relevant to its current turn. Full transcript lives in long-term store. Prompt caching keeps the "kernel" (system prompt) in cache. 90%+ cache hit rate, sub-50ms for cached tokens.
 - **Filesystem**: LangGraph checkpointing stores state at every node. Any failed session can be replayed from the last successful checkpoint.
 - **Process isolation**: Each candidate session is an isolated LangGraph run. A failure in one session cannot affect another.
 - **Kernel logging**: Every agent step emits a LangSmith trace. We can replay any production session exactly.
@@ -103,4 +103,4 @@ Before you build your next agent system, write the OS spec. Fill in the table ab
 
 ## Next in this series
 
-**#3 — Eureka Labs (July 2024)**. Karpathy leaves OpenAI and makes a specific bet: AI doesn't just change software, it changes how humans learn. What that bet tells us about his model of where this all goes.
+**#3. Eureka Labs (July 2024)**. Karpathy leaves OpenAI and makes a specific bet: AI doesn't just change software, it changes how humans learn. What that bet tells us about his model of where this all goes.

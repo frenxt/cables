@@ -25,17 +25,15 @@ kind: track-episode
 
 # Day 5: Permissions and your first settings.json
 
-Every tool call Claude Code makes — a bash command, a file write, an MCP server call — pauses by default and waits for your approval. That's the right default. It's also death by a thousand interruptions if you never tune it.
+Every tool call Claude Code makes (a bash command, a file write, an MCP call) pauses and waits for approval. That is the right default. It is also death by a thousand interruptions if you never tune it.
 
 <WarStory title="We approved npm run lint 40 times in one day">
-Early on we were running long refactor sessions and letting Claude Code handle the loop: make change, lint, check types, repeat. Every single `npm run lint` and `git status` required a keypress. By the end of the day one of us had approved the same two commands over forty times. We weren't reviewing anything — we were just pressing Y out of habit. Pressing Y forty times isn't a safety control, it's a ritual that creates the illusion of one.
+Early on we were running long refactor sessions and letting Claude Code drive the loop: change, lint, typecheck, repeat. Every `npm run lint` and `git status` required a keypress. By the end of the day one of us had approved the same two commands more than forty times. We weren't reviewing anything. We were pressing Y out of habit. Pressing Y forty times isn't a safety control, it's a ritual that creates the illusion of one. The fix was a six-line `settings.json`.
 </WarStory>
 
 ## What we tried
 
-We created a `.claude/settings.json` file in the project root and added an allowlist for the commands we approved every time without thinking.
-
-The file looks like this:
+We created `.claude/settings.json` in the project root and added an allowlist for the commands we approved every time without thinking.
 
 ```json
 {
@@ -66,24 +64,39 @@ We also set up a global version at `~/.claude/settings.json` for commands that m
 }
 ```
 
-The pattern for a rule is `ToolName(command-pattern)`. Wildcards (`*`) match anything after the prefix. That means `Bash(git log*)` allows `git log`, `git log --oneline`, `git log -p` — but not `git push`.
+The pattern for a rule is `ToolName(command-pattern)`. The wildcard (`*`) matches anything after the prefix. So `Bash(git log*)` allows `git log`, `git log --oneline`, `git log -p`, but not `git push`.
+
+## Decide once: allow, ask, or deny
+
+```mermaid
+flowchart TD
+  C["new command Claude wants to run"] --> Q1{"read-only?"}
+  Q1 -->|"yes"| A["allow"]
+  Q1 -->|"no"| Q2{"reversible and scoped?"}
+  Q2 -->|"yes"| K["ask (default)"]
+  Q2 -->|"no"| Q3{"destructive (rm -rf, push --force)?"}
+  Q3 -->|"yes"| D["deny / never auto-allow"]
+  Q3 -->|"no"| K
+```
+
+Most rules collapse to that tree. Read-only goes on the allowlist. Destructive stays gated forever. The middle band ("reversible and scoped") is the band you tune over time as you learn what your project actually does.
 
 ## What happened
 
-The friction disappeared almost immediately for the commands we added. Claude Code moved through lint-typecheck-fix cycles without pausing, which is exactly what you want when you're watching it work through a large change.
+The friction disappeared almost immediately for the commands we added. Claude Code moved through lint, typecheck, and fix cycles without pausing, which is exactly what you want when you're watching it work through a large change.
 
-The unexpected part: removing the interruptions made it easier to notice the ones that remained. When Claude Code paused to ask, we paid attention — because it wasn't asking constantly anymore. The approval prompts that stayed were actually doing something.
+The unexpected part: removing the easy interruptions made it easier to notice the ones that remained. When Claude Code paused to ask, we paid attention, because it wasn't asking constantly anymore. The approval prompts that stayed were the ones doing real work.
 
-We also discovered there's a project-level settings file and a global one, and they merge. Project-level rules apply to that repo. Global rules apply everywhere. We'd been putting everything in project-level out of habit, when several rules belonged globally.
+We also discovered the project-level and global files merge. We'd been putting everything in project-level out of habit when several rules belonged globally. Splitting them halved the size of the project file.
 
 ## What we learned
 
-- Separate read-only commands from write commands. Read-only commands — `git status`, `git diff`, `git log`, `ls`, `cat` — are almost always safe to allow. Write commands require judgment. Add them to the allowlist only when you've decided they're low-risk in your specific project context.
-- `settings.json` lives at `.claude/settings.json` for project-level rules and `~/.claude/settings.json` for global rules. Both files merge. Project rules take precedence where they conflict.
-- Never auto-allow destructive operations. `rm -rf`, `git reset --hard`, `git push --force`, deploy scripts — these should always pause and ask. The cost of a misfire is too high, and you're not approving these dozens of times per day anyway.
-- If you want Claude Code to help you audit your own settings, use the `less-permission-prompts` skill. It reads your recent transcripts, finds the commands you approve most often, and proposes allowlist entries. It's a good bootstrap for a new project.
+- Separate read-only from write. Read-only commands (`git status`, `git diff`, `git log`, `ls`, `cat`) are almost always safe to allow. Write commands need judgment. Add them to the allowlist only after you've decided they're low-risk in this specific project.
+- `settings.json` lives at `.claude/settings.json` for project rules and `~/.claude/settings.json` for global rules. Both files merge. Project rules take precedence on conflict.
+- Never auto-allow destructive operations. `rm -rf`, `git reset --hard`, `git push --force`, deploy scripts: these stay in the ask column forever. The cost of a misfire is too high, and you're not approving these dozens of times per day anyway.
+- If you want Claude Code to audit your own settings, use the `fewer-permission-prompts` skill. It reads your recent transcripts, finds the commands you approve most often, and proposes allowlist entries. A good bootstrap for a new project.
 - Treat the allowlist as a living file. Add things when you notice you're approving them reflexively. Remove things if the project changes and a command becomes risky in a new context.
 
 ## Next
 
-- **Day 6** — Using Claude Code with git.
+- **Day 6**. Using Claude Code with git.

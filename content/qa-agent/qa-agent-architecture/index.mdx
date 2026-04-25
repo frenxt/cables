@@ -12,7 +12,7 @@ contributors:
   - frenxt
 last_verified: '2026-04-17'
 series: qa-agent-guides
-series_title: QA Agent — Complete Guide
+series_title: 'QA Agent: Complete Guide'
 series_order: 6
 series_total: 7
 tags:
@@ -40,7 +40,7 @@ Before contributing, understand what runs when you type `python cli.py run --sui
 - Which integration points are extension-friendly
 
 <WarStory title="Why we chose markdown specs over Python test files">
-Early prototypes used Python test functions. After two sprints the test suite had diverged from what the product team expected — the functions had accumulated implementation detail that only engineers could read. Switching to markdown specs closed that gap. The product manager started reading test cases during sprint reviews. When a spec was wrong, they caught it. That feedback loop was worth the tradeoff in IDE tooling.
+Early prototypes used Python test functions. After two sprints the test suite had diverged from what the product team expected. The functions had accumulated implementation detail that only engineers could read. Switching to markdown specs closed that gap. The product manager started reading test cases during sprint reviews. When a spec was wrong, they caught it. That feedback loop was worth the tradeoff in IDE tooling.
 </WarStory>
 
 ## Execution pipeline
@@ -130,9 +130,9 @@ llm:
 
 The cleanest places to extend QA Agent:
 
-- **New integrations** (Jira, GitHub Issues, Slack) — add a module alongside `linear_reporter.py`, implement a `report(run_result)` function, and call it from `runner.py` after the run completes
-- **Custom agent tools** — add browser actions to `custom_tools.py` (e.g., drag-and-drop, file upload helpers)
-- **Custom report formats** — replace or extend `reporter.py` for JSON output, CSV summaries, or custom HTML templates
+- **New integrations** (Jira, GitHub Issues, Slack). Add a module alongside `linear_reporter.py`, implement a `report(run_result)` function, and call it from `runner.py` after the run completes
+- **Custom agent tools**. Add browser actions to `custom_tools.py` (e.g., drag-and-drop, file upload helpers)
+- **Custom report formats**. Replace or extend `reporter.py` for JSON output, CSV summaries, or custom HTML templates
 
 ## What's next
 

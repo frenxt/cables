@@ -1,6 +1,6 @@
 ---
 title: >-
-  Harrison Chase: better models alone won't ship your agent (2025) — the
+  Harrison Chase: better models alone won't ship your agent (2025): the
   production gap
 slug: chase-03-production-gap
 tool: claude-code
@@ -24,10 +24,10 @@ contributors:
 publisher: frenxt-labs
 provenance_repo: frenxt/cables
 source_links:
-  - label: VentureBeat — LangChain CEO argues better models alone won't ship agents
+  - label: 'VentureBeat: LangChain CEO argues better models alone won''t ship agents'
     url: >-
       https://venturebeat.com/orchestration/langchains-ceo-argues-that-better-models-alone-wont-get-your-ai-agent-to
-  - label: Sequoia — LangChain's Harrison Chase on Building the Orchestration Layer
+  - label: 'Sequoia: LangChain''s Harrison Chase on Building the Orchestration Layer'
     url: 'https://sequoiacap.com/podcast/training-data-harrison-chase/'
   - label: LangChain three-year reflection post
     url: 'https://blog.langchain.com/three-years-langchain/'
@@ -36,7 +36,7 @@ kind: standalone
 
 # Harrison Chase on Production Agents #3: The production gap
 
-*Part 3 of 5 — tracing Chase's production agent thinking with FRE|Nxt Labs commentary.*
+*Part 3 of 5. Tracing Chase's production agent thinking with FRE|Nxt Labs commentary.*
 
 ---
 
@@ -44,9 +44,9 @@ kind: standalone
 
 > "Better models alone won't get your AI agent to production."
 >
-> — **Harrison Chase** ([LangChain blog](https://blog.langchain.com/author/harrison/) · [VentureBeat interview](https://venturebeat.com/orchestration/langchains-ceo-argues-that-better-models-alone-wont-get-your-ai-agent-to)), CEO of LangChain, consistent across 2025 keynotes and interviews
+> **Harrison Chase** ([LangChain blog](https://blog.langchain.com/author/harrison/) · [VentureBeat interview](https://venturebeat.com/orchestration/langchains-ceo-argues-that-better-models-alone-wont-get-your-ai-agent-to)), CEO of LangChain, consistent across 2025 keynotes and interviews
 
-The full argument: the gap between "it works in a notebook" and "it works at scale with real users" is not primarily a model-capability gap. It's an orchestration gap — state management, error recovery, human-in-the-loop checkpoints, memory, and observability.
+The full argument: the gap between "it works in a notebook" and "it works at scale with real users" is not primarily a model-capability gap. It's an orchestration gap. State management, error recovery, human-in-the-loop checkpoints, memory, and observability.
 
 His framing for production agents: planning, memory, subagents, file systems, context/token management, and code execution. The model is one component. The harness is the product.
 
@@ -54,9 +54,9 @@ His framing for production agents: planning, memory, subagents, file systems, co
 
 ## What we heard
 
-This is the most important thing to understand about the multi-agent market right now. Every team we talk to has prototypes. Almost none have production. The failure mode is identical across them: they improved the model, the prompt, or the data — but they never built the orchestration layer.
+This is the most important thing to understand about the multi-agent market right now. Every team we talk to has prototypes. Almost none have production. The failure mode is identical across them: they improved the model, the prompt, or the data. But they never built the orchestration layer.
 
-The model is the CPU. You still need the operating system. (See [Karpathy #2 — LLM OS](../karpathy-02-llm-os) for the same idea from a different angle.)
+The model is the CPU. You still need the operating system. (See [Karpathy #2. LLM OS](../karpathy-02-llm-os) for the same idea from a different angle.)
 
 Chase and Karpathy agree on the diagnosis. They disagree on whether raw capability is the ceiling or the floor (see [Amodei #5](../amodei-05-end-of-exponential) and [Karpathy #6](../karpathy-06-march-of-nines)). Both views converge on the same practical answer: you have to build the harness regardless, and the harness is where most of the production work lives.
 
@@ -84,7 +84,7 @@ The work required to go from "passes two" to "passes all five" is usually 60–7
 
 We use LangGraph for every multi-agent engagement. The reason is exactly what Chase describes: LangGraph forces you to think in state machines. Every node is explicit. Every edge is a decision. There is no magic routing that works in a demo and fails in production.
 
-The InterviewLM system was 8 agents, 100+ concurrent sessions, sub-2s p99 latency. None of that was achievable without the orchestration layer. We built the model-swapping logic, the prompt caching, and the evaluation harness on top of LangGraph. The models (Claude Sonnet/Haiku routed by task complexity) were almost interchangeable by the time we finished — the hard work was in the graph.
+The InterviewLM system was 8 agents, 100+ concurrent sessions, sub-2s p99 latency. None of that was achievable without the orchestration layer. We built the model-swapping logic, the prompt caching, and the evaluation harness on top of LangGraph. The models (Claude Sonnet/Haiku routed by task complexity) were almost interchangeable by the time we finished. The hard work was in the graph.
 
 ---
 
@@ -110,4 +110,4 @@ Before your next demo-to-production scoping conversation, ask: *what happens whe
 
 ## Next in this series
 
-**#4 — Deep Agents (July 2025)**. Chase's packaged answer: a harness that comes with planning, memory, subagents, and a virtual filesystem built in. What it gets right and when not to use it.
+**#4. Deep Agents (July 2025)**. Chase's packaged answer: a harness that comes with planning, memory, subagents, and a virtual filesystem built in. What it gets right and when not to use it.

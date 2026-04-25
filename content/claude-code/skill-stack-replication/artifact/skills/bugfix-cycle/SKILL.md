@@ -34,9 +34,9 @@ digraph bugfix {
 Most bugs require authenticated sessions. The QA agent auto-refreshes expired tokens before each run.
 
 **Persona selection for test cases:**
-- `unauthenticated` — public pages only (home, pricing, login, signup)
-- `free-user` — most bugs (builder, chat, message counter, suggestions, file upload)
-- `pro-user` — pro-tier features (billing, advanced limits, priority support)
+- `unauthenticated`. Public pages only (home, pricing, login, signup)
+- `free-user`. Most bugs (builder, chat, message counter, suggestions, file upload)
+- `pro-user`. Pro-tier features (billing, advanced limits, priority support)
 
 **How it works:**
 - Credentials stored in `apps/qa-agent/.env` (`QA_FREE_USER_EMAIL`, `QA_FREE_USER_PASSWORD`, etc.)

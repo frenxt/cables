@@ -12,7 +12,7 @@ contributors:
   - frenxt
 last_verified: '2026-04-17'
 series: qa-agent-guides
-series_title: QA Agent — Complete Guide
+series_title: 'QA Agent: Complete Guide'
 series_order: 2
 series_total: 7
 tags:
@@ -87,7 +87,7 @@ QA_LLM_API_KEY=sk-...          # recommended: OpenRouter key (access to all mode
 # OPENAI_API_KEY=sk-...        # fallback: direct OpenAI key
 ```
 
-The default model is `google/gemini-3.1-flash-lite-preview` via OpenRouter. This is the model used across 480+ production spec runs — it balances speed and accuracy well for UI testing.
+The default model is `google/gemini-3.1-flash-lite-preview` via OpenRouter. This is the model used across 480+ production spec runs. It balances speed and accuracy well for UI testing.
 
 ## Step 5: Configure your base URL
 
@@ -119,11 +119,11 @@ Open the HTML report to see the full run with screenshots.
 
 ## Troubleshooting
 
-**`browser-use: command not found`** — run `pip install -e .` again inside your venv, then `browser-use install`.
+**`browser-use: command not found`**. Run `pip install -e .` again inside your venv, then `browser-use install`.
 
-**`API key not set` error** — confirm `.env` exists in the project root and has at least one of the three keys from Step 4.
+**`API key not set` error**. Confirm `.env` exists in the project root and has at least one of the three keys from Step 4.
 
-**`base_url` connection refused** — start your local dev server first, then run QA Agent.
+**`base_url` connection refused**. Start your local dev server first, then run QA Agent.
 
 ## What's next
 

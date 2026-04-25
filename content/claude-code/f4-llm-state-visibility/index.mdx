@@ -24,17 +24,33 @@ kind: team-playbook
 
 # Your LLM cannot read your agent state
 
-The most common architectural mistake when building LangGraph agents is assuming the LLM can see your state fields. It cannot. The LLM only sees three things: the messages list, the system prompt, and the tool schemas. Everything else you store in `AgentState` is invisible to the model — unless you explicitly inject it.
+The most common architectural mistake when building LangGraph agents is assuming the LLM can see your state fields. It cannot. The LLM only sees three things: the messages list, the system prompt, and the tool schemas. Everything else you store in `AgentState` is invisible to the model. Unless you explicitly inject it, the model is reasoning from the transcript alone, no matter how much structured state you think you are handing it.
 
 <WarStory title="The agent kept asking for context it already had">
-We built an onboarding flow that collected a user's business name, primary goal, success metric, and design preferences into a `job_context` state field. We stored these in `AgentState` across the session. Users complained the agent kept asking clarifying questions it should already know the answers to — "What's the main goal of this project?" repeated two or three turns into a session. We dug into LangSmith traces and saw the agent had the correct values in state, but was generating those questions anyway. The model wasn't reading our state. It was making decisions from messages alone. We had built careful state management that the LLM was entirely bypassing.
+We built an onboarding flow that collected a user's business name, primary goal, success metric, and design preferences into a `job_context` state field. We stored the values in `AgentState` across the session. Users complained the agent kept asking clarifying questions it should already know the answer to: "What is the main goal of this project?" coming back two or three turns into a session. We opened the LangSmith traces and saw the agent had the correct values in state while generating those questions anyway. The model was not reading our state. It was making decisions from messages alone. We had built careful state management that the LLM was entirely bypassing.
 </WarStory>
 
 ## What we tried
 
 Our initial AgentState had 65+ fields covering everything from `main_goal` to `job_context` to `design_document` to `plan_items`. We assumed the framework would make these accessible to the LLM. The LangGraph docs cover `InjectedState` for tools, but we missed the implication: that injection is for tool *execution* code, not for the LLM's reasoning.
 
-We tried adding instructions to the system prompt like "Read the current goal from state" and "Use the job_context you were given." These had no effect — because there was nothing for the model to read. We also tried putting state field names in tool descriptions, hoping the model would call a tool to retrieve them. That just added unnecessary tool calls to every turn.
+We tried adding instructions to the system prompt like "Read the current goal from state" and "Use the job_context you were given." These had no effect. There was nothing for the model to read. We also tried putting state field names in tool descriptions, hoping the model would call a tool to retrieve them. That just added unnecessary tool calls to every turn.
+
+## How state actually reaches the model
+
+```mermaid
+flowchart LR
+  State["AgentState (60+ fields)"] -->|invisible| LLM
+  Middleware["context_injection_middleware"] -->|reads| State
+  Middleware -->|appends XML blocks| SP["system prompt"]
+  SP --> LLM
+  Msgs["messages"] --> LLM
+  Schemas["tool schemas"] --> LLM
+  Tools["tools (InjectedState)"] -->|reads| State
+  Tools -->|ToolMessage| Msgs
+```
+
+The LLM only reads the three right-side inputs. Every path from `AgentState` to the model has to pass through one of them, or the model cannot see the data.
 
 ## What happened
 
@@ -78,8 +94,8 @@ The same pattern handles design requirements, cancellation context (when a user 
 
 ## When this doesn't fit
 
-- **Simple single-turn agents.** If your agent has no persistent state across turns, this is irrelevant — the conversation history is the only context you need.
-- **Very large state objects.** Injecting everything every turn inflates tokens and may damage prompt caching. Be selective: inject only what the model needs to reason correctly in the current turn, not your entire state schema.
+- **Simple single-turn agents.** If your agent has no persistent state across turns, this is irrelevant. The conversation history is the only context you need.
+- **Very large state objects.** Injecting everything every turn inflates tokens and can damage prompt caching. Be selective: inject only what the model needs to reason correctly in the current turn, not your entire state schema.
 - **Agents using tool-based retrieval as the primary pattern.** If your architecture has the model explicitly call a `get_context` tool, middleware injection can create redundancy. Pick one pattern and document it.
 
 ## Result

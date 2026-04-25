@@ -12,10 +12,10 @@ Periodic exercise to run the full E2E test suite, triage results, review screens
 
 Before running anything, detect the project's E2E infrastructure:
 
-1. **Find the test config** — search for `playwright.config.ts`, `cypress.config.ts`, `jest.config.ts`, or similar
-2. **Find the test directory** — look for `e2e/`, `tests/`, `test/`, `__tests__/`, `cypress/`
-3. **Identify the runner** — check `package.json` scripts for `test:e2e`, `test`, `playwright`, `cypress`
-4. **Check for a testing guide** — look for `E2E-TESTING-GUIDE.md`, `TESTING.md`, or similar in the test directory
+1. **Find the test config**. Search for `playwright.config.ts`, `cypress.config.ts`, `jest.config.ts`, or similar
+2. **Find the test directory**. Look for `e2e/`, `tests/`, `test/`, `__tests__/`, `cypress/`
+3. **Identify the runner**. Check `package.json` scripts for `test:e2e`, `test`, `playwright`, `cypress`
+4. **Check for a testing guide**. Look for `E2E-TESTING-GUIDE.md`, `TESTING.md`, or similar in the test directory
 
 If no E2E tests exist, report that and ask whether to set them up.
 
@@ -69,10 +69,10 @@ Prioritize: mobile viewport tests, recently changed pages, interaction-state scr
 
 ## Step 4: Check Coverage Gaps
 
-1. **Map app routes** — find all pages/routes in the app (check router config, `app/` directory, `pages/` directory)
-2. **Map existing tests** — list what each test file covers
-3. **Identify gaps** — routes or features with no test coverage
-4. **Prioritize** — critical user flows (auth, payments, core features) first
+1. **Map app routes**. Find all pages/routes in the app (check router config, `app/` directory, `pages/` directory)
+2. **Map existing tests**. List what each test file covers
+3. **Identify gaps**. Routes or features with no test coverage
+4. **Prioritize**. Critical user flows (auth, payments, core features) first
 
 ## Step 5: Report
 

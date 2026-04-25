@@ -40,7 +40,7 @@ pip install browser-use
 playwright install chromium
 ```
 
-Then we invoked the browser QA skill from Claude Code, passing it three user journey descriptions — not URLs. The skill takes natural-language flow descriptions as input, not a sitemap. Each description read like a short user story: "Sign in with test account, verify dashboard loads, sign out." We ran in headed mode first (`BROWSER_USE_HEADLESS=false`) so we could watch what the agent was actually doing and catch obvious prompt issues early. Once the flows were stable we switched to headless for CI.
+Then we invoked the browser QA skill from Claude Code, passing it three user journey descriptions. Not URLs. The skill takes natural-language flow descriptions as input, not a sitemap. Each description read like a short user story: "Sign in with test account, verify dashboard loads, sign out." We ran in headed mode first (`BROWSER_USE_HEADLESS=false`) so we could watch what the agent was actually doing and catch obvious prompt issues early. Once the flows were stable we switched to headless for CI.
 
 Authentication was the trickiest part. We pre-seeded session cookies by logging in manually, exporting cookies to `tests/fixtures/auth.json`, and loading them at the start of each run. This meant the agent skipped the login wall and could focus on the flow itself without consuming tokens re-authenticating on every run.
 
@@ -58,20 +58,20 @@ Screenshot: runs/2026-04-15/checkout-step-4.png
 Reproduction: Load /cart with seed fixture, add item, proceed to checkout
 ```
 
-That format made triage fast — we knew the exact step, the CSS property causing it, and had a screenshot to share.
+That format made triage fast. We knew the exact step, the CSS property causing it, and had a screenshot to share.
 
-False positives did appear. The most common cause was timing: the agent would attempt to click a button before a loading spinner resolved. We saw this on the checkout confirmation screen which delayed ~800 ms under test conditions. Retrying the step once eliminated most of them. We also saw a false positive on a modal that the agent expected to close but was instead replaced by a second confirmation dialog — the agent interpreted this as failure rather than a two-step flow.
+False positives did appear. The most common cause was timing: the agent would attempt to click a button before a loading spinner resolved. We saw this on the checkout confirmation screen which delayed ~800 ms under test conditions. Retrying the step once eliminated most of them. We also saw a false positive on a modal that the agent expected to close but was instead replaced by a second confirmation dialog. The agent interpreted this as failure rather than a two-step flow.
 
 Across three flows, a full run took roughly 4–6 minutes in headed mode and 2–3 minutes headless. Results were consistent run-to-run as long as the seed dataset and auth state were stable. With a flaky network or a cold server the variance was wider.
 
 ## What we learned
 
-- Start with high-value user journeys, not full-site crawls. browser-use is slow relative to a unit test — save it for the flows where a real user would feel the breakage.
+- Start with high-value user journeys, not full-site crawls. browser-use is slow relative to a unit test. Save it for the flows where a real user would feel the breakage.
 - Capture screenshots only on failure. Logging every step produces hundreds of images and slows the run. Failure-only screenshots stay actionable.
 - Keep one stable seed dataset. Non-deterministic test data (fresh UUIDs, random inventory) is the fastest way to introduce flakiness. One fixture file per flow, committed to the repo.
 - Run browser-use on staging before deploy, not on every commit. AI-driven sessions cost more (time and tokens) than a Playwright assertion. Use them for pre-deploy checks or scheduled overnight runs, not as a commit gate.
-- Handle auth state explicitly. Letting the agent log in fresh each run wastes tokens and introduces a second point of failure. Pre-seeded cookies or a test-account session token are both fine — just make the auth step declarative rather than implicit.
-- Understand where browser-use ends and Playwright begins. browser-use is AI-driven and takes natural-language flow descriptions — it handles ambiguity well but is slower and less precise. Playwright is code-driven with explicit selectors and assertions — faster, cheaper, and deterministic. Use browser-use to discover what to test; write Playwright tests to lock in what you've found.
+- Handle auth state explicitly. Letting the agent log in fresh each run wastes tokens and introduces a second point of failure. Pre-seeded cookies or a test-account session token are both fine. Just make the auth step declarative rather than implicit.
+- Understand where browser-use ends and Playwright begins. browser-use is AI-driven and takes natural-language flow descriptions. It handles ambiguity well but is slower and less precise. Playwright is code-driven with explicit selectors and assertions. Faster, cheaper, and deterministic. Use browser-use to discover what to test; write Playwright tests to lock in what you've found.
 
 ## When this doesn't fit
 
@@ -82,4 +82,4 @@ Across three flows, a full run took roughly 4–6 minutes in headed mode and 2�
 
 ## Next
 
-- Next — Your first subagent.
+- Next: Your first subagent.
