@@ -131,6 +131,44 @@ describe("installPlan", () => {
     expect(existsSync(join(projectRoot, ".claude/skills/test/SKILL.md"))).toBe(true);
   });
 
+  it("rewrites Claude skill targets and content for Codex installs", async () => {
+    const plan = makePlan([
+      {
+        source: "artifact/SKILL.md",
+        target: ".claude/skills/qa/SKILL.md",
+        content: "Read CLAUDE.md and .claude/skills/qa/SKILL.md\n",
+      },
+    ]);
+    const result = await installPlan(plan, {
+      projectRoot,
+      force: false,
+      dryRun: false,
+      targetTool: "codex",
+      onConflict: async () => "overwrite",
+    });
+    const target = ".agents/skills/qa/SKILL.md";
+    expect(result.writtenFiles).toContain(target);
+    expect(existsSync(join(projectRoot, target))).toBe(true);
+    expect(readFileSync(join(projectRoot, target), "utf8")).toBe(
+      "Read AGENTS.md and .agents/skills/qa/SKILL.md\n"
+    );
+  });
+
+  it("rewrites root CLAUDE.md targets for Codex installs", async () => {
+    const plan = makePlan([
+      { source: "artifact/CLAUDE.md", target: "CLAUDE.md", content: "# CLAUDE.md\n" },
+    ]);
+    const result = await installPlan(plan, {
+      projectRoot,
+      force: false,
+      dryRun: false,
+      targetTool: "codex",
+      onConflict: async () => "overwrite",
+    });
+    expect(result.writtenFiles).toContain("AGENTS.md");
+    expect(readFileSync(join(projectRoot, "AGENTS.md"), "utf8")).toBe("# AGENTS.md\n");
+  });
+
   it("handles multiple files in one plan", async () => {
     const plan = makePlan([
       { source: "a.md", target: "a.md", content: "a\n" },

@@ -31,6 +31,20 @@ describe("runAdd (e2e against LocalResolver)", () => {
     expect(readFileSync(join(projectRoot, "CLAUDE.md"), "utf8")).toContain("Sample CLAUDE.md");
   });
 
+  it("installs Claude artifacts into Codex project paths when requested", async () => {
+    const resolver = new LocalResolver(fakeRoot);
+    const result = await runAdd(resolver, "sample-with-artifact", {
+      projectRoot,
+      force: true,
+      dryRun: false,
+      targetTool: "codex",
+      onConflict: async () => "overwrite",
+    });
+    expect(result.writtenFiles).toContain("AGENTS.md");
+    expect(existsSync(join(projectRoot, "AGENTS.md"))).toBe(true);
+    expect(readFileSync(join(projectRoot, "AGENTS.md"), "utf8")).toContain("Sample AGENTS.md");
+  });
+
   it("dry-run reports what would be written but does not change files", async () => {
     writeFileSync(join(projectRoot, "CLAUDE.md"), "# keep\n");
     const resolver = new LocalResolver(fakeRoot);

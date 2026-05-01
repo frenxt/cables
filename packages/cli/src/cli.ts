@@ -4,7 +4,12 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createResolver } from "./lib/resolver";
-import { detectClaudeCodeProject } from "./lib/project";
+import {
+  detectClaudeCodeProject,
+  detectCodexProject,
+  resolveTargetTool,
+  type SupportedProjectTool,
+} from "./lib/project";
 import { runList, type ListOptions } from "./commands/list";
 import { runSearch } from "./commands/search";
 import { runInfo } from "./commands/info";
@@ -77,6 +82,42 @@ function printConvertResult(
   }
 }
 
+function assertSupportedProject(
+  projectRoot: string,
+  targetTool: SupportedProjectTool,
+  force: boolean,
+  interactive: boolean
+): Promise<void> | void {
+  const detected =
+    targetTool === "codex"
+      ? detectCodexProject(projectRoot)
+      : detectClaudeCodeProject(projectRoot);
+  if (detected || force) return;
+
+  const message =
+    targetTool === "codex"
+      ? "This doesn't look like a Codex project (no AGENTS.md, .codex/, or .agents/)."
+      : "This doesn't look like a Claude Code project (no .claude/ or CLAUDE.md).";
+
+  if (!interactive) {
+    throw new Error(`${message} Re-run with --force or use an interactive terminal.`);
+  }
+
+  return select<"yes" | "no">({
+    message: `${message} Continue anyway?`,
+    options: [
+      { value: "no", label: "Abort" },
+      { value: "yes", label: "Continue" },
+    ],
+    initialValue: "no",
+  }).then((proceed) => {
+    if (isCancel(proceed) || proceed === "no") {
+      cancel("Install aborted.");
+      exit(1);
+    }
+  });
+}
+
 export async function run(argv: string[]): Promise<void> {
   const cli = cac("frenxt");
 
@@ -133,6 +174,7 @@ export async function run(argv: string[]): Promise<void> {
 
   cli
     .command("add <slug>", "Install a cable's artifact into the current project")
+    .option("--tool <tool>", "Target tool: auto|claude-code|codex", { default: "auto" })
     .option("--force", "Overwrite existing files without prompting")
     .option("--dry-run", "Print planned writes without touching disk")
     .action(async (slug: string, opts) => {
@@ -142,28 +184,8 @@ export async function run(argv: string[]): Promise<void> {
           banner();
         }
         const projectRoot = cwd();
-        if (!detectClaudeCodeProject(projectRoot)) {
-          if (!opts.force) {
-            if (!interactive) {
-              throw new Error(
-                "This doesn't look like a Claude Code project (no .claude/ or CLAUDE.md). Re-run with --force or use an interactive terminal."
-              );
-            }
-            const proceed = await select<"yes" | "no">({
-              message:
-                "This doesn't look like a Claude Code project (no .claude/ or CLAUDE.md). Continue anyway?",
-              options: [
-                { value: "no", label: "Abort" },
-                { value: "yes", label: "Continue" },
-              ],
-              initialValue: "no",
-            });
-            if (isCancel(proceed) || proceed === "no") {
-              cancel("Install aborted.");
-              exit(1);
-            }
-          }
-        }
+        const targetTool = resolveTargetTool(projectRoot, opts.tool);
+        await assertSupportedProject(projectRoot, targetTool, !!opts.force, interactive);
         const resolver = createResolver();
         const spin = isInteractiveTTY()
           ? spinner(`Fetching ${emphasis(slug)} from ${resolver.describe()}`)
@@ -177,6 +199,7 @@ export async function run(argv: string[]): Promise<void> {
             projectRoot,
             force: !!opts.force,
             dryRun: !!opts.dryRun,
+            targetTool,
             onConflict: async (path, existing, incoming): Promise<ConflictResolution> =>
               isInteractiveTTY()
                 ? promptConflict(path, existing, incoming)

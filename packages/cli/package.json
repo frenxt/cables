@@ -1,6 +1,6 @@
 {
   "name": "frenxt-cables",
-  "version": "0.0.0",
+  "version": "0.3.1",
   "description": "Install reusable AI workflow recipes and artifacts for Claude Code, Codex, and other AI coding tools.",
   "repository": {
     "type": "git",

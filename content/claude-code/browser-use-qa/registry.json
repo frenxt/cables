@@ -2,7 +2,7 @@
   "slug": "browser-use-qa",
   "artifact_type": "skill",
   "version": "1.0.0",
-  "requires": ["BROWSER_USE_API_KEY"],
+  "requires": ["BROWSER_USE_API_KEY", "GOOGLE_API_KEY"],
   "files": [
     {
       "source": "artifact/SKILL.md",
@@ -11,5 +11,5 @@
       "on_conflict": "prompt"
     }
   ],
-  "post_install_notes": "Set BROWSER_USE_API_KEY in your environment before running this skill."
+  "post_install_notes": "Set the Browser Use/model keys required by your QA harness, commonly BROWSER_USE_API_KEY and GOOGLE_API_KEY, before running this skill."
 }

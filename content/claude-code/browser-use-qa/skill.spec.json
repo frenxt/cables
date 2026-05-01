@@ -1,7 +1,7 @@
 {
   "slug": "browser-use-qa",
   "canonical_name": "Browser QA",
-  "summary": "Run autonomous browser QA against critical user journeys and return reproducible failure evidence.",
+  "summary": "Run autonomous browser QA against code changes, suites, bug regressions, and release flows, then return reproducible failure evidence.",
   "capability_cluster": "qa-testing",
   "maturity": "stable",
   "owner": "frenxt",
@@ -20,17 +20,23 @@
       "description": "How login credentials are provided to browser automation."
     },
     {
-      "name": "journey_list",
+      "name": "journey_scope",
       "type": "string",
       "required": true,
-      "description": "Ordered list of high-value user flows to execute."
+      "description": "Suite, file, tag, release checklist, CSV, changed route, or ordered list of user flows to execute."
+    },
+    {
+      "name": "evidence_policy",
+      "type": "string",
+      "required": false,
+      "description": "Whether to run headed, capture screenshots/GIFs, and include console or network observations."
     }
   ],
   "outputs": [
     {
-      "name": "journey_results",
+      "name": "qa_report",
       "type": "report",
-      "description": "Pass/fail and error detail for each journey."
+      "description": "Pass/fail/error/manual counts, scoped coverage summary, and residual risks."
     },
     {
       "name": "reproduction_steps",
@@ -38,15 +44,19 @@
       "description": "Deterministic repro steps for each failing journey."
     },
     {
-      "name": "failure_screenshots",
+      "name": "failure_artifacts",
       "type": "file",
-      "description": "Screenshot references for failed browser states."
+      "description": "Screenshot, GIF, video, trace, or HTML report references for failed browser states."
     }
   ],
   "dependencies": {
-    "env_vars": [],
+    "env_vars": [
+      "BROWSER_USE_API_KEY",
+      "GOOGLE_API_KEY"
+    ],
     "binaries": [
-      "node"
+      "node",
+      "python3.11"
     ],
     "services": [
       "browser-use"
@@ -54,17 +64,18 @@
     "plugins": []
   },
   "workflow_steps": [
-    "Define journey scope around business-critical paths.",
-    "Run browser automation against each journey with stable test data.",
-    "Capture pass/fail outcomes and evidence for failures.",
-    "Return prioritized failure list with reproduction guidance."
+    "Verify a Browser Use QA harness or identify the repo's equivalent browser automation setup.",
+    "Choose the narrowest useful scope from suite, file, tag, release checklist, CSV, or changed code.",
+    "Generate focused markdown test cases when existing coverage does not exercise the requested flow.",
+    "Run headed first for new or flaky flows, then parallelize stable suites.",
+    "Separate product bugs from harness failures and return evidence-backed findings."
   ],
   "verification": {
-    "smoke_test": "Run against a staging URL with at least three journeys and verify each result includes pass/fail plus repro details.",
+    "smoke_test": "Run one headed Browser Use smoke flow against a local or staging URL and verify the final report includes counts, repro steps, and artifact paths for failures.",
     "expected_artifacts": [
-      "journey_results_report",
+      "qa_report",
       "reproduction_steps",
-      "failure_screenshot_references"
+      "failure_artifact_references"
     ]
   }
 }
